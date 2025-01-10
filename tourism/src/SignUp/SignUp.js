@@ -1,47 +1,119 @@
 import { Card, Button } from "@mui/material";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./SignUp.css";
 
+// Sign up page
 function SignUp() {
+  // to select sign up card
   const [activeCard, setActiveCard] = useState(null);
+
+  // check password and confirm password are same
+  const [error, setError] = useState("");
+
+  // refs for data
+  const nameRef = useRef(null);
+  const addressRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
+  const passRef = useRef(null);
+  const confPassRef = useRef(null);
+
+  const [touristData, setTouristData] = useState({});
+
+  const handleTouristDataSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted");
+
+    const data = {
+      name: nameRef.current.value,
+      address: addressRef.current.value,
+      email: emailRef.current.value,
+      phone: phoneRef.current.value,
+    };
+    setTouristData(data);
+
+    setActiveCard("passcard");
+  };
+
+  const handleTouristPassSubmit = (e) => {
+    e.preventDefault();
+    const { name, address, email, phone } = touristData;
+    if (passRef.current.value !== confPassRef.current.value) {
+      setError("Passwords do not match!");
+      return;
+    }
+    setError("");
+    alert(
+      `Passwords match! Submitted Data:\nName: ${name}\nAddress: ${address}\nEmail: ${email}\nPhone: ${phone}`
+    );
+  };
 
   const Card1 = () => (
     <div className="card2">
       <button className="close-icon" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <h2>Card 1</h2>
-      <p>This is the content of Card 1.</p>
+      <div className="form-container">
+        <div className="heading">Tourist Sign Up</div>
+        <form onSubmit={handleTouristDataSubmit}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            ref={nameRef}
+            className="form-input"
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            ref={addressRef}
+            className="form-input"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            ref={emailRef}
+            className="form-input"
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            ref={phoneRef}
+            className="form-input"
+          />
+          <button type="submit" className="form-button">
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 
-  const Card2 = () => (
+  const Passcard = () => (
     <div className="card2">
       <button className="close-icon" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <h2>Card 2</h2>
-      <p>This is the content of Card 2.</p>
-    </div>
-  );
-
-  const Card3 = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
-        ✕
-      </button>
-      <h2>Card 3</h2>
-      <p>This is the content of Card 3.</p>
-    </div>
-  );
-
-  const Card4 = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
-        ✕
-      </button>
-      <h2>Card 4</h2>
-      <p>This is the content of Card 4.</p>
+      <div className="form-container">
+        <div className="heading">Tourist Sign Up</div>
+        <form onSubmit={handleTouristPassSubmit}>
+          <input
+            type="password"
+            placeholder="Enter password"
+            ref={passRef}
+            className="form-input"
+          />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            ref={confPassRef}
+            className="form-input"
+          />
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit" className="form-button">
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 
@@ -55,6 +127,8 @@ function SignUp() {
         return <Card3 />;
       case "card4":
         return <Card4 />;
+      case "passcard":
+        return <Passcard />;
       default:
         return null;
     }
