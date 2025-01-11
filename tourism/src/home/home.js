@@ -6,9 +6,13 @@ function Home() {
   const handleSignUp = () => {
     navigate("/signup");
   };
+  const handleSignIn = () => {
+    navigate("/signin");
+  };
   return (
     <>
       <Button onClick={handleSignUp}>Sign Up</Button>
+      <Button onClick={handleSignIn}>Sign In</Button>
     </>
   );
 }
