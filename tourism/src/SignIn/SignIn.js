@@ -215,7 +215,57 @@ function SignIn() {
       </div>
     </div>
   );
+  const AdminData = useRef({
+    email: "",
+    password: "",
+  });
 
+  const handleAdminDataSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted");
+
+    // Store data in ref instead of state
+    AdminData.current = {
+      email: emailRef.current.value,
+      password: AdminData.current.password, // Store existing password
+    };
+
+    // Store password in GuideData
+    AdminData.current.password = passRef.current.value;
+
+    alert(
+      `Passwords match! Submitted Data:\nEmail: ${AdminData.current.email}\nPassword: ${AdminData.current.password}`
+    );
+  };
+
+  const AdminCard = () => (
+    <div className="card2">
+      <button className="close-icon" onClick={() => setActiveCard(null)}>
+        ✕
+      </button>
+      <div className="form-container">
+        <div className="heading">Admin Sign In</div>
+        <form onSubmit={handleAdminDataSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            ref={emailRef}
+            className="form-input"
+            defaultValue={AdminData.current.email}
+          />
+          <input
+            type="password"
+            placeholder="Enter password"
+            ref={passRef}
+            className="form-input"
+          />
+          <button type="submit" className="form-button">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+  );
   const renderCardContent = () => {
     switch (activeCard) {
       case "TouristCard":
@@ -226,6 +276,8 @@ function SignIn() {
         return <AirlineCard />;
       case "GuideCard":
         return <GuideCard />;
+      case "AdminCard":
+        return <AdminCard />;
       default:
         return null;
     }
@@ -253,6 +305,9 @@ function SignIn() {
           </Button>
           <Button className="button" onClick={() => setActiveCard("GuideCard")}>
             Tour Guide
+          </Button>
+          <Button className="button" onClick={() => setActiveCard("AdminCard")}>
+            Admin
           </Button>
         </div>
       </Card>
