@@ -1,26 +1,19 @@
 import { Card, Button } from "@mui/material";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SignUp.css";
 
 // Sign up page
 function SignUp() {
-  const insert = async () => {
+  const navigate = useNavigate();
+  const insertTourist = async () => {
     console.log(touristData);
-    console.log("Request body:", JSON.stringify(touristData));
     fetch("http://localhost:8008/Tourism/insertUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        first_name: touristData.first_name,
-        last_name: touristData.last_name,
-        age: touristData.age,
-        email: touristData.email,
-        phone: touristData.phone,
-        address: touristData.address,
-        password: touristData.password,
-      }),
+      body: JSON.stringify(touristData.current),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -44,6 +37,9 @@ function SignUp() {
   const firstNameRef = useRef("");
   const lastNameRef = useRef("");
   const ageRef = useRef("");
+  const countryRef = useRef("");
+  const stateRef = useRef("");
+  const cityRef = useRef("");
   const addressRef = useRef("");
   const emailRef = useRef("");
   const phoneRef = useRef("");
@@ -57,8 +53,12 @@ function SignUp() {
     email: "",
     age: "",
     phone: "",
+    country: "",
+    state: "",
+    city: "",
     address: "",
     password: "",
+    role_ID: "",
   });
 
   const handleTouristDataSubmit = (e) => {
@@ -70,10 +70,14 @@ function SignUp() {
       first_name: firstNameRef.current.value,
       last_name: lastNameRef.current.value,
       age: ageRef.current.value,
+      country: countryRef.current.value,
+      state: stateRef.current.value,
+      city: cityRef.current.value,
       address: addressRef.current.value,
       email: emailRef.current.value,
       phone: phoneRef.current.value,
-      password: touristData.current.password, // Store existing password
+      password: touristData.current.password,
+      role_ID: 1,
     };
 
     if (passRef.current.value !== confPassRef.current.value) {
@@ -88,7 +92,10 @@ function SignUp() {
 
     // Store password in touristData
     touristData.current.password = passRef.current.value;
-    insert();
+    insertTourist();
+    localStorage.setItem("loggedIn", true);
+    localStorage.setItem("first_name", touristData.current.first_name);
+    navigate("/TouristDashboard");
   };
 
   const TouristCard = () => (
@@ -125,7 +132,31 @@ function SignUp() {
           />
           <input
             type="text"
-            placeholder="Address"
+            placeholder="Country"
+            ref={countryRef}
+            className="form-input"
+            defaultValue={touristData.current.country}
+            required
+          />
+          <input
+            type="text"
+            placeholder="State/Province"
+            ref={stateRef}
+            className="form-input"
+            defaultValue={touristData.current.state}
+            required
+          />
+          <input
+            type="text"
+            placeholder="City"
+            ref={cityRef}
+            className="form-input"
+            defaultValue={touristData.current.city}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Complete Address"
             ref={addressRef}
             className="form-input"
             defaultValue={touristData.current.address}

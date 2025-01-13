@@ -7,16 +7,16 @@ const checkTable = async () => {
         email varchar(30) primary key,
         age int not null,
         address varchar(100) not null,
-        password varchar(30) not null);`);
+        password varchar(30) not null,
+        role_ID int not null,
+        foreign key (role_ID) references role(role_ID));`);
 };
 
 const insertUser = async (req, res) => {
   await checkTable();
   console.log(req.body);
   pool.query(
-    `insert into 
-        user(first_name,last_name,phone,email,age,address,password)
-        values(?,?,?,?,?,?,?);`,
+    `insert into user(first_name,last_name,phone,email,age,address,password,role_ID) values(?,?,?,?,?,?,?,?);`,
     [
       req.body.first_name,
       req.body.last_name,
@@ -25,6 +25,7 @@ const insertUser = async (req, res) => {
       req.body.age,
       req.body.address,
       req.body.password,
+      req.body.role_ID,
     ],
     (err, results) => {
       if (err) {

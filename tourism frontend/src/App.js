@@ -3,6 +3,11 @@ import "./App.css";
 import Home from "./home/home.js";
 import SignUp from "./SignUp/SignUp.js";
 import SignIn from "./SignIn/SignIn.js";
+import TouristDashboard from "./dashboard/tourist/TouristDashboard.js";
+import AdminDashboard from "./dashboard/admin/AdminDashboard.js";
+import HotelDashboard from "./dashboard/hotel/HotelDashboard.js";
+import AirlineDashboard from "./dashboard/airline/AirlineDashboard.js";
+import GuideDashboard from "./dashboard/guide/GuideDashboard.js";
 //import { useState, useEffect } from "react";
 
 function App() {
@@ -17,6 +22,21 @@ function App() {
             </Route>
             <Route path="signIn">
               <Route index element={<SignIn />} />
+            </Route>
+            <Route path="TouristDashboard">
+              <Route index element={<TouristDashboard />} />
+            </Route>
+            <Route path="HotelDashboard">
+              <Route index element={<HotelDashboard />} />
+            </Route>
+            <Route path="AirlineDashboard">
+              <Route index element={<AirlineDashboard />} />
+            </Route>
+            <Route path="GuideDashboard">
+              <Route index element={<GuideDashboard />} />
+            </Route>
+            <Route path="AdminDashboard">
+              <Route index element={<AdminDashboard />} />
             </Route>
           </Route>
         </Routes>
