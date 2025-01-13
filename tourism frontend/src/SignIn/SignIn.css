@@ -18,8 +18,8 @@
   font-size: 30px;
   font-weight: bold;
 }
-.back2 {
-  background-image: url("https://images.pexels.com/photos/3075993/pexels-photo-3075993.jpeg?cs=srgb&dl=pexels-sanaan-3075993.jpg&fm=jpg");
+.back {
+  background-image: url("https://media.istockphoto.com/id/695806288/photo/airplane-over-city.jpg?s=612x612&w=0&k=20&c=rX8Tmz9eLIo-OocE045HYOxkL_eh7DpREXqZmilyfdo=");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -79,6 +79,7 @@
 }
 
 .card2 {
+  margin-top: 20vh;
   position: relative;
   padding: 20px;
   border-radius: 8px;
@@ -91,7 +92,7 @@
 /* Center the form on the page */
 .form-container {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 0px;
 }
 
 /* Style the input fields */
@@ -99,7 +100,7 @@
   display: block;
   margin: 10px auto;
   padding: 10px;
-  width: 300px;
+  width: 275px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
@@ -148,4 +149,26 @@
 .back-button:hover {
   transform: scale(1.2);
   color: red;
+}
+.input-menu {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.input-menu:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+.select-menu-option {
+  font-size: 14px;
+  color: #333;
 }

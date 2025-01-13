@@ -6,11 +6,15 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.3.1",
+    "countries-list": "^3.1.1",
+    "country-state-city": "^3.2.1",
     "cra-template": "1.2.0",
     "react": "^19.0.0",
+    "react-country-state-city": "^1.1.9",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "world-countries": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
