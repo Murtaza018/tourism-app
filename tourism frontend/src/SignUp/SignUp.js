@@ -918,7 +918,7 @@ function SignUp() {
             </Button>
           </div>
         </Card>
-        <div className="card-content">{renderCardContent()}</div>
+        <div>{renderCardContent()}</div>
       </div>
       <div className="back"></div>
     </div>

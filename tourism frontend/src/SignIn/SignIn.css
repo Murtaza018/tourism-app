@@ -1,4 +1,4 @@
-.card {
+.card-signin {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
@@ -9,7 +9,7 @@
   position: relative;
 }
 
-.heading {
+.heading-signin {
   background-color: transparent;
   color: black;
   padding: 10px;
@@ -18,8 +18,16 @@
   font-size: 30px;
   font-weight: bold;
 }
-.back {
-  background-image: url("https://media.istockphoto.com/id/695806288/photo/airplane-over-city.jpg?s=612x612&w=0&k=20&c=rX8Tmz9eLIo-OocE045HYOxkL_eh7DpREXqZmilyfdo=");
+.button-container-signin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  background-color: transparent;
+}
+
+.back2-signin {
+  background-image: url("https://images.pexels.com/photos/3075993/pexels-photo-3075993.jpeg?cs=srgb&dl=pexels-sanaan-3075993.jpg&fm=jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -30,7 +38,7 @@
   align-items: center;
 }
 
-.button-container {
+.button-container-signin {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -38,7 +46,7 @@
   background-color: transparent;
 }
 
-.MuiButton-root.button {
+.MuiButton-root.button-signin {
   color: black;
   background-color: rgba(0, 255, 255, 0.5);
   text-align: center;
@@ -53,14 +61,14 @@
     background-color 0.3s ease;
 }
 
-.button:hover {
+.button-signin:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   background-color: deepskyblue;
   color: darkblue;
 }
 
-.close-icon {
+.close-icon-signin {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -73,30 +81,26 @@
   transition: transform 0.2s ease;
 }
 
-.close-icon:hover {
+.close-icon-signin:hover {
   transform: scale(1.2);
   color: red;
 }
 
-.card2 {
-  margin-top: 20vh;
+.card2-signin {
   position: relative;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-size: 18px;
   text-align: center;
-  width: 300px;
-  background-color: transparent;
 }
-/* Center the form on the page */
-.form-container {
+.form-container-signin {
   text-align: center;
   margin-top: 0px;
 }
 
 /* Style the input fields */
-.form-input {
+.form-input-signin {
   display: block;
   margin: 10px auto;
   padding: 10px;
@@ -105,8 +109,7 @@
   border-radius: 5px;
   font-size: 16px;
 }
-
-.form-button {
+.form-button-signin {
   color: black;
   background-color: rgba(0, 255, 255, 0.5);
   text-align: center;
@@ -122,53 +125,14 @@
     background-color 0.3s ease;
 }
 
-.form-button:hover {
+.form-button-signin:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   background-color: deepskyblue;
   color: darkblue;
 }
 
-.error-message {
+.error-message-signin {
   color: red;
   font-size: 14px;
-}
-.back-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  font-weight: bold;
-  color: black;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.back-button:hover {
-  transform: scale(1.2);
-  color: red;
-}
-.input-menu {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  font-size: 16px;
-  color: #333;
-  cursor: pointer;
-}
-
-.input-menu:focus {
-  outline: none;
-  border-color: #007bff;
-  background-color: #fff;
-}
-
-.select-menu-option {
-  font-size: 14px;
-  color: #333;
 }

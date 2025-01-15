@@ -13,6 +13,22 @@ const checkTable = async () => {
         role_ID int not null,
         foreign key (role_ID) references role(role_ID));`);
 };
+const signInUser = async (req, res) => {
+  await checkTable();
+  console.log(req.body);
+  pool.query(
+    `select * from user where email = ?;`,
+    [req.body.email],
+    (err, results) => {
+      if (results.length > 0) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 const insertUser = async (req, res) => {
   await checkTable();
   console.log(req.body);
@@ -40,4 +56,4 @@ const insertUser = async (req, res) => {
   );
 };
 
-module.exports = { insertUser };
+module.exports = { insertUser, signInUser };

@@ -133,23 +133,6 @@
   color: red;
   font-size: 14px;
 }
-.back-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  font-weight: bold;
-  color: black;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.back-button:hover {
-  transform: scale(1.2);
-  color: red;
-}
 .input-menu {
   width: 100%;
   padding: 10px;

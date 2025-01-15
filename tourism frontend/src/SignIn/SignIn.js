@@ -1,12 +1,15 @@
 import { Card, Button } from "@mui/material";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
 // Sign in page
 function SignIn() {
+  const navigate = useNavigate();
   // to select sign in card
   const [activeCard, setActiveCard] = useState(null);
-
+  //display email or password error
+  const [error, setError] = useState("");
   // refs for data
   const emailRef = useRef("");
   const passRef = useRef("");
@@ -15,7 +18,38 @@ function SignIn() {
     email: "",
     password: "",
   });
-
+  const signInTourist = async () => {
+    console.log(touristData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(touristData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === touristData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("first_name", data.data[0].first_name);
+            navigate("/TouristDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleTouristDataSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -29,33 +63,33 @@ function SignIn() {
     // Store password in touristData
     touristData.current.password = passRef.current.value;
 
-    alert(
-      `Passwords match! Submitted Data:\nEmail: ${touristData.current.email}\nPassword: ${touristData.current.password}`
-    );
+    signInTourist();
   };
 
   const TouristCard = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <div className="form-container">
-        <div className="heading">Tourist Sign In</div>
+      <div className="form-container-signin">
+        <div className="heading-signin">Tourist Sign In</div>
         <form onSubmit={handleTouristDataSubmit}>
           <input
             type="email"
             placeholder="Email"
             ref={emailRef}
-            className="form-input"
+            className="form-input-signin"
             defaultValue={touristData.current.email}
           />
           <input
             type="password"
             placeholder="Enter password"
             ref={passRef}
-            className="form-input"
+            className="form-input-signin"
+            defaultValue={touristData.current.password}
           />
-          <button type="submit" className="form-button">
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
             Submit
           </button>
         </form>
@@ -66,7 +100,38 @@ function SignIn() {
     email: "",
     password: "",
   });
-
+  const signInHotel = async () => {
+    console.log(HotelData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(HotelData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === HotelData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("first_name", data.data[0].first_name);
+            navigate("/HotelDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleHotelDataSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -80,84 +145,33 @@ function SignIn() {
     // Store password in HotelData
     HotelData.current.password = passRef.current.value;
 
-    alert(
-      `Passwords match! Submitted Data:\nEmail: ${HotelData.current.email}\nPassword: ${HotelData.current.password}`
-    );
+    signInHotel();
   };
 
   const HotelCard = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <div className="form-container">
-        <div className="heading">Hotel Management Sign In</div>
+      <div className="form-container-signin">
+        <div className="heading-signin">Hotel Sign In</div>
         <form onSubmit={handleHotelDataSubmit}>
           <input
             type="email"
             placeholder="Email"
             ref={emailRef}
-            className="form-input"
+            className="form-input-signin"
             defaultValue={HotelData.current.email}
           />
           <input
             type="password"
             placeholder="Enter password"
             ref={passRef}
-            className="form-input"
+            className="form-input-signin"
+            defaultValue={HotelData.current.password}
           />
-          <button type="submit" className="form-button">
-            Submit
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-  const AirlineData = useRef({
-    email: "",
-    password: "",
-  });
-
-  const handleAirlineDataSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted");
-
-    // Store data in ref instead of state
-    AirlineData.current = {
-      email: emailRef.current.value,
-      password: AirlineData.current.password, // Store existing password
-    };
-
-    // Store password in AirlineData
-    AirlineData.current.password = passRef.current.value;
-
-    alert(
-      `Passwords match! Submitted Data:\nEmail: ${AirlineData.current.email}\nPassword: ${AirlineData.current.password}`
-    );
-  };
-
-  const AirlineCard = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
-        ✕
-      </button>
-      <div className="form-container">
-        <div className="heading">Airline Company Sign In</div>
-        <form onSubmit={handleAirlineDataSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            ref={emailRef}
-            className="form-input"
-            defaultValue={AirlineData.current.email}
-          />
-          <input
-            type="password"
-            placeholder="Enter password"
-            ref={passRef}
-            className="form-input"
-          />
-          <button type="submit" className="form-button">
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
             Submit
           </button>
         </form>
@@ -168,7 +182,38 @@ function SignIn() {
     email: "",
     password: "",
   });
-
+  const signInGuide = async () => {
+    console.log(GuideData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(GuideData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === GuideData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("first_name", data.data[0].first_name);
+            navigate("/GuideDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleGuideDataSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -182,33 +227,115 @@ function SignIn() {
     // Store password in GuideData
     GuideData.current.password = passRef.current.value;
 
-    alert(
-      `Passwords match! Submitted Data:\nEmail: ${GuideData.current.email}\nPassword: ${GuideData.current.password}`
-    );
+    signInGuide();
   };
 
   const GuideCard = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <div className="form-container">
-        <div className="heading">Tour Guide Sign In</div>
+      <div className="form-container-signin">
+        <div className="heading-signin">Guide Sign In</div>
         <form onSubmit={handleGuideDataSubmit}>
           <input
             type="email"
             placeholder="Email"
             ref={emailRef}
-            className="form-input"
+            className="form-input-signin"
             defaultValue={GuideData.current.email}
           />
           <input
             type="password"
             placeholder="Enter password"
             ref={passRef}
-            className="form-input"
+            className="form-input-signin"
+            defaultValue={GuideData.current.password}
           />
-          <button type="submit" className="form-button">
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+  const AirlineData = useRef({
+    email: "",
+    password: "",
+  });
+  const signInAirline = async () => {
+    console.log(AirlineData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(AirlineData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === AirlineData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("first_name", data.data[0].first_name);
+            navigate("/AirlineDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleAirlineDataSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted");
+
+    // Store data in ref instead of state
+    AirlineData.current = {
+      email: emailRef.current.value,
+      password: AirlineData.current.password, // Store existing password
+    };
+
+    // Store password in AirlineData
+    AirlineData.current.password = passRef.current.value;
+
+    signInAirline();
+  };
+
+  const AirlineCard = () => (
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
+        ✕
+      </button>
+      <div className="form-container-signin">
+        <div className="heading-signin">Airline Sign In</div>
+        <form onSubmit={handleAirlineDataSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            ref={emailRef}
+            className="form-input-signin"
+            defaultValue={AirlineData.current.email}
+          />
+          <input
+            type="password"
+            placeholder="Enter password"
+            ref={passRef}
+            className="form-input-signin"
+            defaultValue={AirlineData.current.password}
+          />
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
             Submit
           </button>
         </form>
@@ -219,7 +346,38 @@ function SignIn() {
     email: "",
     password: "",
   });
-
+  const signInAdmin = async () => {
+    console.log(AdminData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(AdminData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === AdminData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("first_name", data.data[0].first_name);
+            navigate("/AdminDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleAdminDataSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -230,36 +388,36 @@ function SignIn() {
       password: AdminData.current.password, // Store existing password
     };
 
-    // Store password in GuideData
+    // Store password in AdminData
     AdminData.current.password = passRef.current.value;
 
-    alert(
-      `Passwords match! Submitted Data:\nEmail: ${AdminData.current.email}\nPassword: ${AdminData.current.password}`
-    );
+    signInAdmin();
   };
 
   const AdminCard = () => (
-    <div className="card2">
-      <button className="close-icon" onClick={() => setActiveCard(null)}>
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
         ✕
       </button>
-      <div className="form-container">
-        <div className="heading">Admin Sign In</div>
+      <div className="form-container-signin">
+        <div className="heading-signin">Admin Sign In</div>
         <form onSubmit={handleAdminDataSubmit}>
           <input
             type="email"
             placeholder="Email"
             ref={emailRef}
-            className="form-input"
+            className="form-input-signin"
             defaultValue={AdminData.current.email}
           />
           <input
             type="password"
             placeholder="Enter password"
             ref={passRef}
-            className="form-input"
+            className="form-input-signin"
+            defaultValue={AdminData.current.password}
           />
-          <button type="submit" className="form-button">
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
             Submit
           </button>
         </form>
@@ -284,34 +442,43 @@ function SignIn() {
   };
 
   return (
-    <div className="back2">
-      <Card className="card">
-        <div className="heading">Sign In</div>
-        <div className="button-container">
+    <div className="back2-signin">
+      <Card className="card-signin">
+        <div className="heading-signin">Sign In</div>
+        <div className="button-container-signin">
           <Button
-            className="button"
+            className="button-signin"
             onClick={() => setActiveCard("TouristCard")}
           >
             Tourist
           </Button>
-          <Button className="button" onClick={() => setActiveCard("HotelCard")}>
+          <Button
+            className="button-signin"
+            onClick={() => setActiveCard("HotelCard")}
+          >
             Hotel Management
           </Button>
           <Button
-            className="button"
+            className="button-signin"
             onClick={() => setActiveCard("AirlineCard")}
           >
             Airline Company
           </Button>
-          <Button className="button" onClick={() => setActiveCard("GuideCard")}>
+          <Button
+            className="button-signin"
+            onClick={() => setActiveCard("GuideCard")}
+          >
             Tour Guide
           </Button>
-          <Button className="button" onClick={() => setActiveCard("AdminCard")}>
+          <Button
+            className="button-signin"
+            onClick={() => setActiveCard("AdminCard")}
+          >
             Admin
           </Button>
         </div>
       </Card>
-      <div className="card-content">{renderCardContent()}</div>
+      <div>{renderCardContent()}</div>
     </div>
   );
 }
