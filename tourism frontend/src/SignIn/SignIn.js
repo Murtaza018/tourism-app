@@ -36,8 +36,7 @@ function SignIn() {
             data.data[0].password === touristData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
-            localStorage.setItem("first_name", data.data[0].first_name);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             navigate("/TouristDashboard");
           } else {
             setError("Incorrect Password!");
@@ -118,8 +117,7 @@ function SignIn() {
             data.data[0].password === HotelData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
-            localStorage.setItem("first_name", data.data[0].first_name);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             navigate("/HotelDashboard");
           } else {
             setError("Incorrect Password!");
@@ -200,8 +198,7 @@ function SignIn() {
             data.data[0].password === GuideData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
-            localStorage.setItem("first_name", data.data[0].first_name);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             navigate("/GuideDashboard");
           } else {
             setError("Incorrect Password!");
@@ -282,8 +279,7 @@ function SignIn() {
             data.data[0].password === AirlineData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
-            localStorage.setItem("first_name", data.data[0].first_name);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             navigate("/AirlineDashboard");
           } else {
             setError("Incorrect Password!");
@@ -364,8 +360,7 @@ function SignIn() {
             data.data[0].password === AdminData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
-            localStorage.setItem("first_name", data.data[0].first_name);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             navigate("/AdminDashboard");
           } else {
             setError("Incorrect Password!");

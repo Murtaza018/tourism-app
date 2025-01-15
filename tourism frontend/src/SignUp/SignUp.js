@@ -96,7 +96,7 @@ function SignUp() {
     touristData.current.password = passRef.current.value;
     insertTourist();
     localStorage.setItem("loggedIn", true);
-    localStorage.setItem("first_name", touristData.current.first_name);
+    localStorage.setItem("user_data", JSON.stringify(touristData.current));
     navigate("/TouristDashboard");
   };
   // Handle country selection
@@ -306,7 +306,7 @@ function SignUp() {
     HotelData.current.password = passRef.current.value;
     insertHotel();
     localStorage.setItem("loggedIn", true);
-    localStorage.setItem("first_name", HotelData.current.first_name);
+    localStorage.setItem("user_data", JSON.stringify(HotelData.current));
     navigate("/HotelDashboard");
   };
   // Handle country selection
@@ -517,7 +517,7 @@ function SignUp() {
     AirlineData.current.password = passRef.current.value;
     insertAirline();
     localStorage.setItem("loggedIn", true);
-    localStorage.setItem("first_name", AirlineData.current.first_name);
+    localStorage.setItem("user_data", JSON.stringify(AirlineData.current));
     navigate("/AirlineDashboard");
   };
   // Handle country selection
@@ -728,7 +728,7 @@ function SignUp() {
     GuideData.current.password = passRef.current.value;
     insertGuide();
     localStorage.setItem("loggedIn", true);
-    localStorage.setItem("first_name", GuideData.current.first_name);
+    localStorage.setItem("user_data", JSON.stringify(GuideData.current));
     navigate("/GuideDashboard");
   };
   // Handle country selection
