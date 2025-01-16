@@ -35,7 +35,7 @@
 .hamburger-icon-HD .line-HD {
   width: 100%;
   height: 4px;
-  background-color: black;
+  background-color: white;
   transition: all 0.3s ease;
 }
 
@@ -54,7 +54,7 @@
 .menu-HD {
   width: 250px;
   height: 100%;
-  background-color: khaki;
+  background-color: rgba(240, 230, 140, 0.8);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 20;
@@ -101,4 +101,203 @@
 
 body.menu-open-HD {
   overflow: hidden;
+}
+
+.background-HD {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://www.uniqhotels.com/media/current_blog/5._Urban_Hotel_Los_Angeles.jpg");
+  min-height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.details-HD {
+  background-color: rgba(240, 230, 140, 0.8);
+  border: 1px solid #ccebff;
+  border-radius: 8px;
+  padding: 50px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.details-HD .data-HD {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #343a40;
+  transition: transform 0.2s ease;
+}
+
+.details-HD .data-HD strong {
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .details-HD {
+    padding: 15px;
+  }
+
+  .details-HD .data-HD {
+    font-size: 14px;
+  }
+}
+.data-HD:hover {
+  transform: scale(1.4);
+}
+.details-HD:hover {
+  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.heading-HD {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #007bff;
+}
+
+.room-content-HD {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  position: relative;
+}
+
+.heading-room-HD {
+  margin-bottom: 10px;
+}
+
+.room-options-container-HD {
+  display: flex;
+  gap: 10px;
+}
+
+.room-option-HD {
+  background-color: transparent;
+  border: 1px solid black;
+  font-size: 1.2em;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.room-option-HD:hover {
+  transform: scale(1.1);
+}
+
+.room-option-HD:hover:nth-child(1) {
+  color: blue;
+  border-color: blue;
+}
+
+.room-option-HD:hover:nth-child(2) {
+  color: red;
+  border-color: red;
+}
+.close-icon-HD {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.close-icon-HD:hover {
+  transform: scale(1.2);
+  color: red;
+}
+.room-content-inner-HD {
+  /* Styles for the inner content container */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  transition: opacity 0.3s ease; /* Add transition for smooth overlay */
+}
+
+.overlay-active-HD {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.add-room-card-HD {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+.form-input-HD {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 275px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.input-menu-HD {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.input-menu-HD:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+.select-menu-option-HD {
+  font-size: 14px;
+  color: #333;
+}
+.form-button-HD {
+  color: black;
+  background-color: rgba(0, 255, 255, 0.5);
+  text-align: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5vh;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.form-button-HD:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: deepskyblue;
+  color: darkblue;
+}
+
+.error-message-HD {
+  color: red;
+  font-size: 14px;
 }

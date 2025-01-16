@@ -7,15 +7,18 @@ function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [activeCard, setActiveCard] = useState(false);
+  const [roleID, setRoleID] = useState(0);
   useEffect(() => {
     // Check and set loggedIn status from localStorage
     const status = localStorage.getItem("loggedIn") === "true";
     setLoggedIn(status);
     if (status) {
-      setFirstName(localStorage.getItem("first_name") || "");
+      const storedData = JSON.parse(localStorage.getItem("user_data"));
+      setRoleID(storedData.role_ID);
+      setFirstName(storedData.first_name || "");
     }
   }, []);
-
+  console.log(roleID);
   const handleSignUp = () => {
     navigate("/signup");
   };
@@ -37,7 +40,23 @@ function Home() {
     localStorage.removeItem("first_name");
     window.location.reload(); // Refresh the page
   };
-
+  const Dashboard = () => {
+    if (roleID === 1) {
+      navigate("/TouristDashboard");
+    }
+    if (roleID === 2) {
+      navigate("/HotelDashboard");
+    }
+    if (roleID === 3) {
+      navigate("/AirlineDashboard");
+    }
+    if (roleID === 4) {
+      navigate("/GuideDashboard");
+    }
+    if (roleID === 5) {
+      navigate("/AdminDashboard");
+    }
+  };
   return (
     <div>
       {loggedIn ? (
@@ -54,6 +73,7 @@ function Home() {
             &times;
           </button>
           <button onClick={logOut}>Log Out</button>
+          <button onClick={Dashboard}>Dashboard</button>
         </div>
       )}
     </div>
