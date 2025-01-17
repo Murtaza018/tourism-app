@@ -15,7 +15,6 @@ const checkTable = async () => {
 };
 const signInUser = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `select * from user where email = ?;`,
     [req.body.email],
@@ -31,7 +30,6 @@ const signInUser = async (req, res) => {
 };
 const insertUser = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `insert into user(first_name,last_name,phone,email,age,country,city,address,password,role_ID) values(?,?,?,?,?,?,?,?,?,?);`,
     [

@@ -11,7 +11,6 @@ const checkTable = async () => {
 };
 const insertRoom = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `insert into room(email,type,quantity,price,status) values(?,?,?,?,?);`,
     [
@@ -32,7 +31,6 @@ const insertRoom = async (req, res) => {
 };
 const getRoomData = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `select * from room where email = ?;`,
     [req.body.email],
@@ -48,7 +46,6 @@ const getRoomData = async (req, res) => {
 };
 const DeleteRoom = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `delete from room where room_id in (?);`,
     [req.body],
@@ -64,7 +61,6 @@ const DeleteRoom = async (req, res) => {
 };
 const UpdateRoom = async (req, res) => {
   await checkTable();
-  console.log(req.body);
   pool.query(
     `update room set type=?,quantity=?,price=?,status=? where room_id = (?);`,
     [

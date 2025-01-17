@@ -416,3 +416,39 @@ body.menu-open-HD {
   gap: 5px;
   justify-content: flex-start;
 }
+
+.res-option-HD {
+  background-color: transparent;
+  border: 1px solid black;
+  font-size: 1.2em;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 5px;
+}
+
+.res-option-HD:hover {
+  transform: scale(1.1);
+}
+
+.res-option-HD:hover:nth-child(1) {
+  color: yellow;
+  border-color: yellow;
+}
+
+.res-option-HD:hover:nth-child(2) {
+  color: blue;
+  border-color: blue;
+}
+.res-option-HD:hover:nth-child(3) {
+  color: green;
+  border-color: green;
+}
+.res-option-HD:hover:nth-child(4) {
+  color: purple;
+  border-color: purple;
+}
+.res-option-HD:hover:nth-child(5) {
+  color: red;
+  border-color: red;
+}

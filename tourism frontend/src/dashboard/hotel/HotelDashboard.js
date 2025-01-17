@@ -6,6 +6,7 @@ function HotelDashboard() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [displayRoomData, setDisplayRoomData] = useState([]);
+  const [displayReservationData, setDisplayReservationData] = useState([]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -169,9 +170,7 @@ function HotelDashboard() {
         console.log(err);
       });
   };
-  useEffect(() => {
-    getRoomData();
-  }, []);
+
   const addRoomData = (e) => {
     e.preventDefault();
 
@@ -593,10 +592,190 @@ function HotelDashboard() {
       </div>
     );
   };
+  const getReservationData = async () => {
+    const storedDataString = localStorage.getItem("user_data");
+    const storedData = JSON.parse(storedDataString);
+
+    fetch("http://localhost:8008/Tourism/getReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: storedData.email }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          setDisplayReservationData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  useEffect(() => {
+    if (activeCard === "RoomUpdates") {
+      getRoomData();
+    } else if (activeCard === "ReservationUpdates") {
+      getReservationData();
+    }
+  }, [activeCard]);
   const ReservationContent = () => {
     return (
       <div>
-        <p>Hello Hotel {firstName} Reservation Content</p>
+        <div className="room-content-HD">
+          <h1 className="heading-room-HD">Reservations</h1>
+          <div className="room-options-container-HD">
+            <button className="res-option-HD">Pending</button>
+            <button className="res-option-HD">Ongoing</button>
+            <button className="res-option-HD">Completed</button>
+            <button className="res-option-HD">Edit Status</button>
+            <button className="res-option-HD">Delete</button>
+          </div>
+          <div className="table-container-HD">
+            {displayReservationData.length > 0 ? (
+              <div>
+                <table className="room-table-HD">
+                  <thead className="table-head-HD">
+                    <tr>
+                      {/*{showCheckboxes && (
+                        <th className="table-header-HD">Select</th>
+                      )}*/}
+                      <th className="table-header-HD">Room Type</th>
+                      <th className="table-header-HD">Guest Name</th>
+                      <th className="table-header-HD">Guest Phone Number</th>
+                      <th className="table-header-HD">Reservation Status</th>
+                      {/*{editboxes && <th className="table-header-HD">Edit</th>}*/}
+                    </tr>
+                  </thead>
+                  <tbody className="table-body-HD">
+                    {displayReservationData.map((reserv) => (
+                      <tr key={reserv.reservation_id} className="table-row-HD">
+                        {/*    {showCheckboxes && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRooms.includes(
+                                reserv.reservation_id
+                              )}
+                              onChange={() =>
+                                handleCheckboxChange(reserv.reservation_id)
+                              }
+                            />
+                          </td>
+                        )}
+                        {editingRoomId === reserv.reservation_id ? ( // Edit mode
+                          <>
+                            <td>
+                              <select
+                                className="select-editroom-HD"
+                                value={editedRoomData.type}
+                                onChange={(e) => handleInputChange(e, "type")}
+                              >
+                                {roomType.map((option) => (
+                                  <option
+                                    className="select-menu-option-HD"
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <input
+                                className="input-editroom-HD"
+                                type="number"
+                                value={editedRoomData.price}
+                                onChange={(e) => handleInputChange(e, "price")}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                className="input-editroom-HD"
+                                type="number"
+                                value={editedRoomData.quantity}
+                                onChange={(e) =>
+                                  handleInputChange(e, "quantity")
+                                }
+                              />
+                            </td>
+                            <td>
+                              <select
+                                className="select-editroom-HD"
+                                value={editedRoomData.status}
+                                onChange={(e) => handleInputChange(e, "status")}
+                              >
+                                {statusType.map((option) => (
+                                  <option
+                                    className="select-menu-option-HD"
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <div className="button-group-HD">
+                                <button
+                                  className="save-button-HD"
+                                  onClick={() => handleSaveClick(room.room_id)}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="cancel-button-HD"
+                                  onClick={handleCancelClick}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>*/}
+                        <td className="table-cell-HD">{reserv.type}</td>
+                        <td className="table-cell-HD">{reserv.first_name}</td>
+                        <td className="table-cell-HD">{reserv.phone}</td>
+                        <td className="table-cell-HD">{reserv.status}</td>
+                      </tr>
+                    ))}
+                    {/*{editboxes && (
+                              <td>
+                                <button
+                                  className="edit-button-HD"
+                                  onClick={() => handleEditClick(room)}
+                                >
+                                  Edit
+                                </button>
+                              </td>
+                            )}
+                          </>
+                        )}
+                      </tr>
+                    ))}*/}
+                  </tbody>
+                </table>
+                {/*{showCheckboxes && (
+                  <button
+                    className="delete-selected-HD"
+                    onClick={handleDeleteSelectedRooms}
+                  >
+                    Delete Selected Rooms
+                  </button>
+                )}*/}
+                {error && <p className="error-message-HD">{error}</p>}
+              </div>
+            ) : (
+              <p className="no-data-message-HD">No data available.</p>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
