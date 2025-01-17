@@ -185,6 +185,7 @@ body.menu-open-HD {
   padding: 5px 10px;
   cursor: pointer;
   transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 5px;
 }
 
 .room-option-HD:hover {
@@ -199,6 +200,10 @@ body.menu-open-HD {
 .room-option-HD:hover:nth-child(2) {
   color: red;
   border-color: red;
+}
+.room-option-HD:hover:nth-child(3) {
+  color: green;
+  border-color: green;
 }
 .close-icon-HD {
   position: absolute;
@@ -300,4 +305,114 @@ body.menu-open-HD {
 .error-message-HD {
   color: red;
   font-size: 14px;
+}
+
+.table-container-HD {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.room-table-HD {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-head-HD {
+  background-color: #f2f2f2;
+}
+
+.table-header-HD,
+.table-cell-HD {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table-header-HD {
+  font-weight: bold;
+}
+
+.no-data-message-HD {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.delete-selected-HD {
+  background-color: transparent;
+  border: 1px solid black;
+  font-size: 1.2em;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 20px;
+}
+.delete-selected-HD:hover {
+  color: red;
+  border-color: red;
+  transform: scale(1.1);
+}
+
+.edit-button-HD,
+.save-button-HD,
+.cancel-button-HD {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button-HD {
+  background-color: #007bff;
+  color: white;
+}
+
+.save-button-HD {
+  background-color: #28a745;
+  color: white;
+}
+
+.cancel-button-HD {
+  background-color: #dc3545;
+  color: white;
+}
+
+.edit-button-HD:hover {
+  background-color: #0056b3;
+}
+
+.save-button-HD:hover {
+  background-color: #1e7e34;
+}
+
+.cancel-button-HD:hover {
+  background-color: #bd2130;
+}
+
+.select-editroom-HD {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0;
+}
+
+.input-editroom-HD {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 80px;
+  box-sizing: border-box;
+  margin: 4px 0;
+}
+
+.button-group-HD {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
 }

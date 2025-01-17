@@ -8,5 +8,7 @@ router.post("/signInUser", userController.signInUser);
 
 router.post("/insertRoom", roomController.insertRoom);
 router.post("/getRoomData", roomController.getRoomData);
+router.post("/DeleteRoom", roomController.DeleteRoom);
+router.post("/updateRoom", roomController.UpdateRoom);
 
 module.exports = router;

@@ -46,5 +46,43 @@ const getRoomData = async (req, res) => {
     }
   );
 };
+const DeleteRoom = async (req, res) => {
+  await checkTable();
+  console.log(req.body);
+  pool.query(
+    `delete from room where room_id in (?);`,
+    [req.body],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+const UpdateRoom = async (req, res) => {
+  await checkTable();
+  console.log(req.body);
+  pool.query(
+    `update room set type=?,quantity=?,price=?,status=? where room_id = (?);`,
+    [
+      req.body.type,
+      req.body.quantity,
+      req.body.price,
+      req.body.status,
+      req.body.room_id,
+    ],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 
-module.exports = { insertRoom, getRoomData };
+module.exports = { insertRoom, getRoomData, DeleteRoom, UpdateRoom };
