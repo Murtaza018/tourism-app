@@ -615,6 +615,7 @@ function HotelDashboard() {
         console.log(err);
       });
   };
+
   useEffect(() => {
     if (activeCard === "RoomUpdates") {
       getRoomData();
