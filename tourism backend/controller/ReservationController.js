@@ -12,12 +12,10 @@ const checkTable = async () => {
 };
 
 const getReservationData = async (req, res) => {
-  console.log("1");
   await checkTable();
   console.log(req.body);
-  console.log("2");
   pool.query(
-    `select res.status,r.type,u.first_name,u.phone from reservation res join room r on res.room_id=r.room_id join user u on res.tourist_email=u.email where res.hotel_email = ?;`,
+    `select res.reservation_id,res.status,r.type,u.first_name,u.phone from reservation res join room r on res.room_id=r.room_id join user u on res.tourist_email=u.email where res.hotel_email = ?;`,
     [req.body.email],
     (err, results) => {
       if (results) {
@@ -29,4 +27,20 @@ const getReservationData = async (req, res) => {
     }
   );
 };
-module.exports = { getReservationData };
+const updateReservationData = async (req, res) => {
+  await checkTable();
+  console.log(req.body);
+  pool.query(
+    `update reservation set status = ? where reservation_id=?`,
+    [req.body.status, req.body.reservation_id],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = { getReservationData, updateReservationData };

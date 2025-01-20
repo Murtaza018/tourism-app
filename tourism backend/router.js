@@ -13,5 +13,9 @@ router.post("/DeleteRoom", roomController.DeleteRoom);
 router.post("/updateRoom", roomController.UpdateRoom);
 
 router.post("/getReservationData", reservationController.getReservationData);
+router.post(
+  "/updateReservationData",
+  reservationController.updateReservationData
+);
 
 module.exports = router;
