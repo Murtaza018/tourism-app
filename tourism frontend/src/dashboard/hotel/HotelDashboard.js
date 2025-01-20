@@ -18,8 +18,15 @@ function HotelDashboard() {
   const [password, setPassword] = useState("");
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [editboxes, setEditboxes] = useState(false);
+  const [reservEditboxes, setReserveEditboxes] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [addRoomCard, setAddRoomCard] = useState(false);
+  const [pendingButton, setPendingButton] = useState(false);
+  const [ongoingButton, setOngoingButton] = useState(false);
+  const [completedButton, setCompletedButton] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [reservEditId, setReservEditId] = useState(null);
+  const [editedReservData, setEditedReservData] = useState({});
   const [activeCard, setActiveCard] = useState(() => {
     const storedCard = localStorage.getItem("activeCard");
     if (storedCard && storedCard !== "Home") {
@@ -615,7 +622,36 @@ function HotelDashboard() {
         console.log(err);
       });
   };
-
+  const handlePendingButton = () => {
+    setPendingButton(!pendingButton);
+    setOngoingButton(false);
+    setCompletedButton(false);
+    if (selectedFilter !== "pending") {
+      setSelectedFilter("pending");
+    } else {
+      setSelectedFilter(null);
+    }
+  };
+  const handleOngoingButton = () => {
+    setPendingButton(false);
+    setOngoingButton(!ongoingButton);
+    setCompletedButton(false);
+    if (selectedFilter !== "ongoing") {
+      setSelectedFilter("ongoing");
+    } else {
+      setSelectedFilter(null);
+    }
+  };
+  const handleCompletedButton = () => {
+    setPendingButton(false);
+    setOngoingButton(false);
+    setCompletedButton(!completedButton);
+    if (selectedFilter !== "completed") {
+      setSelectedFilter("completed");
+    } else {
+      setSelectedFilter(null);
+    }
+  };
   useEffect(() => {
     if (activeCard === "RoomUpdates") {
       getRoomData();
@@ -623,16 +659,94 @@ function HotelDashboard() {
       getReservationData();
     }
   }, [activeCard]);
+  const filteredReservations = displayReservationData.filter((reserv) => {
+    if (!selectedFilter) {
+      return true; // Show all if no filter is selected
+    }
+    return reserv.status.toLowerCase() === selectedFilter;
+  });
+  const updateReserv = () => {
+    console.log(editedRoomData);
+    fetch("http://localhost:8008/Tourism/updateReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedReservData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Edited");
+        } else {
+          console.log("Reservation not edited!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const toggleReservationEditButton = () => {
+    setReserveEditboxes(!reservEditboxes);
+    if (reservEditId) {
+      setReservEditId(null);
+    }
+  };
+  const handleReservEditClick = (reserv) => {
+    console.log(reserv);
+    console.log(reserv.reservation_id);
+    setReservEditId(reserv.reservation_id);
+    setEditedReservData({ ...reserv }); // Initialize edited data with current room data
+  };
+
+  const handleSaveReservClick = () => {
+    if (editedReservData.status === "") {
+      setError("Please select a status!");
+      return;
+    }
+    setError("");
+    updateReserv(editedReservData); // Call the update function
+    setReservEditId(null); // Exit edit mode
+    window.location.reload();
+  };
+
+  const handleCancelReservClick = () => {
+    setReservEditId(null); // Exit edit mode without saving changes
+  };
+
+  const handleReservInputChange = (event, field) => {
+    setEditedReservData((prevData) => ({
+      ...prevData,
+      [field]: event.target.value,
+    }));
+  };
+  const reservStatusType = [
+    { value: "", label: "Select Status" },
+    { value: "pending", label: "Pending" },
+    { value: "ongoing", label: "Ongoing" },
+    { value: "completed", label: "Completed" },
+  ];
   const ReservationContent = () => {
     return (
       <div>
         <div className="room-content-HD">
           <h1 className="heading-room-HD">Reservations</h1>
           <div className="room-options-container-HD">
-            <button className="res-option-HD">Pending</button>
-            <button className="res-option-HD">Ongoing</button>
-            <button className="res-option-HD">Completed</button>
-            <button className="res-option-HD">Edit Status</button>
+            <button className="res-option-HD" onClick={handlePendingButton}>
+              {pendingButton ? "Cancel Pending" : "Pending"}
+            </button>
+            <button className="res-option-HD" onClick={handleOngoingButton}>
+              {ongoingButton ? "Cancel Ongoing" : "Ongoing"}
+            </button>
+            <button className="res-option-HD" onClick={handleCompletedButton}>
+              {completedButton ? "Cancel Completed" : "Completed"}
+            </button>
+            <button
+              className="res-option-HD"
+              onClick={toggleReservationEditButton}
+            >
+              {reservEditboxes ? "Cancel Edit" : "Edit Reservation"}
+            </button>
             <button className="res-option-HD">Delete</button>
           </div>
           <div className="table-container-HD">
@@ -641,76 +755,34 @@ function HotelDashboard() {
                 <table className="room-table-HD">
                   <thead className="table-head-HD">
                     <tr>
-                      {/*{showCheckboxes && (
-                        <th className="table-header-HD">Select</th>
-                      )}*/}
                       <th className="table-header-HD">Room Type</th>
                       <th className="table-header-HD">Guest Name</th>
                       <th className="table-header-HD">Guest Phone Number</th>
                       <th className="table-header-HD">Reservation Status</th>
-                      {/*{editboxes && <th className="table-header-HD">Edit</th>}*/}
+                      {reservEditboxes && (
+                        <th className="table-header-HD">Edit</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="table-body-HD">
-                    {displayReservationData.map((reserv) => (
+                    {filteredReservations.map((reserv) => (
                       <tr key={reserv.reservation_id} className="table-row-HD">
-                        {/*    {showCheckboxes && (
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedRooms.includes(
-                                reserv.reservation_id
-                              )}
-                              onChange={() =>
-                                handleCheckboxChange(reserv.reservation_id)
-                              }
-                            />
-                          </td>
-                        )}
-                        {editingRoomId === reserv.reservation_id ? ( // Edit mode
+                        {reservEditId === reserv.reservation_id ? (
                           <>
+                            <td className="table-cell-HD">{reserv.type}</td>
+                            <td className="table-cell-HD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-HD">{reserv.phone}</td>
                             <td>
                               <select
                                 className="select-editroom-HD"
-                                value={editedRoomData.type}
-                                onChange={(e) => handleInputChange(e, "type")}
-                              >
-                                {roomType.map((option) => (
-                                  <option
-                                    className="select-menu-option-HD"
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </select>
-                            </td>
-                            <td>
-                              <input
-                                className="input-editroom-HD"
-                                type="number"
-                                value={editedRoomData.price}
-                                onChange={(e) => handleInputChange(e, "price")}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                className="input-editroom-HD"
-                                type="number"
-                                value={editedRoomData.quantity}
+                                value={editedReservData.status}
                                 onChange={(e) =>
-                                  handleInputChange(e, "quantity")
+                                  handleReservInputChange(e, "status")
                                 }
-                              />
-                            </td>
-                            <td>
-                              <select
-                                className="select-editroom-HD"
-                                value={editedRoomData.status}
-                                onChange={(e) => handleInputChange(e, "status")}
                               >
-                                {statusType.map((option) => (
+                                {reservStatusType.map((option) => (
                                   <option
                                     className="select-menu-option-HD"
                                     key={option.value}
@@ -725,13 +797,15 @@ function HotelDashboard() {
                               <div className="button-group-HD">
                                 <button
                                   className="save-button-HD"
-                                  onClick={() => handleSaveClick(room.room_id)}
+                                  onClick={() =>
+                                    handleSaveReservClick(reserv.reservation_id)
+                                  }
                                 >
                                   Save
                                 </button>
                                 <button
                                   className="cancel-button-HD"
-                                  onClick={handleCancelClick}
+                                  onClick={handleCancelReservClick}
                                 >
                                   Cancel
                                 </button>
@@ -739,18 +813,18 @@ function HotelDashboard() {
                             </td>
                           </>
                         ) : (
-                          <>*/}
-                        <td className="table-cell-HD">{reserv.type}</td>
-                        <td className="table-cell-HD">{reserv.first_name}</td>
-                        <td className="table-cell-HD">{reserv.phone}</td>
-                        <td className="table-cell-HD">{reserv.status}</td>
-                      </tr>
-                    ))}
-                    {/*{editboxes && (
+                          <>
+                            <td className="table-cell-HD">{reserv.type}</td>
+                            <td className="table-cell-HD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-HD">{reserv.phone}</td>
+                            <td className="table-cell-HD">{reserv.status}</td>
+                            {reservEditboxes && (
                               <td>
                                 <button
                                   className="edit-button-HD"
-                                  onClick={() => handleEditClick(room)}
+                                  onClick={() => handleReservEditClick(reserv)}
                                 >
                                   Edit
                                 </button>
@@ -759,17 +833,9 @@ function HotelDashboard() {
                           </>
                         )}
                       </tr>
-                    ))}*/}
+                    ))}
                   </tbody>
                 </table>
-                {/*{showCheckboxes && (
-                  <button
-                    className="delete-selected-HD"
-                    onClick={handleDeleteSelectedRooms}
-                  >
-                    Delete Selected Rooms
-                  </button>
-                )}*/}
                 {error && <p className="error-message-HD">{error}</p>}
               </div>
             ) : (
