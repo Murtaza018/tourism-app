@@ -43,4 +43,23 @@ const updateReservationData = async (req, res) => {
     }
   );
 };
-module.exports = { getReservationData, updateReservationData };
+const deleteReservationData = async (req, res) => {
+  await checkTable();
+  pool.query(
+    `delete from reservation where reservation_id in (?);`,
+    [req.body],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = {
+  getReservationData,
+  updateReservationData,
+  deleteReservationData,
+};

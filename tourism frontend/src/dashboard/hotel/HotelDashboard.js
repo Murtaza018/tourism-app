@@ -20,6 +20,7 @@ function HotelDashboard() {
   const [editboxes, setEditboxes] = useState(false);
   const [reservEditboxes, setReserveEditboxes] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedReservs, setSelectedReservs] = useState([]);
   const [addRoomCard, setAddRoomCard] = useState(false);
   const [pendingButton, setPendingButton] = useState(false);
   const [ongoingButton, setOngoingButton] = useState(false);
@@ -27,6 +28,7 @@ function HotelDashboard() {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [reservEditId, setReservEditId] = useState(null);
   const [editedReservData, setEditedReservData] = useState({});
+  const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
   const [activeCard, setActiveCard] = useState(() => {
     const storedCard = localStorage.getItem("activeCard");
     if (storedCard && storedCard !== "Home") {
@@ -686,7 +688,31 @@ function HotelDashboard() {
         console.log(err);
       });
   };
+  const DeleteReservation = (selectedData) => {
+    console.log(editedRoomData);
+    fetch("http://localhost:8008/Tourism/deleteReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Deleted");
+        } else {
+          console.log("Reservation not Deleted!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const toggleReservationEditButton = () => {
+    if (reservDeleteboxes) {
+      setReservDeleteboxes(false);
+    }
     setReserveEditboxes(!reservEditboxes);
     if (reservEditId) {
       setReservEditId(null);
@@ -726,6 +752,41 @@ function HotelDashboard() {
     { value: "ongoing", label: "Ongoing" },
     { value: "completed", label: "Completed" },
   ];
+
+  const toggleReservationDeleteButton = () => {
+    setReservDeleteboxes(!reservDeleteboxes);
+    setSelectedRooms([]);
+    if (reservEditboxes) {
+      setReserveEditboxes(false);
+    }
+  };
+
+  const handleReservCheckboxChange = (reservId) => {
+    setSelectedReservs((prevSelectedReservs) => {
+      if (prevSelectedReservs.includes(reservId)) {
+        return prevSelectedReservs.filter((id) => id !== reservId);
+      } else {
+        return [...prevSelectedReservs, reservId];
+      }
+    });
+  };
+
+  const handleDeleteSelectedReserv = () => {
+    if (selectedReservs.length === 0) {
+      alert("Please select reservations to delete.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the selected reservations?"
+    );
+    if (confirmDelete) {
+      DeleteReservation(selectedReservs); // Call the onDeleteRooms function passed as a prop
+      setReservDeleteboxes(false); // Hide checkboxes after deletion
+      setSelectedReservs([]); // Clear selected rooms
+      window.location.reload();
+    }
+  };
   const ReservationContent = () => {
     return (
       <div>
@@ -745,9 +806,14 @@ function HotelDashboard() {
               className="res-option-HD"
               onClick={toggleReservationEditButton}
             >
-              {reservEditboxes ? "Cancel Edit" : "Edit Reservation"}
+              {reservEditboxes ? "Cancel Edit" : "Edit"}
             </button>
-            <button className="res-option-HD">Delete</button>
+            <button
+              className="res-option-HD"
+              onClick={toggleReservationDeleteButton}
+            >
+              {reservDeleteboxes ? "Cancel Delete" : "Delete"}
+            </button>
           </div>
           <div className="table-container-HD">
             {displayReservationData.length > 0 ? (
@@ -755,6 +821,9 @@ function HotelDashboard() {
                 <table className="room-table-HD">
                   <thead className="table-head-HD">
                     <tr>
+                      {reservDeleteboxes && (
+                        <th className="table-header-HD">Select</th>
+                      )}
                       <th className="table-header-HD">Room Type</th>
                       <th className="table-header-HD">Guest Name</th>
                       <th className="table-header-HD">Guest Phone Number</th>
@@ -767,6 +836,21 @@ function HotelDashboard() {
                   <tbody className="table-body-HD">
                     {filteredReservations.map((reserv) => (
                       <tr key={reserv.reservation_id} className="table-row-HD">
+                        {reservDeleteboxes && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedReservs.includes(
+                                reserv.reservation_id
+                              )}
+                              onChange={() =>
+                                handleReservCheckboxChange(
+                                  reserv.reservation_id
+                                )
+                              }
+                            />
+                          </td>
+                        )}
                         {reservEditId === reserv.reservation_id ? (
                           <>
                             <td className="table-cell-HD">{reserv.type}</td>
@@ -836,6 +920,14 @@ function HotelDashboard() {
                     ))}
                   </tbody>
                 </table>
+                {reservDeleteboxes && (
+                  <button
+                    className="delete-selected-HD"
+                    onClick={handleDeleteSelectedReserv}
+                  >
+                    Delete Selected Reservations
+                  </button>
+                )}
                 {error && <p className="error-message-HD">{error}</p>}
               </div>
             ) : (

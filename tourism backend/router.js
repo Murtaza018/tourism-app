@@ -17,5 +17,9 @@ router.post(
   "/updateReservationData",
   reservationController.updateReservationData
 );
+router.post(
+  "/deleteReservationData",
+  reservationController.deleteReservationData
+);
 
 module.exports = router;
