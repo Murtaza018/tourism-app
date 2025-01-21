@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./HotelDashboard.css";
 import { useNavigate } from "react-router-dom";
+import { Country, City } from "country-state-city";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ function HotelDashboard() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [editData, setEditData] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCountryName, setSelectedCountryName] = useState("");
+  const [cities, setCities] = useState([]);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [editboxes, setEditboxes] = useState(false);
   const [reservEditboxes, setReserveEditboxes] = useState(false);
@@ -38,31 +44,45 @@ function HotelDashboard() {
   });
   const [editingRoomId, setEditingRoomId] = useState(null); // Track which room is being edited
   const [editedRoomData, setEditedRoomData] = useState({}); // Store edited data
-
+  const firstNameRef = useRef("");
+  const lastNameRef = useRef("");
+  const ageRef = useRef("");
+  const addressRef = useRef("");
+  const phoneRef = useRef("");
+  const passRef = useRef("");
+  const confPassRef = useRef("");
   useEffect(() => {
     localStorage.setItem("activeCard", activeCard);
   }, [activeCard]);
 
   useEffect(() => {
-    const storedDataString = localStorage.getItem("user_data");
-    if (storedDataString) {
-      try {
-        const storedData = JSON.parse(storedDataString);
-        if (storedData) {
-          setFirstName(storedData.first_name || "");
-          setLastName(storedData.last_name || "");
-          setEmail(storedData.email || "");
-          setAge(storedData.age || "");
-          setPhone(storedData.phone || "");
-          setCountry(storedData.country || "");
-          setCity(storedData.city || "");
-          setAddress(storedData.address || "");
-          setPassword(storedData.password || "");
+    fetch("http://localhost:8008/Tourism/UserDataRetreival", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setFirstName(data.data[0].first_name || "");
+          setLastName(data.data[0].last_name || "");
+          setEmail(data.data[0].email || "");
+          setAge(data.data[0].age || "");
+          setPhone(data.data[0].phone || "");
+          setCountry(data.data[0].country || "");
+          setCity(data.data[0].city || "");
+          setAddress(data.data[0].address || "");
+          setPassword(data.data[0].password || "");
+        } else {
+          console.log("Data not retreived!", data.data);
         }
-      } catch (error) {
-        console.error("Error parsing user data", error);
-      }
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const logOut = () => {
@@ -938,10 +958,262 @@ function HotelDashboard() {
       </div>
     );
   };
+  const HotelData = useRef({
+    first_name: "",
+    last_name: "",
+    email: "",
+    age: "",
+    phone: "",
+    country: "",
+    city: "",
+    address: "",
+    password: "",
+  });
+  const updateHotelData = () => {
+    console.log(HotelData);
+    fetch("http://localhost:8008/Tourism/updateUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(HotelData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Hotel Data updated!");
+        } else {
+          console.log("Hotel Data not updated!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const saveChanges = (e) => {
+    console.log(selectedCountryName);
+    console.log(selectedCity);
+    e.preventDefault();
+    HotelData.current = {
+      first_name: firstNameRef.current.value,
+      last_name: lastNameRef.current.value,
+      age: ageRef.current.value,
+      country: selectedCountryName,
+      city: selectedCity,
+      address: addressRef.current.value,
+      email: email,
+      phone: phoneRef.current.value,
+      password: passRef.current.value,
+    };
+    if (passRef.current.value !== confPassRef.current.value) {
+      setError("Passwords do not match!");
+      return;
+    }
+    if (ageRef.current.value < 18 || ageRef.current.value > 150) {
+      setError("Select a valid age!");
+      return;
+    }
+    if (selectedCountryName === "") {
+      setError("Select a valid country!");
+      return;
+    }
+    if (selectedCity === "") {
+      setError("Select a valid city!");
+      return;
+    }
+
+    setError("");
+    console.log(HotelData);
+    updateHotelData();
+    window.location.reload();
+  };
+  const HotelCountryChange = (event) => {
+    event.preventDefault();
+    const countryIsoCode = event.target.value;
+    setSelectedCountry(countryIsoCode);
+    setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
+    setSelectedCity(""); // Reset city when the country changes
+
+    // Fetch cities for the selected country
+    if (countryIsoCode) {
+      const countryCities = City.getCitiesOfCountry(countryIsoCode);
+      setCities(countryCities);
+    } else {
+      setCities([]); // Reset cities if no country is selected
+    }
+  };
+
+  // Handle city selection
+  const HotelCityChange = (event) => {
+    event.preventDefault();
+    setSelectedCity(event.target.value);
+  };
+  const editDataButton = () => {
+    if (!editData) {
+      setError("");
+      HotelData.current = {
+        first_name: firstName,
+        last_name: lastName,
+        age: age,
+        country: country,
+        city: city,
+        address: address,
+        email: email,
+        phone: phone,
+        password: password,
+      };
+    }
+    setEditData(!editData);
+  };
   const SettingContent = () => {
     return (
       <div>
-        <p>Hello Hotel {firstName} Setting Content</p>
+        <h2 className="heading-HD">Settings</h2>
+        {editData === true ? (
+          <div>
+            <input
+              type="text"
+              placeholder="First Name"
+              ref={firstNameRef}
+              className="form-input"
+              defaultValue={HotelData.current.first_name}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              ref={lastNameRef}
+              className="form-input"
+              defaultValue={HotelData.current.last_name}
+              required
+            />
+            <p className="data-HD">
+              <strong>Email:</strong> {email}
+            </p>
+
+            <input
+              type="number"
+              placeholder="Age(18-150)"
+              ref={ageRef}
+              className="form-input"
+              defaultValue={HotelData.current.age}
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              ref={phoneRef}
+              className="form-input"
+              defaultValue={HotelData.current.phone}
+              required
+            />
+            <select
+              className="input-menu"
+              id="country"
+              value={selectedCountry}
+              onChange={HotelCountryChange}
+            >
+              <option className="select-menu-option" value="">
+                Select Country
+              </option>
+              {Country.getAllCountries().map((country) => (
+                <option
+                  className="select-menu-option"
+                  key={country.isoCode}
+                  value={country.isoCode}
+                >
+                  {country.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="input-menu"
+              id="city"
+              value={selectedCity}
+              onChange={HotelCityChange}
+              disabled={!selectedCountry}
+            >
+              <option className="select-menu-option" value="">
+                Select City
+              </option>
+              {cities.map((city) => (
+                <option
+                  className="select-menu-option"
+                  key={city.name}
+                  value={city.name}
+                >
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Complete Address"
+              ref={addressRef}
+              className="form-input"
+              defaultValue={HotelData.current.address}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Enter password"
+              ref={passRef}
+              defaultValue={HotelData.current.password}
+              className="form-input"
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              ref={confPassRef}
+              defaultValue={HotelData.current.password}
+              className="form-input"
+              required
+            />
+            {error && <p className="error-message">{error}</p>}
+          </div>
+        ) : (
+          <div>
+            <p className="data-HD">
+              <strong>First Name:</strong> {firstName}
+            </p>
+            <p className="data-HD">
+              <strong>Last Name:</strong> {lastName}
+            </p>
+            <p className="data-HD">
+              <strong>Email:</strong> {email}
+            </p>
+            <p className="data-HD">
+              <strong>Age:</strong> {age}
+            </p>
+            <p className="data-HD">
+              <strong>Phone:</strong> {phone}
+            </p>
+            <p className="data-HD">
+              <strong>Country:</strong> {country}
+            </p>
+            <p className="data-HD">
+              <strong>City:</strong> {city}
+            </p>
+            <p className="data-HD">
+              <strong>Address:</strong> {address}
+            </p>
+            <p className="data-HD">
+              <strong>Password:</strong> {password}
+            </p>
+          </div>
+        )}
+        <div className="button-group-HD">
+          {editData && (
+            <button className="save-button-HD" onClick={saveChanges}>
+              Save
+            </button>
+          )}
+          <button className="edit-button-HD" onClick={editDataButton}>
+            {editData ? "Cancel Edit" : "Edit"}
+          </button>
+        </div>
+        {/*Delete Account and Lock Account Button*/}
       </div>
     );
   };

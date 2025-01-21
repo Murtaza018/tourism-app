@@ -53,5 +53,44 @@ const insertUser = async (req, res) => {
     }
   );
 };
-
-module.exports = { insertUser, signInUser };
+const updateUser = async (req, res) => {
+  await checkTable();
+  pool.query(
+    `update user set first_name=?,last_name=?,phone=?,age=?,country=?,city=?,address=?,password=? where email=?;`,
+    [
+      req.body.first_name,
+      req.body.last_name,
+      req.body.phone,
+      req.body.age,
+      req.body.country,
+      req.body.city,
+      req.body.address,
+      req.body.password,
+      req.body.email,
+    ],
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: "user updated" });
+      }
+    }
+  );
+};
+const UserDataRetreival = async (req, res) => {
+  await checkTable();
+  console.log(req.body);
+  pool.query(
+    `select * from user where email=?`,
+    [req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = { insertUser, signInUser, updateUser, UserDataRetreival };
