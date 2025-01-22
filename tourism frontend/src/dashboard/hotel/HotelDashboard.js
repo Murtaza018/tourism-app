@@ -1065,6 +1065,12 @@ function HotelDashboard() {
     }
     setEditData(!editData);
   };
+  const lockAccount = () => {
+    //lock Account
+  };
+  const deleteAccount = () => {
+    //delete Account
+  };
   const SettingContent = () => {
     return (
       <div>
@@ -1203,17 +1209,25 @@ function HotelDashboard() {
             </p>
           </div>
         )}
-        <div className="button-group-HD">
+        <div className="setting-container-HD">
           {editData && (
             <button className="save-button-HD" onClick={saveChanges}>
               Save
             </button>
           )}
           <button className="edit-button-HD" onClick={editDataButton}>
-            {editData ? "Cancel Edit" : "Edit"}
+            {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
         {/*Delete Account and Lock Account Button*/}
+        <div className="setting-container-HD">
+          <button className="room-option-HD" onClick={lockAccount}>
+            Lock Account
+          </button>
+          <button className="room-option-HD" onClick={deleteAccount}>
+            Delete Account
+          </button>
+        </div>
       </div>
     );
   };

@@ -452,3 +452,12 @@ body.menu-open-HD {
   color: red;
   border-color: red;
 }
+.setting-container-HD {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 10px;
+  height: 100px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}

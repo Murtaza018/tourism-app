@@ -13,9 +13,26 @@ function Home() {
     const status = localStorage.getItem("loggedIn") === "true";
     setLoggedIn(status);
     if (status) {
-      const storedData = JSON.parse(localStorage.getItem("user_data"));
-      setRoleID(storedData.role_ID);
-      setFirstName(storedData.first_name || "");
+      fetch("http://localhost:8008/Tourism/UserDataRetreival", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: localStorage.getItem("email") }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setFirstName(data.data[0].first_name || "");
+            setRoleID(data.data[0].role_ID);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, []);
   console.log(roleID);
