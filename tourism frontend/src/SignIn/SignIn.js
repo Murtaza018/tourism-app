@@ -37,6 +37,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
             navigate("/TouristDashboard");
           } else {
             setError("Incorrect Password!");
@@ -118,6 +119,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
             navigate("/HotelDashboard");
           } else {
             setError("Incorrect Password!");
@@ -199,6 +201,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
             navigate("/GuideDashboard");
           } else {
             setError("Incorrect Password!");
@@ -280,6 +283,8 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
+
             navigate("/AirlineDashboard");
           } else {
             setError("Incorrect Password!");
@@ -361,6 +366,8 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
+
             navigate("/AdminDashboard");
           } else {
             setError("Incorrect Password!");

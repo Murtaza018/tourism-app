@@ -1,5 +1,5 @@
 const pool = require("../dbConnection.js");
-const checkTable = async () => {
+const ReservationCheckTable = async () => {
   await pool.query(`create table if not exists reservation(
         reservation_id int auto_increment primary key,
         tourist_email varchar(30) not null,
@@ -12,7 +12,7 @@ const checkTable = async () => {
 };
 
 const getReservationData = async (req, res) => {
-  await checkTable();
+  await ReservationCheckTable();
   console.log(req.body);
   pool.query(
     `select res.reservation_id,res.status,r.type,u.first_name,u.phone from reservation res join room r on res.room_id=r.room_id join user u on res.tourist_email=u.email where res.hotel_email = ?;`,
@@ -28,7 +28,7 @@ const getReservationData = async (req, res) => {
   );
 };
 const updateReservationData = async (req, res) => {
-  await checkTable();
+  await ReservationCheckTable();
   console.log(req.body);
   pool.query(
     `update reservation set status = ? where reservation_id=?`,
@@ -44,7 +44,7 @@ const updateReservationData = async (req, res) => {
   );
 };
 const deleteReservationData = async (req, res) => {
-  await checkTable();
+  await ReservationCheckTable();
   pool.query(
     `delete from reservation where reservation_id in (?);`,
     [req.body],

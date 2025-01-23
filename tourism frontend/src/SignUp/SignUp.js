@@ -97,6 +97,7 @@ function SignUp() {
     insertTourist();
     localStorage.setItem("loggedIn", true);
     localStorage.setItem("user_data", JSON.stringify(touristData.current));
+    localStorage.setItem("email", touristData.current.email);
     navigate("/TouristDashboard");
   };
   // Handle country selection
@@ -307,6 +308,7 @@ function SignUp() {
     insertHotel();
     localStorage.setItem("loggedIn", true);
     localStorage.setItem("user_data", JSON.stringify(HotelData.current));
+    localStorage.setItem("email", HotelData.current.email);
     navigate("/HotelDashboard");
   };
   // Handle country selection
@@ -518,6 +520,7 @@ function SignUp() {
     insertAirline();
     localStorage.setItem("loggedIn", true);
     localStorage.setItem("user_data", JSON.stringify(AirlineData.current));
+    localStorage.setItem("email", AirlineData.current.email);
     navigate("/AirlineDashboard");
   };
   // Handle country selection
@@ -729,6 +732,7 @@ function SignUp() {
     insertGuide();
     localStorage.setItem("loggedIn", true);
     localStorage.setItem("user_data", JSON.stringify(GuideData.current));
+    localStorage.setItem("email", GuideData.current.email);
     navigate("/GuideDashboard");
   };
   // Handle country selection

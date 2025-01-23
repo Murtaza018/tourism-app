@@ -1,5 +1,6 @@
 const pool = require("../dbConnection.js");
-const checkTable = async () => {
+const stat = require("./StatusController.js");
+const UserCheckTable = async () => {
   await pool.query(`create table if not exists user(
         first_name varchar(20) not null,
         last_name varchar(20) not null,
@@ -14,7 +15,7 @@ const checkTable = async () => {
         foreign key (role_ID) references role(role_ID));`);
 };
 const signInUser = async (req, res) => {
-  await checkTable();
+  await UserCheckTable();
   pool.query(
     `select * from user where email = ?;`,
     [req.body.email],
@@ -29,7 +30,11 @@ const signInUser = async (req, res) => {
   );
 };
 const insertUser = async (req, res) => {
-  await checkTable();
+  await UserCheckTable();
+  await stat.AccountStatusCheckTable();
+  await pool.query(`insert into AccountStatus(email) values(?);`, [
+    req.body.email,
+  ]);
   pool.query(
     `insert into user(first_name,last_name,phone,email,age,country,city,address,password,role_ID) values(?,?,?,?,?,?,?,?,?,?);`,
     [
@@ -54,7 +59,7 @@ const insertUser = async (req, res) => {
   );
 };
 const updateUser = async (req, res) => {
-  await checkTable();
+  await UserCheckTable();
   pool.query(
     `update user set first_name=?,last_name=?,phone=?,age=?,country=?,city=?,address=?,password=? where email=?;`,
     [
@@ -78,7 +83,7 @@ const updateUser = async (req, res) => {
   );
 };
 const UserDataRetreival = async (req, res) => {
-  await checkTable();
+  await UserCheckTable();
   console.log(req.body);
   pool.query(
     `select * from user where email=?`,

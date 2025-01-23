@@ -1,5 +1,5 @@
 const pool = require("../dbConnection.js");
-const checkTable = async () => {
+const RoomCheckTable = async () => {
   await pool.query(`create table if not exists room(
         room_id int auto_increment primary key,
         email varchar(30) not null,
@@ -10,7 +10,7 @@ const checkTable = async () => {
         foreign key (email) references user(email));`);
 };
 const insertRoom = async (req, res) => {
-  await checkTable();
+  await RoomCheckTable();
   pool.query(
     `insert into room(email,type,quantity,price,status) values(?,?,?,?,?);`,
     [
@@ -30,7 +30,7 @@ const insertRoom = async (req, res) => {
   );
 };
 const getRoomData = async (req, res) => {
-  await checkTable();
+  await RoomCheckTable();
   pool.query(
     `select * from room where email = ?;`,
     [req.body.email],
@@ -45,7 +45,7 @@ const getRoomData = async (req, res) => {
   );
 };
 const DeleteRoom = async (req, res) => {
-  await checkTable();
+  await RoomCheckTable();
   pool.query(
     `delete from room where room_id in (?);`,
     [req.body],
@@ -60,7 +60,7 @@ const DeleteRoom = async (req, res) => {
   );
 };
 const UpdateRoom = async (req, res) => {
-  await checkTable();
+  await RoomCheckTable();
   pool.query(
     `update room set type=?,quantity=?,price=?,status=? where room_id = (?);`,
     [

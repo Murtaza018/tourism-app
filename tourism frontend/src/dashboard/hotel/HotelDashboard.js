@@ -1219,7 +1219,6 @@ function HotelDashboard() {
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
-        {/*Delete Account and Lock Account Button*/}
         <div className="setting-container-HD">
           <button className="room-option-HD" onClick={lockAccount}>
             Lock Account
