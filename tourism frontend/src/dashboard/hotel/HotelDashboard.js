@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import "./HotelDashboard.css";
 import { useNavigate } from "react-router-dom";
 import { Country, City } from "country-state-city";
+import LockIcon from "@mui/icons-material/Lock";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -1112,9 +1114,39 @@ function HotelDashboard() {
         });
     }
   };
+  const [error2, setError2] = useState(null);
   const deleteAccount = () => {
     //delete Account
     //check if there are reservations,if not,delete account
+    const confirmation = window.confirm(
+      "Delete Account(This action can NOT be reversed)? Select 'OK' to confirm"
+    );
+    if (confirmation) {
+      fetch("http://localhost:8008/Tourism/CheckReservationCount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: localStorage.getItem("email") }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            if (data.data[0].res_count > 0) {
+              setError2(
+                "Deleting Account not possible when there are pending or ongoing reservations!"
+              );
+            } else {
+              //delete account logic
+            }
+          } else {
+            console.log("API failed!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   const SettingContent = () => {
     return (
@@ -1272,6 +1304,23 @@ function HotelDashboard() {
             Delete Account
           </button>
         </div>
+        <div className="setting-container-HD">
+          {error2 && <p className="error-message">{error2}</p>}
+        </div>
+
+        {accountStatus ? (
+          <p className="locking-account-message-HD">
+            <LockIcon />
+            Locking Account will NOT show your Hotel to the Tourists for
+            reservations
+          </p>
+        ) : (
+          <p className="locking-account-message-HD">
+            <LockOpenIcon />
+            Unlocking Account will show your Hotel to the Tourists for
+            reservations
+          </p>
+        )}
       </div>
     );
   };

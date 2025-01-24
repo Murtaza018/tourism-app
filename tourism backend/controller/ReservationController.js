@@ -58,8 +58,24 @@ const deleteReservationData = async (req, res) => {
     }
   );
 };
+const CheckReservationCount = async (req, res) => {
+  await ReservationCheckTable();
+  pool.query(
+    `select count(reservation_id) as res_count from reservation where hotel_email=? and (status="pending" or status="ongoing");`,
+    [req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 module.exports = {
   getReservationData,
   updateReservationData,
   deleteReservationData,
+  CheckReservationCount,
 };

@@ -24,6 +24,10 @@ router.post(
   "/deleteReservationData",
   reservationController.deleteReservationData
 );
+router.post(
+  "/CheckReservationCount",
+  reservationController.CheckReservationCount
+);
 
 router.post(
   "/AccountStatusRetreival",
