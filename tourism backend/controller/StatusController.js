@@ -5,4 +5,39 @@ const AccountStatusCheckTable = async () => {
         status boolean default true,
         foreign key (email) references user(email));`);
 };
-module.exports = { AccountStatusCheckTable };
+const AccountStatusRetreival = async (req, res) => {
+  console.log(req.body);
+  await AccountStatusCheckTable();
+  pool.query(
+    `select status from AccountStatus where email = ?;`,
+    [req.body.email],
+    (err, results) => {
+      if (results.length > 0) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+const UpdateAccountStatus = async (req, res) => {
+  await AccountStatusCheckTable();
+  pool.query(
+    `update AccountStatus set status=not status where email = ?;`,
+    [req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = {
+  AccountStatusCheckTable,
+  AccountStatusRetreival,
+  UpdateAccountStatus,
+};

@@ -1065,11 +1065,56 @@ function HotelDashboard() {
     }
     setEditData(!editData);
   };
+  const [accountStatus, setAccountStatus] = useState(true);
+  useEffect(() => {
+    fetch("http://localhost:8008/Tourism/AccountStatusRetreival", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          if (data.data[0].status === 0) {
+            setAccountStatus(false);
+          }
+        } else {
+          console.log("Status not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   const lockAccount = () => {
     //lock Account
+    const confirmation = window.confirm("Select 'OK' to confirm");
+    if (confirmation) {
+      fetch("http://localhost:8008/Tourism/UpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: localStorage.getItem("email") }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            setAccountStatus(!accountStatus);
+          } else {
+            console.log("Status not updated!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   const deleteAccount = () => {
     //delete Account
+    //check if there are reservations,if not,delete account
   };
   const SettingContent = () => {
     return (
@@ -1221,7 +1266,7 @@ function HotelDashboard() {
         </div>
         <div className="setting-container-HD">
           <button className="room-option-HD" onClick={lockAccount}>
-            Lock Account
+            {accountStatus ? "Lock Account" : "Unlock Account"}
           </button>
           <button className="room-option-HD" onClick={deleteAccount}>
             Delete Account
@@ -1315,3 +1360,58 @@ function HotelDashboard() {
 }
 
 export default HotelDashboard;
+
+{
+  /* import * as React from 'react';
+import { useState, useEffect } from 'react';
+import Switch from '@mui/material/Switch';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    // Get stored theme from localStorage on initial load
+    const storedTheme = localStorage.getItem('theme');
+    return storedTheme === 'dark'; // Return true if stored theme is 'dark'
+  });
+
+  useEffect(() => {
+    // Store theme in localStorage whenever it changes
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: darkMode ? 'dark' : 'light',
+        },
+      }),
+    [darkMode],
+  );
+
+  const handleChange = (event) => {
+    setDarkMode(event.target.checked);
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div>
+        <Switch
+          checked={darkMode}
+          onChange={handleChange}
+          inputProps={{ 'aria-label': 'controlled' }}
+        />
+        <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>
+          {/* Your app components */
+}
+{
+  /*
+      </div>
+    </ThemeProvider>
+  );
+}
+
+export default App;*/
+}
