@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { Country, City } from "country-state-city";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import HomeIcon from "@mui/icons-material/Home";
+import BedIcon from "@mui/icons-material/Bed";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -1383,6 +1388,7 @@ function HotelDashboard() {
                   className="button-HD"
                   onClick={() => setActiveCard("Home")}
                 >
+                  <HomeIcon />
                   Home
                 </button>
               </li>
@@ -1391,6 +1397,7 @@ function HotelDashboard() {
                   className="button-HD"
                   onClick={() => setActiveCard("RoomUpdates")}
                 >
+                  <BedIcon />
                   Rooms
                 </button>
               </li>
@@ -1399,6 +1406,7 @@ function HotelDashboard() {
                   className="button-HD"
                   onClick={() => setActiveCard("ReservationUpdates")}
                 >
+                  <CalendarMonthIcon />
                   Reservations
                 </button>
               </li>
@@ -1407,11 +1415,13 @@ function HotelDashboard() {
                   className="button-HD"
                   onClick={() => setActiveCard("SettingUpdates")}
                 >
+                  <SettingsIcon />
                   Settings
                 </button>
               </li>
               <li>
                 <button className="button-HD" onClick={logOut}>
+                  <LogoutIcon />
                   Logout
                 </button>
               </li>

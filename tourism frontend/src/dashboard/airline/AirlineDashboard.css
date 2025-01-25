@@ -1,0 +1,165 @@
+.main-container-AD {
+  display: flex;
+  padding-left: 50px;
+  transition: padding-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.main-container-AD.menu-open {
+  padding-left: 250px;
+}
+
+.hamburger-menu-AD {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 21;
+}
+
+.hamburger-icon-AD {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 22;
+}
+
+.hamburger-icon-AD .line-AD {
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+.line-top-AD.open-AD {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.line-middle-AD.open-AD {
+  opacity: 0;
+}
+
+.line-bottom-AD.open-AD {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.menu-AD {
+  width: 250px;
+  height: 100%;
+  background-color: rgba(240, 230, 140, 0.8);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.menu-AD.open-AD {
+  transform: translateX(0);
+}
+
+.menu-AD ul {
+  list-style: none;
+  padding: 50px 20px;
+  margin: 0;
+}
+
+.menu-AD li {
+  margin: 20px 0;
+}
+
+.button-AD {
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.button-AD:hover {
+  color: #b83737;
+  transform: scale(1.1);
+}
+
+.content-AD {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  flex-grow: 1;
+}
+
+body.menu-open-AD {
+  overflow: hidden;
+}
+
+.background-AD {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://wallpapers.com/images/hd/plane-desktop-j4dp3aam3imyhsny.jpg");
+  min-height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.details-AD {
+  background-color: rgba(240, 230, 140, 0.8);
+  border: 1px solid #ccebff;
+  border-radius: 8px;
+  padding: 50px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.details-AD .data-AD {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #343a40;
+  transition: transform 0.2s ease;
+}
+
+.details-AD .data-AD strong {
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .details-AD {
+    padding: 15px;
+  }
+
+  .details-AD .data-AD {
+    font-size: 14px;
+  }
+}
+.data-AD:hover {
+  transform: scale(1.4);
+}
+.details-AD:hover {
+  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.heading-AD {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #007bff;
+}

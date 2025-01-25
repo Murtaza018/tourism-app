@@ -118,7 +118,6 @@ function SignIn() {
             data.data[0].password === HotelData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("email", data.data[0].email);
             navigate("/HotelDashboard");
           } else {
@@ -282,7 +281,6 @@ function SignIn() {
             data.data[0].password === AirlineData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("email", data.data[0].email);
             navigate("/AirlineDashboard");
           } else {
