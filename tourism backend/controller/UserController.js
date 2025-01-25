@@ -98,4 +98,25 @@ const UserDataRetreival = async (req, res) => {
     }
   );
 };
-module.exports = { insertUser, signInUser, updateUser, UserDataRetreival };
+const DeleteUser = async (req, res) => {
+  await UserCheckTable();
+  console.log(req.body);
+  pool.query(
+    `delete from user where email=?`,
+    [req.body.email],
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: "user deleted" });
+      }
+    }
+  );
+};
+module.exports = {
+  insertUser,
+  signInUser,
+  updateUser,
+  UserDataRetreival,
+  DeleteUser,
+};

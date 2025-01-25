@@ -10,7 +10,7 @@
 }
 
 .hamburger-menu-HD {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   height: 100vh;
@@ -251,14 +251,14 @@ body.menu-open-HD {
   display: block;
   margin: 10px auto;
   padding: 10px;
-  width: 275px;
+  width: 48%;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   margin-bottom: 20px;
 }
 .input-menu-HD {
-  width: 100%;
+  width: 51%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;

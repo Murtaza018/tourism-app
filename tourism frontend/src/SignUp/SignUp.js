@@ -519,7 +519,6 @@ function SignUp() {
     AirlineData.current.password = passRef.current.value;
     insertAirline();
     localStorage.setItem("loggedIn", true);
-    localStorage.setItem("user_data", JSON.stringify(AirlineData.current));
     localStorage.setItem("email", AirlineData.current.email);
     navigate("/AirlineDashboard");
   };

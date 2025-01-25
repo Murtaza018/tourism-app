@@ -101,7 +101,7 @@ function HotelDashboard() {
   };
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    document.body.style.overflow = "auto";
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -179,15 +179,12 @@ function HotelDashboard() {
       });
   };
   const getRoomData = async () => {
-    const storedDataString = localStorage.getItem("user_data");
-    const storedData = JSON.parse(storedDataString);
-
     fetch("http://localhost:8008/Tourism/getRoomData", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: storedData.email }),
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -624,15 +621,12 @@ function HotelDashboard() {
     );
   };
   const getReservationData = async () => {
-    const storedDataString = localStorage.getItem("user_data");
-    const storedData = JSON.parse(storedDataString);
-
     fetch("http://localhost:8008/Tourism/getReservationData", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: storedData.email }),
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -1115,6 +1109,27 @@ function HotelDashboard() {
     }
   };
   const [error2, setError2] = useState(null);
+  const deleteAccountAPI = () => {
+    fetch("http://localhost:8008/Tourism/DeleteUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          setError2("Account Deleted!");
+          setTimeout(logOut(), 3000);
+        } else {
+          console.log("API failed!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const deleteAccount = () => {
     //delete Account
     //check if there are reservations,if not,delete account
@@ -1138,6 +1153,7 @@ function HotelDashboard() {
               );
             } else {
               //delete account logic
+              deleteAccountAPI();
             }
           } else {
             console.log("API failed!", data.data);
@@ -1158,7 +1174,7 @@ function HotelDashboard() {
               type="text"
               placeholder="First Name"
               ref={firstNameRef}
-              className="form-input"
+              className="form-input-HD"
               defaultValue={HotelData.current.first_name}
               required
             />
@@ -1166,7 +1182,7 @@ function HotelDashboard() {
               type="text"
               placeholder="Last Name"
               ref={lastNameRef}
-              className="form-input"
+              className="form-input-HD"
               defaultValue={HotelData.current.last_name}
               required
             />
@@ -1178,7 +1194,7 @@ function HotelDashboard() {
               type="number"
               placeholder="Age(18-150)"
               ref={ageRef}
-              className="form-input"
+              className="form-input-HD"
               defaultValue={HotelData.current.age}
               required
             />
@@ -1186,22 +1202,22 @@ function HotelDashboard() {
               type="tel"
               placeholder="Phone"
               ref={phoneRef}
-              className="form-input"
+              className="form-input-HD"
               defaultValue={HotelData.current.phone}
               required
             />
             <select
-              className="input-menu"
+              className="input-menu-HD"
               id="country"
               value={selectedCountry}
               onChange={HotelCountryChange}
             >
-              <option className="select-menu-option" value="">
+              <option className="select-menu-option-HD" value="">
                 Select Country
               </option>
               {Country.getAllCountries().map((country) => (
                 <option
-                  className="select-menu-option"
+                  className="select-menu-option-HD"
                   key={country.isoCode}
                   value={country.isoCode}
                 >
@@ -1211,18 +1227,18 @@ function HotelDashboard() {
             </select>
 
             <select
-              className="input-menu"
+              className="input-menu-HD"
               id="city"
               value={selectedCity}
               onChange={HotelCityChange}
               disabled={!selectedCountry}
             >
-              <option className="select-menu-option" value="">
+              <option className="select-menu-option-HD" value="">
                 Select City
               </option>
               {cities.map((city) => (
                 <option
-                  className="select-menu-option"
+                  className="select-menu-option-HD"
                   key={city.name}
                   value={city.name}
                 >
@@ -1234,7 +1250,7 @@ function HotelDashboard() {
               type="text"
               placeholder="Complete Address"
               ref={addressRef}
-              className="form-input"
+              className="form-input-HD"
               defaultValue={HotelData.current.address}
               required
             />
@@ -1243,14 +1259,14 @@ function HotelDashboard() {
               placeholder="Enter password"
               ref={passRef}
               defaultValue={HotelData.current.password}
-              className="form-input"
+              className="form-input-HD"
             />
             <input
               type="password"
               placeholder="Confirm password"
               ref={confPassRef}
               defaultValue={HotelData.current.password}
-              className="form-input"
+              className="form-input-HD"
               required
             />
             {error && <p className="error-message">{error}</p>}
@@ -1296,6 +1312,7 @@ function HotelDashboard() {
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
+
         <div className="setting-container-HD">
           <button className="room-option-HD" onClick={lockAccount}>
             {accountStatus ? "Lock Account" : "Unlock Account"}
@@ -1338,6 +1355,7 @@ function HotelDashboard() {
         return null;
     }
   };
+
   return (
     <div>
       <div className="background-HD"></div>
@@ -1409,58 +1427,3 @@ function HotelDashboard() {
 }
 
 export default HotelDashboard;
-
-{
-  /* import * as React from 'react';
-import { useState, useEffect } from 'react';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    // Get stored theme from localStorage on initial load
-    const storedTheme = localStorage.getItem('theme');
-    return storedTheme === 'dark'; // Return true if stored theme is 'dark'
-  });
-
-  useEffect(() => {
-    // Store theme in localStorage whenever it changes
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
-
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: darkMode ? 'dark' : 'light',
-        },
-      }),
-    [darkMode],
-  );
-
-  const handleChange = (event) => {
-    setDarkMode(event.target.checked);
-  };
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <div>
-        <Switch
-          checked={darkMode}
-          onChange={handleChange}
-          inputProps={{ 'aria-label': 'controlled' }}
-        />
-        <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>
-          {/* Your app components */
-}
-{
-  /*
-      </div>
-    </ThemeProvider>
-  );
-}
-
-export default App;*/
-}

@@ -284,7 +284,6 @@ function SignIn() {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("email", data.data[0].email);
-
             navigate("/AirlineDashboard");
           } else {
             setError("Incorrect Password!");
@@ -477,6 +476,9 @@ function SignIn() {
             onClick={() => setActiveCard("AdminCard")}
           >
             Admin
+          </Button>
+          <Button className="button-signin" onClick={() => navigate("/signup")}>
+            Do not have an account? Sign Up
           </Button>
         </div>
       </Card>
