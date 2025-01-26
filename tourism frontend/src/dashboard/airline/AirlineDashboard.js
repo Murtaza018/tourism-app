@@ -21,6 +21,28 @@ function AirlineDashboard() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    fetch("http://localhost:8008/Tourism/UserDataRetreival", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          //set data in variables
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
     document.body.style.overflow = "auto";
     return () => {
       document.body.style.overflow = "auto";
