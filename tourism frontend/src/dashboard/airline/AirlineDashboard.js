@@ -3,10 +3,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 //import { TextField } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import BedIcon from "@mui/icons-material/Bed";
+import FlightIcon from "@mui/icons-material/Flight";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import { Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -19,6 +22,17 @@ function AirlineDashboard() {
     return "Home";
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [AccountData, setAccountData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    country: "",
+    city: "",
+    address: "",
+    phone: "",
+    age: "",
+    password: "",
+  });
 
   useEffect(() => {
     fetch("http://localhost:8008/Tourism/UserDataRetreival", {
@@ -32,7 +46,18 @@ function AirlineDashboard() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          //set data in variables
+          setAccountData(() => ({
+            first_name: data.data[0].first_name,
+            last_name: data.data[0].last_name,
+            age: data.data[0].age,
+            phone: data.data[0].phone,
+            email: data.data[0].email,
+            address: data.data[0].address,
+            country: data.data[0].country,
+            city: data.data[0].city,
+            password: data.data[0].password,
+          }));
+          console.log("Account Data:", AccountData);
         } else {
           console.log("Data not retreived!", data.data);
         }
@@ -67,12 +92,81 @@ function AirlineDashboard() {
   const HomeContent = () => {
     return (
       <div>
-        <p>Hello World</p>
-        <p>Hello World</p>
+        <h2 className="heading-AD">
+          <strong>Details</strong>
+        </h2>
+        <p className="data-AD">
+          <strong>First Name: {AccountData.first_name}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Last Name: {AccountData.last_name}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Email: {AccountData.email}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Age: {AccountData.age}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Phone: {AccountData.phone}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Country: {AccountData.country}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>City: {AccountData.city}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Address: {AccountData.address}</strong>
+        </p>
+        <p className="data-AD">
+          <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+        </p>
       </div>
     );
   };
-  const RoomContent = () => {
+  const FlightButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "transparent",
+    border: "2px solid black",
+    color: "black",
+    fontSize: "1.2em",
+    padding: "5px 10px",
+    cursor: "pointer",
+    transition: "transform 0.5s ease, color 0.5s ease, border-color 0.5s ease",
+    marginTop: "5px",
+    "&:hover": {
+      transform: "scale(1.2)",
+    },
+    "&:nth-of-type(1):hover": {
+      color: "blue",
+      borderColor: "blue",
+    },
+    "&:nth-of-type(2):hover": {
+      color: "green",
+      borderColor: "green",
+    },
+    "&:nth-of-type(3):hover": {
+      color: "red",
+      borderColor: "red",
+    },
+  }));
+  const FlightContent = () => {
+    return (
+      <div>
+        <div className="flight-content-AD">
+          <h2 className="heading-AD">
+            <strong>Flights</strong>
+          </h2>
+          <div className="flight-options-container-AD">
+            <FlightButton variant="outlined">Add Flight</FlightButton>
+            <FlightButton variant="outlined">Edit Flight</FlightButton>
+            <FlightButton variant="outlined">Delete Flight</FlightButton>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const ReservationContent = () => {
     return (
       <div>
         <p>Hello World</p>
@@ -80,7 +174,7 @@ function AirlineDashboard() {
       </div>
     );
   };
-  const ReservationContent = () => {
+  const FeedbackContent = () => {
     return (
       <div>
         <p>Hello World</p>
@@ -100,10 +194,12 @@ function AirlineDashboard() {
     switch (activeCard) {
       case "Home":
         return <HomeContent />;
-      case "RoomUpdates":
-        return <RoomContent />;
+      case "FlightUpdates":
+        return <FlightContent />;
       case "ReservationUpdates":
         return <ReservationContent />;
+      case "Feedback":
+        return <FeedbackContent />;
       case "SettingUpdates":
         return <SettingContent />;
       default:
@@ -112,7 +208,6 @@ function AirlineDashboard() {
   };
   return (
     <div>
-      <h1>Hello Airline</h1>
       <div className="background-AD"></div>
       <div className="main-container-AD">
         <div className="hamburger-menu-AD">
@@ -136,7 +231,10 @@ function AirlineDashboard() {
               <li>
                 <button
                   className="button-AD"
-                  onClick={() => setActiveCard("Home")}
+                  onClick={() => {
+                    setActiveCard("Home");
+                    localStorage.setItem("activeCard", "Home");
+                  }}
                 >
                   <HomeIcon />
                   Home
@@ -145,16 +243,22 @@ function AirlineDashboard() {
               <li>
                 <button
                   className="button-AD"
-                  onClick={() => setActiveCard("RoomUpdates")}
+                  onClick={() => {
+                    setActiveCard("FlightUpdates");
+                    localStorage.setItem("activeCard", "FlightUpdates");
+                  }}
                 >
-                  <BedIcon />
-                  Rooms
+                  <FlightIcon />
+                  Flights
                 </button>
               </li>
               <li>
                 <button
                   className="button-AD"
-                  onClick={() => setActiveCard("ReservationUpdates")}
+                  onClick={() => {
+                    setActiveCard("ReservationUpdates");
+                    localStorage.setItem("activeCard", "ReservationUpdates");
+                  }}
                 >
                   <CalendarMonthIcon />
                   Reservations
@@ -163,7 +267,22 @@ function AirlineDashboard() {
               <li>
                 <button
                   className="button-AD"
-                  onClick={() => setActiveCard("SettingUpdates")}
+                  onClick={() => {
+                    setActiveCard("Feedback");
+                    localStorage.setItem("activeCard", "Feedback");
+                  }}
+                >
+                  <FeedbackIcon />
+                  Feedback
+                </button>
+              </li>
+              <li>
+                <button
+                  className="button-AD"
+                  onClick={() => {
+                    setActiveCard("SettingUpdates");
+                    localStorage.setItem("activeCard", "SettingUpdates");
+                  }}
                 >
                   <SettingsIcon />
                   Settings

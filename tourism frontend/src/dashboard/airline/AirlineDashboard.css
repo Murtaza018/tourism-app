@@ -51,19 +51,6 @@
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-.menu-AD {
-  width: 250px;
-  height: 100%;
-  background-color: rgba(240, 230, 140, 0.8);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 20;
-  overflow-y: auto;
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
 .menu-AD.open-AD {
   transform: translateX(0);
 }
@@ -96,12 +83,6 @@
   transform: scale(1.1);
 }
 
-.content-AD {
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  flex-grow: 1;
-}
-
 body.menu-open-AD {
   overflow: hidden;
 }
@@ -117,27 +98,43 @@ body.menu-open-AD {
   left: 0;
   z-index: -1;
 }
-
+.menu-AD {
+  width: 250px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.content-AD {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  flex-grow: 1;
+}
 .details-AD {
-  background-color: rgba(240, 230, 140, 0.8);
+  background-color: rgba(159, 138, 163, 0.8);
   border: 1px solid #ccebff;
   border-radius: 8px;
   padding: 50px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   overflow: hidden;
+  transition: box-shadow 1s ease;
 }
 
 .details-AD .data-AD {
-  font-weight: bold;
   margin-bottom: 10px;
   font-size: 16px;
   color: #343a40;
   transition: transform 0.2s ease;
+  color: inherit !important;
 }
 
 .details-AD .data-AD strong {
-  font-weight: 600;
   margin-right: 5px;
 }
 
@@ -150,16 +147,29 @@ body.menu-open-AD {
     font-size: 14px;
   }
 }
+
 .data-AD:hover {
   transform: scale(1.4);
 }
+
 .details-AD:hover {
-  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 20px 5px rgba(79, 9, 112, 0.7),
+    inset 0 0 20px 5px rgba(79, 9, 112, 0.7);
 }
 
 .heading-AD {
-  font-size: 1.5em;
-  margin-bottom: 15px;
-  color: #007bff;
+  font-size: 2em;
+  margin-bottom: 6vh;
+  color: rgb(79, 9, 112);
+}
+.flight-content-AD {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  position: relative;
+}
+.flight-options-container-AD {
+  display: flex;
+  gap: 3vw;
 }
