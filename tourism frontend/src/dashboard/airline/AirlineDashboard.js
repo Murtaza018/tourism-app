@@ -1,7 +1,7 @@
 import "./AirlineDashboard.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-//import { TextField } from "@mui/material";
+import { Card, TextField } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import FlightIcon from "@mui/icons-material/Flight";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -10,6 +10,14 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import CloseIcon from "@mui/icons-material/Close";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -129,7 +137,7 @@ function AirlineDashboard() {
     backgroundColor: "transparent",
     border: "2px solid black",
     color: "black",
-    fontSize: "1.2em",
+    fontSize: "1em",
     padding: "5px 10px",
     cursor: "pointer",
     transition: "transform 0.5s ease, color 0.5s ease, border-color 0.5s ease",
@@ -150,6 +158,35 @@ function AirlineDashboard() {
       borderColor: "red",
     },
   }));
+  const [openFlightCard, setOpenFlightCard] = useState(false);
+
+  const handleClickOpenFlightCard = () => {
+    setOpenFlightCard(true);
+  };
+
+  const handleCloseFlightCard = () => {
+    setOpenFlightCard(false);
+  };
+  const FlightCard = ({ open, onClose }) => {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <Button className="close-button-AD" onClick={onClose}>
+          <CloseIcon />
+        </Button>
+        <Card className="flight-card-AD">
+          <DialogTitle>Add Flight</DialogTitle>
+          <TextField
+            variant="outlined"
+            label="First Name"
+            margin="dense"
+            required
+            //fullWidth
+            defaultValue={AccountData.first_name}
+          />
+        </Card>
+      </Dialog>
+    );
+  };
   const FlightContent = () => {
     return (
       <div>
@@ -158,11 +195,22 @@ function AirlineDashboard() {
             <strong>Flights</strong>
           </h2>
           <div className="flight-options-container-AD">
-            <FlightButton variant="outlined">Add Flight</FlightButton>
-            <FlightButton variant="outlined">Edit Flight</FlightButton>
-            <FlightButton variant="outlined">Delete Flight</FlightButton>
+            <FlightButton
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={handleClickOpenFlightCard}
+            >
+              Add Flight
+            </FlightButton>
+            <FlightButton variant="outlined" startIcon={<EditIcon />}>
+              Edit Flight
+            </FlightButton>
+            <FlightButton variant="outlined" startIcon={<DeleteIcon />}>
+              Delete Flight
+            </FlightButton>
           </div>
         </div>
+        <FlightCard open={openFlightCard} onClose={handleCloseFlightCard} />
       </div>
     );
   };
