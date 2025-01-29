@@ -175,11 +175,18 @@ body.menu-open-AD {
 }
 .MuiDialog-paper {
   overflow: hidden !important;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  max-width: 90vw;
+  padding: 3vw;
 }
 .flight-card-AD {
   margin-top: 6vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 .close-button-AD {
   position: absolute !important;
@@ -195,4 +202,34 @@ body.menu-open-AD {
 .close-button-AD:hover {
   color: red !important;
   transform: scale(1.2);
+}
+.input-menu-AD {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5vh !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.input-menu-AD:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+.flight-card-div-AD {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.flight-card-heading-AD {
+  font-size: 2em;
+  margin-bottom: 6vh;
+  color: rgb(79, 9, 112);
+  text-align: center;
 }

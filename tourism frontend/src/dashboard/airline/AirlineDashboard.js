@@ -1,7 +1,14 @@
 import "./AirlineDashboard.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, TextField } from "@mui/material";
+import {
+  Card,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import FlightIcon from "@mui/icons-material/Flight";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -14,9 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Country, City } from "country-state-city";
 import CloseIcon from "@mui/icons-material/Close";
 
 function AirlineDashboard() {
@@ -159,7 +164,10 @@ function AirlineDashboard() {
     },
   }));
   const [openFlightCard, setOpenFlightCard] = useState(false);
-
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCountryName, setSelectedCountryName] = useState("");
+  const [cities, setCities] = useState([]);
   const handleClickOpenFlightCard = () => {
     setOpenFlightCard(true);
   };
@@ -167,23 +175,137 @@ function AirlineDashboard() {
   const handleCloseFlightCard = () => {
     setOpenFlightCard(false);
   };
+  const HotelCountryChange = (event) => {
+    event.preventDefault();
+    const countryIsoCode = event.target.value;
+    setSelectedCountry(countryIsoCode);
+    setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
+    setSelectedCity(""); // Reset city when the country changes
+
+    // Fetch cities for the selected country
+    if (countryIsoCode) {
+      const countryCities = City.getCitiesOfCountry(countryIsoCode);
+      setCities(countryCities);
+    } else {
+      setCities([]); // Reset cities if no country is selected
+    }
+  };
+
+  // Handle city selection
+  const HotelCityChange = (event) => {
+    event.preventDefault();
+    setSelectedCity(event.target.value);
+    console.log(selectedCountryName);
+  };
   const FlightCard = ({ open, onClose }) => {
     return (
       <Dialog open={open} onClose={onClose}>
         <Button className="close-button-AD" onClick={onClose}>
           <CloseIcon />
         </Button>
-        <Card className="flight-card-AD">
-          <DialogTitle>Add Flight</DialogTitle>
-          <TextField
-            variant="outlined"
-            label="First Name"
-            margin="dense"
-            required
-            //fullWidth
-            defaultValue={AccountData.first_name}
-          />
-        </Card>
+        <div>
+          <h1 className="flight-card-heading-AD">Add Flight</h1>
+        </div>
+        <div className="flight-card-div-AD">
+          <Card className="flight-card-AD">
+            <h3 className="flight-card-heading-AD">Departure</h3>
+            <TextField
+              variant="outlined"
+              label="First Name"
+              margin="dense"
+              required
+              fullWidth
+              defaultValue={AccountData.first_name}
+            />
+            <FormControl className="input-menu-AD">
+              <InputLabel id="country-label">Select Country</InputLabel>
+              <Select
+                labelId="country-label"
+                id="country"
+                value={selectedCountry}
+                label="Select Country"
+                fullWidth
+                onChange={HotelCountryChange}
+              >
+                <MenuItem value="">Select Country</MenuItem>
+                {Country.getAllCountries().map((country) => (
+                  <MenuItem key={country.isoCode} value={country.isoCode}>
+                    {country.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl className="input-menu-AD" disabled={!selectedCountry}>
+              <InputLabel id="city-label">Select City</InputLabel>
+
+              <Select
+                labelId="city-label"
+                id="city"
+                fullWidth
+                value={selectedCity}
+                label="Select City"
+                onChange={HotelCityChange}
+              >
+                <MenuItem value="">Select City</MenuItem>
+                {cities.map((city) => (
+                  <MenuItem key={city.name} value={city.name}>
+                    {city.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Card>
+          <Card className="flight-card-AD">
+            <h3 className="flight-card-heading-AD">Arrival</h3>
+            <TextField
+              variant="outlined"
+              label="First Name"
+              margin="dense"
+              required
+              fullWidth
+              defaultValue={AccountData.first_name}
+            />
+            <FormControl className="input-menu-AD">
+              <InputLabel id="country-label">Select Country</InputLabel>
+              <Select
+                labelId="country-label"
+                id="country"
+                value={selectedCountry}
+                label="Select Country"
+                fullWidth
+                onChange={HotelCountryChange}
+              >
+                <MenuItem value="">Select Country</MenuItem>
+                {Country.getAllCountries().map((country) => (
+                  <MenuItem key={country.isoCode} value={country.isoCode}>
+                    {country.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl className="input-menu-AD" disabled={!selectedCountry}>
+              <InputLabel id="city-label">Select City</InputLabel>
+
+              <Select
+                labelId="city-label"
+                id="city"
+                fullWidth
+                value={selectedCity}
+                label="Select City"
+                onChange={HotelCityChange}
+              >
+                <MenuItem value="">Select City</MenuItem>
+                {cities.map((city) => (
+                  <MenuItem key={city.name} value={city.name}>
+                    {city.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Card>
+        </div>
       </Dialog>
     );
   };
