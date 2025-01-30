@@ -173,63 +173,294 @@ body.menu-open-AD {
   display: flex;
   gap: 3vw;
 }
-.MuiDialog-paper {
-  overflow: hidden !important;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  width: 500px;
-  max-width: 90vw;
-  padding: 3vw;
-}
-.flight-card-AD {
-  margin-top: 6vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-.close-button-AD {
-  position: absolute !important;
-  right: 10px;
-  top: 10px;
-  min-width: 40px !important;
-  width: 40px;
-  height: 40px;
-  padding: 8px !important;
-  border-radius: 50% !important;
-  color: black !important;
-}
-.close-button-AD:hover {
-  color: red !important;
-  transform: scale(1.2);
-}
-.input-menu-AD {
+
+.dialog-container-AD {
+  background: #0f0f1e;
   width: 100%;
-  padding: 10px;
-  margin-top: 5vh !important;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  font-size: 16px;
-  color: #333;
-  cursor: pointer;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: none !important;
+  box-shadow: 0 0 40px rgba(138, 43, 226, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.input-menu-AD:focus {
-  outline: none;
-  border-color: #007bff;
-  background-color: #fff;
+.dialog-container-AD::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background: linear-gradient(45deg, #4f0fb8, #6a11cb, #2575fc, #4f0fb8);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderRotate 4s linear infinite;
+  border-radius: 15px;
+}
+
+@keyframes borderRotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.dialog-content-wrapper-AD {
+  background: #0f0f1e;
+  flex: 1;
+  border-radius: 13px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-header-AD {
+  padding: 3vh;
+  background: #13132b;
+  border-bottom: 1px solid #2a2a4a;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.close-button-AD {
+  position: absolute !important;
+  top: 20px;
+  right: 20px;
+  width: 40px !important;
+  height: 40px !important;
+  border: 2px solid #4a00e0 !important;
+  background: transparent !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.close-button-AD:hover {
+  background: #4a00e0 !important;
+  transform: rotate(180deg);
+}
+
+.close-icon-AD {
+  color: #4a00e0;
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+.close-button-AD:hover .close-icon-AD {
+  color: #fff;
+}
+
+.flight-card-heading-AD {
+  color: #fff;
+  text-align: center;
+  font-size: 2.5em;
+  font-weight: 800;
+  margin: 15px 0 35px;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.flight-card-heading-AD::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #4a00e0, #8e2de2);
 }
 
 .flight-card-div-AD {
   display: flex;
-  flex-direction: row;
-  gap: 20px;
+  gap: 15px;
+  padding: 20px 15px;
+  perspective: 1000px;
+  overflow-y: auto;
+  flex: 1;
 }
 
-.flight-card-heading-AD {
-  font-size: 2em;
-  margin-bottom: 6vh;
-  color: rgb(79, 9, 112);
-  text-align: center;
+.flight-card-AD {
+  flex: 1;
+  background: #1a1a35 !important;
+  border: 1px solid #2a2a4a !important;
+  padding: 15px !important;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: min-content;
+}
+
+.flight-card-AD:hover {
+  transform: translateZ(20px);
+}
+
+.flight-card-AD::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 40%, rgba(138, 43, 226, 0.1));
+  pointer-events: none;
+}
+
+.input-menu-AD {
+  margin: 20px 0 !important;
+  width: 100%;
+}
+
+.input-menu-AD .MuiOutlinedInput-root {
+  background: #13132b;
+  border-radius: 8px;
+  border: 1px solid #2a2a4a;
+}
+
+.input-menu-AD .MuiOutlinedInput-root:hover {
+  border-color: #4a00e0;
+}
+
+.input-menu-AD .MuiOutlinedInput-root.Mui-focused {
+  border-color: #8e2de2;
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+.input-menu-AD .MuiInputLabel-root {
+  color: #8e2de2;
+}
+
+.input-menu-AD .MuiSelect-select {
+  color: #fff;
+}
+
+.date-input-AD {
+  width: 18vw;
+  padding: 15px;
+  background: #13132b;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.date-input-AD:focus {
+  outline: none;
+  border-color: #8e2de2;
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+label {
+  color: #8e2de2;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 10px 0 5px;
+}
+
+.dialog-content-wrapper-AD::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dialog-content-wrapper-AD::-webkit-scrollbar-track {
+  background: #13132b;
+}
+
+.dialog-content-wrapper-AD::-webkit-scrollbar-thumb {
+  background: #4a00e0;
+  border-radius: 4px;
+}
+
+.dialog-content-wrapper-AD::-webkit-scrollbar-thumb:hover {
+  background: #8e2de2;
+}
+.MuiDialog-paper {
+  max-width: 68vw !important;
+  max-height: 90vh !important;
+}
+
+.add-flight-button-AD {
+  background: linear-gradient(45deg, #4f0fb8, #6a11cb) !important;
+  color: white !important;
+  padding: 12px 30px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 15px rgba(79, 15, 184, 0.2) !important;
+  border: none !important;
+  margin-top: 20px !important;
+  width: 100% !important;
+}
+
+.add-flight-button-AD::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.add-flight-button-AD:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(79, 15, 184, 0.3) !important;
+  background: linear-gradient(45deg, #6a11cb, #4f0fb8) !important;
+}
+
+.add-flight-button-AD:active {
+  transform: translateY(1px) !important;
+}
+
+.add-flight-button-AD:hover::before {
+  left: 100%;
+}
+
+.add-flight-button-AD:disabled {
+  background: #2a2a4a !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.error-message-AD {
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
+  border-left: 3px solid #ff4d4d;
+  padding: 12px 15px;
+  margin: 15px 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  animation: errorSlideIn 0.3s ease-out;
+}
+
+@keyframes errorSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

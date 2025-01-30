@@ -26,7 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
-
+  const [error, setError] = useState("");
   const [activeCard, setActiveCard] = useState(() => {
     const storedCard = localStorage.getItem("activeCard");
     if (storedCard && storedCard !== "Home") {
@@ -164,10 +164,34 @@ function AirlineDashboard() {
     },
   }));
   const [openFlightCard, setOpenFlightCard] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedCountryName, setSelectedCountryName] = useState("");
-  const [cities, setCities] = useState([]);
+  const [selectedDepartureCountry, setSelectedDepartureCountry] = useState("");
+  const [selectedArrivalCountry, setSelectedArrivalCountry] = useState("");
+  const [selectedDepartureCity, setSelectedDepartureCity] = useState("");
+  const [selectedArrivalCity, setSelectedArrivalCity] = useState("");
+  const [selectedDepartureCountryName, setSelectedDepartureCountryName] =
+    useState("");
+  const [selectedArrivalCountryName, setSelectedArrivalCountryName] =
+    useState("");
+  const [departureCities, setDepartureCities] = useState([]);
+  const [arrivalCities, setArrivalCities] = useState([]);
+  const [departureDate, setDepartureDate] = useState("");
+  const [arrivalDate, setArrivalDate] = useState("");
+  const [departureTime, setDepartureTime] = useState("");
+  const [arrivalTime, setArrivalTime] = useState("");
+
+  const handleDepartureDateChange = (event) => {
+    setDepartureDate(event.target.value);
+  };
+  const handleArrivalDateChange = (event) => {
+    setArrivalDate(event.target.value);
+  };
+
+  const handleDepartureTimeChange = (event) => {
+    setDepartureTime(event.target.value);
+  };
+  const handleArrivalTimeChange = (event) => {
+    setArrivalTime(event.target.value);
+  };
   const handleClickOpenFlightCard = () => {
     setOpenFlightCard(true);
   };
@@ -175,136 +199,201 @@ function AirlineDashboard() {
   const handleCloseFlightCard = () => {
     setOpenFlightCard(false);
   };
-  const HotelCountryChange = (event) => {
+  const DepartureCountryChange = (event) => {
     event.preventDefault();
     const countryIsoCode = event.target.value;
-    setSelectedCountry(countryIsoCode);
-    setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
-    setSelectedCity(""); // Reset city when the country changes
+    setSelectedDepartureCountry(countryIsoCode);
+    setSelectedDepartureCountryName(
+      Country.getCountryByCode(countryIsoCode).name
+    );
+    setSelectedDepartureCity(""); // Reset city when the country changes
 
     // Fetch cities for the selected country
     if (countryIsoCode) {
       const countryCities = City.getCitiesOfCountry(countryIsoCode);
-      setCities(countryCities);
+      setDepartureCities(countryCities);
     } else {
-      setCities([]); // Reset cities if no country is selected
+      setDepartureCities([]); // Reset cities if no country is selected
     }
   };
 
-  // Handle city selection
-  const HotelCityChange = (event) => {
+  const ArrivalCountryChange = (event) => {
     event.preventDefault();
-    setSelectedCity(event.target.value);
-    console.log(selectedCountryName);
+    const countryIsoCode = event.target.value;
+    setSelectedArrivalCountry(countryIsoCode);
+    setSelectedArrivalCountryName(
+      Country.getCountryByCode(countryIsoCode).name
+    );
+    setSelectedArrivalCity(""); // Reset city when the country changes
+
+    // Fetch cities for the selected country
+    if (countryIsoCode) {
+      const countryCities = City.getCitiesOfCountry(countryIsoCode);
+      setArrivalCities(countryCities);
+    } else {
+      setArrivalCities([]); // Reset cities if no country is selected
+    }
+  };
+  // Handle city selection
+  const DepartureCityChange = (event) => {
+    event.preventDefault();
+    setSelectedDepartureCity(event.target.value);
+    console.log(selectedDepartureCountryName);
+  };
+  const ArrivalCityChange = (event) => {
+    event.preventDefault();
+    setSelectedArrivalCity(event.target.value);
+    console.log(selectedArrivalCountryName);
+  };
+  const addFlight = (event) => {
+    event.preventDefault();
+    setError("Hello");
   };
   const FlightCard = ({ open, onClose }) => {
     return (
-      <Dialog open={open} onClose={onClose}>
-        <Button className="close-button-AD" onClick={onClose}>
-          <CloseIcon />
-        </Button>
-        <div>
-          <h1 className="flight-card-heading-AD">Add Flight</h1>
-        </div>
-        <div className="flight-card-div-AD">
-          <Card className="flight-card-AD">
-            <h3 className="flight-card-heading-AD">Departure</h3>
-            <TextField
-              variant="outlined"
-              label="First Name"
-              margin="dense"
-              required
-              fullWidth
-              defaultValue={AccountData.first_name}
-            />
-            <FormControl className="input-menu-AD">
-              <InputLabel id="country-label">Select Country</InputLabel>
-              <Select
-                labelId="country-label"
-                id="country"
-                value={selectedCountry}
-                label="Select Country"
-                fullWidth
-                onChange={HotelCountryChange}
-              >
-                <MenuItem value="">Select Country</MenuItem>
-                {Country.getAllCountries().map((country) => (
-                  <MenuItem key={country.isoCode} value={country.isoCode}>
-                    {country.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+      <Dialog open={open} onClose={onClose} className="dialog-container-AD">
+        <div className="dialog-content-wrapper-AD">
+          <div className="dialog-header-AD">
+            <Button className="close-button-AD" onClick={onClose}>
+              <CloseIcon className="close-icon-AD" />
+            </Button>
+            <div>
+              <h1 className="flight-card-heading-AD">Add Flight</h1>
+            </div>
+            <div className="flight-card-div-AD">
+              <Card className="flight-card-AD">
+                <h3 className="flight-card-heading-AD">Departure</h3>
+                <FormControl className="input-menu-AD">
+                  <InputLabel id="country-label">Select Country</InputLabel>
+                  <Select
+                    labelId="country-label"
+                    id="country"
+                    value={selectedDepartureCountry}
+                    label="Select Country"
+                    fullWidth
+                    onChange={DepartureCountryChange}
+                  >
+                    <MenuItem value="">Select Country</MenuItem>
+                    {Country.getAllCountries().map((country) => (
+                      <MenuItem key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-            <FormControl className="input-menu-AD" disabled={!selectedCountry}>
-              <InputLabel id="city-label">Select City</InputLabel>
+                <FormControl
+                  className="input-menu-AD"
+                  disabled={!selectedDepartureCountry}
+                >
+                  <InputLabel id="city-label">Select City</InputLabel>
 
-              <Select
-                labelId="city-label"
-                id="city"
-                fullWidth
-                value={selectedCity}
-                label="Select City"
-                onChange={HotelCityChange}
-              >
-                <MenuItem value="">Select City</MenuItem>
-                {cities.map((city) => (
-                  <MenuItem key={city.name} value={city.name}>
-                    {city.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Card>
-          <Card className="flight-card-AD">
-            <h3 className="flight-card-heading-AD">Arrival</h3>
-            <TextField
-              variant="outlined"
-              label="First Name"
-              margin="dense"
-              required
-              fullWidth
-              defaultValue={AccountData.first_name}
-            />
-            <FormControl className="input-menu-AD">
-              <InputLabel id="country-label">Select Country</InputLabel>
-              <Select
-                labelId="country-label"
-                id="country"
-                value={selectedCountry}
-                label="Select Country"
-                fullWidth
-                onChange={HotelCountryChange}
-              >
-                <MenuItem value="">Select Country</MenuItem>
-                {Country.getAllCountries().map((country) => (
-                  <MenuItem key={country.isoCode} value={country.isoCode}>
-                    {country.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                  <Select
+                    labelId="city-label"
+                    id="city"
+                    fullWidth
+                    value={selectedDepartureCity}
+                    label="Select City"
+                    onChange={DepartureCityChange}
+                  >
+                    <MenuItem value="">Select City</MenuItem>
+                    {departureCities.map((city) => (
+                      <MenuItem key={city.name} value={city.name}>
+                        {city.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <label htmlFor="date">Date:</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={departureDate}
+                  className="date-input-AD"
+                  onChange={handleDepartureDateChange}
+                />
 
-            <FormControl className="input-menu-AD" disabled={!selectedCountry}>
-              <InputLabel id="city-label">Select City</InputLabel>
+                <label htmlFor="time">Time(UTC):</label>
+                <input
+                  type="time"
+                  id="time"
+                  className="date-input-AD"
+                  name="time"
+                  value={departureTime}
+                  onChange={handleDepartureTimeChange}
+                />
+              </Card>
+              <Card className="flight-card-AD">
+                <h3 className="flight-card-heading-AD">Arrival</h3>
 
-              <Select
-                labelId="city-label"
-                id="city"
-                fullWidth
-                value={selectedCity}
-                label="Select City"
-                onChange={HotelCityChange}
-              >
-                <MenuItem value="">Select City</MenuItem>
-                {cities.map((city) => (
-                  <MenuItem key={city.name} value={city.name}>
-                    {city.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Card>
+                <FormControl className="input-menu-AD">
+                  <InputLabel id="country-label">Select Country</InputLabel>
+                  <Select
+                    labelId="country-label"
+                    id="country"
+                    value={selectedArrivalCountry}
+                    label="Select Country"
+                    fullWidth
+                    onChange={ArrivalCountryChange}
+                  >
+                    <MenuItem value="">Select Country</MenuItem>
+                    {Country.getAllCountries().map((country) => (
+                      <MenuItem key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl
+                  className="input-menu-AD"
+                  disabled={!selectedArrivalCountry}
+                >
+                  <InputLabel id="city-label">Select City</InputLabel>
+
+                  <Select
+                    labelId="city-label"
+                    id="city"
+                    fullWidth
+                    value={selectedArrivalCity}
+                    label="Select City"
+                    onChange={ArrivalCityChange}
+                  >
+                    <MenuItem value="">Select City</MenuItem>
+                    {arrivalCities.map((city) => (
+                      <MenuItem key={city.name} value={city.name}>
+                        {city.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <label htmlFor="date">Date:</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  className="date-input-AD"
+                  value={arrivalDate}
+                  onChange={handleArrivalDateChange}
+                />
+
+                <label htmlFor="time">Time(UTC):</label>
+                <input
+                  type="time"
+                  id="time"
+                  className="date-input-AD"
+                  name="time"
+                  value={arrivalTime}
+                  onChange={handleArrivalTimeChange}
+                />
+              </Card>
+            </div>
+            {error && <p className="error-message-AD">{error}</p>}
+            <Button className="add-flight-button-AD" onClick={addFlight}>
+              Submit
+            </Button>
+          </div>
         </div>
       </Dialog>
     );
