@@ -48,6 +48,13 @@ function AirlineDashboard() {
   });
 
   useEffect(() => {
+    if (activeCard === "RoomUpdates") {
+      getFlightData();
+    } // else if (activeCard === "ReservationUpdates") {
+    //   getReservationData();
+    // }
+  }, [activeCard]);
+  useEffect(() => {
     fetch("http://localhost:8008/Tourism/UserDataRetreival", {
       method: "POST",
       headers: {
@@ -257,7 +264,37 @@ function AirlineDashboard() {
     setSelectedArrivalCity(event.target.value);
     console.log(selectedArrivalCountryName);
   };
-  const addFlightData = () => {};
+  const addFlightData = () => {
+    fetch("http://localhost:8008/Tourism/InsertFlight", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: localStorage.getItem("email"),
+        departureDate,
+        departureTime,
+        selectedDepartureCity,
+        selectedArrivalCountryName,
+        arrivalDate,
+        arrivalTime,
+        selectedArrivalCity,
+        selectedDepartureCountryName,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Flight added!");
+          window.location.reload();
+        } else {
+          console.log("Flight not added!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const addFlight = (event) => {
     event.preventDefault();
     if (selectedDepartureCountry === "") {
@@ -299,6 +336,27 @@ function AirlineDashboard() {
     }
     setError("");
     addFlightData();
+  };
+  const [displayFlightData, setDisplayFlightData] = useState([]);
+  const getFlightData = async () => {
+    fetch("http://localhost:8008/Tourism/getFlightData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          setDisplayFlightData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   const FlightCard = ({ open, onClose }) => {
     return (
@@ -461,6 +519,8 @@ function AirlineDashboard() {
       </Dialog>
     );
   };
+  const [editboxes, setEditboxes] = useState(false);
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
   const FlightContent = () => {
     return (
       <div>
@@ -482,6 +542,147 @@ function AirlineDashboard() {
             <FlightButton variant="outlined" startIcon={<DeleteIcon />}>
               Delete Flight
             </FlightButton>
+          </div>
+          <div className="table-container-HD">
+            {displayFlightData.length > 0 ? (
+              <div>
+                <table className="room-table-HD">
+                  <thead className="table-head-HD">
+                    <tr>
+                      {showCheckboxes && (
+                        <th className="table-header-HD">Select</th>
+                      )}
+                      <th className="table-header-HD">Departure Country</th>
+                      <th className="table-header-HD">Departure City</th>
+                      <th className="table-header-HD">Departure Date</th>
+                      <th className="table-header-HD">Departure Time</th>
+                      <th className="table-header-HD">Arrival Country</th>
+                      <th className="table-header-HD">Arrival City</th>
+                      <th className="table-header-HD">Arrival Date</th>
+                      <th className="table-header-HD">Arrival Time</th>
+                      {editboxes && <th className="table-header-HD">Edit</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="table-body-HD">
+                    {displayFlightData.map((room) => (
+                      <tr key={room.room_id} className="table-row-HD">
+                        {showCheckboxes && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRooms.includes(room.room_id)}
+                              onChange={() =>
+                                handleCheckboxChange(room.room_id)
+                              }
+                            />
+                          </td>
+                        )}
+                        {editingRoomId === room.room_id ? ( // Edit mode
+                          <>
+                            <td>
+                              <select
+                                className="select-editroom-HD"
+                                value={editedRoomData.type}
+                                onChange={(e) => handleInputChange(e, "type")}
+                              >
+                                {roomType.map((option) => (
+                                  <option
+                                    className="select-menu-option-HD"
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <input
+                                className="input-editroom-HD"
+                                type="number"
+                                value={editedRoomData.price}
+                                onChange={(e) => handleInputChange(e, "price")}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                className="input-editroom-HD"
+                                type="number"
+                                value={editedRoomData.quantity}
+                                onChange={(e) =>
+                                  handleInputChange(e, "quantity")
+                                }
+                              />
+                            </td>
+                            <td>
+                              <select
+                                className="select-editroom-HD"
+                                value={editedRoomData.status}
+                                onChange={(e) => handleInputChange(e, "status")}
+                              >
+                                {statusType.map((option) => (
+                                  <option
+                                    className="select-menu-option-HD"
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <div className="button-group-HD">
+                                <button
+                                  className="save-button-HD"
+                                  onClick={() => handleSaveClick(room.room_id)}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="cancel-button-HD"
+                                  onClick={handleCancelClick}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="table-cell-HD">{room.type}</td>
+                            <td className="table-cell-HD">{room.price}</td>
+                            <td className="table-cell-HD">{room.quantity}</td>
+                            <td className="table-cell-HD">{room.status}</td>
+                            {editboxes && (
+                              <td>
+                                <button
+                                  className="edit-button-HD"
+                                  onClick={() => handleEditClick(room)}
+                                >
+                                  Edit
+                                </button>
+                              </td>
+                            )}
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {showCheckboxes && (
+                  <button
+                    className="delete-selected-HD"
+                    onClick={handleDeleteSelectedRooms}
+                  >
+                    Delete Selected Rooms
+                  </button>
+                )}
+                {error && <p className="error-message-HD">{error}</p>}
+              </div>
+            ) : (
+              <p className="no-data-message-HD">No data available.</p>
+            )}
           </div>
         </div>
         <FlightCard open={openFlightCard} onClose={handleCloseFlightCard} />

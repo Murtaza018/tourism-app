@@ -2,6 +2,7 @@ const userController = require("./controller/UserController.js");
 const roomController = require("./controller/RoomController.js");
 const reservationController = require("./controller/ReservationController.js");
 const accountStatusController = require("./controller/StatusController.js");
+const flightController = require("./controller/FlightController.js");
 const express = require("express");
 const router = express.Router();
 
@@ -38,5 +39,7 @@ router.post(
   "/UpdateAccountStatus",
   accountStatusController.UpdateAccountStatus
 );
+
+router.post("/InsertFlight", flightController.insertFlight);
 
 module.exports = router;
