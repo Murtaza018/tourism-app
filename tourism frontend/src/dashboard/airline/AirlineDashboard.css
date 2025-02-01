@@ -261,13 +261,17 @@ body.menu-open-AD {
 .flight-card-heading-AD {
   color: #fff;
   text-align: center;
-  font-size: 2.5em;
   font-weight: 800;
   margin: 15px 0 35px;
   position: relative;
   text-transform: uppercase;
 }
-
+.flight-card-heading-AD h3 {
+  font-size: 1.5em;
+}
+.flight-card-heading-AD h5 {
+  font-size: 1em;
+}
 .flight-card-heading-AD::after {
   content: "";
   position: absolute;
@@ -300,7 +304,7 @@ body.menu-open-AD {
 }
 
 .flight-card-AD:hover {
-  transform: translateZ(20px);
+  transform: translateY(-2px);
 }
 
 .flight-card-AD::before {
@@ -312,7 +316,7 @@ body.menu-open-AD {
 }
 
 .input-menu-AD {
-  margin: 20px 0 !important;
+  margin: 10px 0 !important;
   width: 100%;
 }
 
@@ -333,6 +337,8 @@ body.menu-open-AD {
 
 .input-menu-AD .MuiInputLabel-root {
   color: #8e2de2;
+  padding: 1px;
+  line-height: 0.7em;
 }
 
 .input-menu-AD .MuiSelect-select {
@@ -341,7 +347,7 @@ body.menu-open-AD {
 
 .date-input-AD {
   width: 18vw;
-  padding: 15px;
+  padding: 10px;
   background: #13132b;
   border: 1px solid #2a2a4a;
   border-radius: 8px;

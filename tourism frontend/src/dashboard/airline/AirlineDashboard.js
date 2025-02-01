@@ -201,6 +201,9 @@ function AirlineDashboard() {
   };
   const DepartureCountryChange = (event) => {
     event.preventDefault();
+    if (event.target.value === "") {
+      return;
+    }
     const countryIsoCode = event.target.value;
     setSelectedDepartureCountry(countryIsoCode);
     setSelectedDepartureCountryName(
@@ -219,6 +222,9 @@ function AirlineDashboard() {
 
   const ArrivalCountryChange = (event) => {
     event.preventDefault();
+    if (event.target.value === "") {
+      return;
+    }
     const countryIsoCode = event.target.value;
     setSelectedArrivalCountry(countryIsoCode);
     setSelectedArrivalCountryName(
@@ -237,17 +243,62 @@ function AirlineDashboard() {
   // Handle city selection
   const DepartureCityChange = (event) => {
     event.preventDefault();
+    if (event.target.value === "") {
+      return;
+    }
     setSelectedDepartureCity(event.target.value);
     console.log(selectedDepartureCountryName);
   };
   const ArrivalCityChange = (event) => {
     event.preventDefault();
+    if (event.target.value === "") {
+      return;
+    }
     setSelectedArrivalCity(event.target.value);
     console.log(selectedArrivalCountryName);
   };
+  const addFlightData = () => {};
   const addFlight = (event) => {
     event.preventDefault();
-    setError("Hello");
+    if (selectedDepartureCountry === "") {
+      setError("Select a valid departure country!");
+      return;
+    }
+    if (selectedDepartureCity === "") {
+      setError("Select a valid departure city!");
+      return;
+    }
+    if (departureDate === "") {
+      setError("Select a valid date!");
+      return;
+    }
+    if (departureTime === "") {
+      setError("Select a valid time!");
+      return;
+    }
+    if (selectedArrivalCountry === "") {
+      setError("Select a valid arrival country!");
+      return;
+    }
+    if (selectedArrivalCity === "") {
+      setError("Select a valid arrival city!");
+      return;
+    }
+
+    if (arrivalDate === "") {
+      setError("Select a valid date!");
+      return;
+    }
+    if (arrivalTime === "") {
+      setError("Select a valid time!");
+      return;
+    }
+    if (arrivalDate < departureDate) {
+      setError("Arrival Date can not be before departure date!");
+      return;
+    }
+    setError("");
+    addFlightData();
   };
   const FlightCard = ({ open, onClose }) => {
     return (
@@ -258,16 +309,18 @@ function AirlineDashboard() {
               <CloseIcon className="close-icon-AD" />
             </Button>
             <div>
-              <h1 className="flight-card-heading-AD">Add Flight</h1>
+              <h3 className="flight-card-heading-AD">Add Flight</h3>
             </div>
             <div className="flight-card-div-AD">
               <Card className="flight-card-AD">
-                <h3 className="flight-card-heading-AD">Departure</h3>
+                <h5 className="flight-card-heading-AD">Departure</h5>
                 <FormControl className="input-menu-AD">
                   <InputLabel id="country-label">Select Country</InputLabel>
                   <Select
+                    required
                     labelId="country-label"
                     id="country"
+                    size="small"
                     value={selectedDepartureCountry}
                     label="Select Country"
                     fullWidth
@@ -289,11 +342,13 @@ function AirlineDashboard() {
                   <InputLabel id="city-label">Select City</InputLabel>
 
                   <Select
+                    required
                     labelId="city-label"
                     id="city"
                     fullWidth
                     value={selectedDepartureCity}
                     label="Select City"
+                    size="small"
                     onChange={DepartureCityChange}
                   >
                     <MenuItem value="">Select City</MenuItem>
@@ -306,6 +361,7 @@ function AirlineDashboard() {
                 </FormControl>
                 <label htmlFor="date">Date:</label>
                 <input
+                  required
                   type="date"
                   id="date"
                   name="date"
@@ -316,6 +372,7 @@ function AirlineDashboard() {
 
                 <label htmlFor="time">Time(UTC):</label>
                 <input
+                  required
                   type="time"
                   id="time"
                   className="date-input-AD"
@@ -325,13 +382,15 @@ function AirlineDashboard() {
                 />
               </Card>
               <Card className="flight-card-AD">
-                <h3 className="flight-card-heading-AD">Arrival</h3>
+                <h5 className="flight-card-heading-AD">Arrival</h5>
 
                 <FormControl className="input-menu-AD">
                   <InputLabel id="country-label">Select Country</InputLabel>
                   <Select
+                    required
                     labelId="country-label"
                     id="country"
+                    size="small"
                     value={selectedArrivalCountry}
                     label="Select Country"
                     fullWidth
@@ -353,6 +412,8 @@ function AirlineDashboard() {
                   <InputLabel id="city-label">Select City</InputLabel>
 
                   <Select
+                    required
+                    size="small"
                     labelId="city-label"
                     id="city"
                     fullWidth
@@ -370,6 +431,7 @@ function AirlineDashboard() {
                 </FormControl>
                 <label htmlFor="date">Date:</label>
                 <input
+                  required
                   type="date"
                   id="date"
                   name="date"
@@ -380,6 +442,7 @@ function AirlineDashboard() {
 
                 <label htmlFor="time">Time(UTC):</label>
                 <input
+                  required
                   type="time"
                   id="time"
                   className="date-input-AD"
