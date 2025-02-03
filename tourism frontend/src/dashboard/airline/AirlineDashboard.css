@@ -174,7 +174,7 @@ body.menu-open-AD {
   gap: 3vw;
 }
 
-.dialog-container-AD {
+/* .dialog-container-AD {
   background: #0f0f1e;
   width: 100%;
   height: 100%;
@@ -366,12 +366,12 @@ body.menu-open-AD {
 }
 
 label {
-  color: #8e2de2;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 10px 0 5px;
+  color: #8e2de2 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin: 10px 0 5px !important;
 }
 
 .dialog-content-wrapper-AD::-webkit-scrollbar {
@@ -469,4 +469,117 @@ label {
     opacity: 1;
     transform: translateX(0);
   }
+} */
+
+.table-container-AD {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.flight-table-AD {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-head-AD {
+  background-color: #f2f2f2;
+}
+
+.table-header-AD,
+.table-cell-AD {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table-header-AD {
+  font-weight: bold;
+}
+
+.no-data-message-AD {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.delete-selected-AD {
+  background-color: transparent;
+  border: 1px solid black;
+  font-size: 1.2em;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 20px;
+}
+.delete-selected-AD:hover {
+  color: red;
+  border-color: red;
+  transform: scale(1.1);
+}
+
+.edit-button-AD,
+.save-button-AD,
+.cancel-button-AD {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button-AD {
+  background-color: #007bff;
+  color: white;
+}
+
+.save-button-AD {
+  background-color: #28a745;
+  color: white;
+}
+
+.cancel-button-AD {
+  background-color: #dc3545;
+  color: white;
+}
+
+.edit-button-AD:hover {
+  background-color: #0056b3;
+}
+
+.save-button-AD:hover {
+  background-color: #1e7e34;
+}
+
+.cancel-button-AD:hover {
+  background-color: #bd2130;
+}
+
+.select-editflight-AD {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0;
+}
+
+.input-editflight-AD {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 80px;
+  box-sizing: border-box;
+  margin: 4px 0;
+}
+
+.button-group-AD {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
 }

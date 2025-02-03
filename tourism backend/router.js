@@ -41,5 +41,8 @@ router.post(
 );
 
 router.post("/InsertFlight", flightController.insertFlight);
+router.post("/getFlightData", flightController.getFlightData);
+router.post("/updateFlight", flightController.UpdateFlight);
+router.post("/DeleteFlight", flightController.DeleteFlight);
 
 module.exports = router;

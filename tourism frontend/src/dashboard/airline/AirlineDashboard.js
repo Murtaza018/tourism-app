@@ -48,7 +48,7 @@ function AirlineDashboard() {
   });
 
   useEffect(() => {
-    if (activeCard === "RoomUpdates") {
+    if (activeCard === "FlightUpdates") {
       getFlightData();
     } // else if (activeCard === "ReservationUpdates") {
     //   getReservationData();
@@ -185,6 +185,8 @@ function AirlineDashboard() {
   const [arrivalDate, setArrivalDate] = useState("");
   const [departureTime, setDepartureTime] = useState("");
   const [arrivalTime, setArrivalTime] = useState("");
+  const [seatsAvailable, setSeatsAvailable] = useState("");
+  const [flightName, setFlightName] = useState("");
 
   const handleDepartureDateChange = (event) => {
     setDepartureDate(event.target.value);
@@ -198,6 +200,12 @@ function AirlineDashboard() {
   };
   const handleArrivalTimeChange = (event) => {
     setArrivalTime(event.target.value);
+  };
+  const handleFlightNameChange = (event) => {
+    setFlightName(event.target.value);
+  };
+  const handleSeatsAvailableChange = (event) => {
+    setSeatsAvailable(event.target.value);
   };
   const handleClickOpenFlightCard = () => {
     setOpenFlightCard(true);
@@ -280,6 +288,8 @@ function AirlineDashboard() {
         arrivalTime,
         selectedArrivalCity,
         selectedDepartureCountryName,
+        seatsAvailable,
+        flightName,
       }),
     })
       .then((response) => response.json())
@@ -334,6 +344,12 @@ function AirlineDashboard() {
       setError("Arrival Date can not be before departure date!");
       return;
     }
+    if (seatsAvailable < 1) {
+      setError("Select a valid seat avaialble!");
+    }
+    if (flightName === "") {
+      setError("Select a valid name!");
+    }
     setError("");
     addFlightData();
   };
@@ -368,6 +384,24 @@ function AirlineDashboard() {
             </Button>
             <div>
               <h3 className="flight-card-heading-AD">Add Flight</h3>
+            </div>
+            <div className="flight-card-top-div-AD">
+              <TextField
+                type="text"
+                className="seats-input-AD"
+                label="Flight Name"
+                value={flightName}
+                onChange={handleFlightNameChange}
+              >
+                Flight Name
+              </TextField>
+              <TextField
+                type="number"
+                className="seats-input-AD"
+                label="Available Seats"
+                value={seatsAvailable}
+                onChange={handleSeatsAvailableChange}
+              ></TextField>
             </div>
             <div className="flight-card-div-AD">
               <Card className="flight-card-AD">
@@ -519,8 +553,132 @@ function AirlineDashboard() {
       </Dialog>
     );
   };
+  const DeleteFlights = async (SF) => {
+    console.log(SF);
+    fetch("http://localhost:8008/Tourism/DeleteFlight", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(SF),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Flight Deleted");
+          window.location.reload();
+        } else {
+          console.log("Flight not deleted!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleDeleteSelectedFlights = () => {
+    if (selectedFlights.length === 0) {
+      alert("Please select flights to delete.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the selected flights?"
+    );
+    if (confirmDelete) {
+      DeleteFlights(selectedFlights); // Call the onDeleteRooms function passed as a prop
+      setShowCheckboxes(false); // Hide checkboxes after deletion
+      setSelectedFlights([]); // Clear selected rooms
+    }
+  };
+  const updateFlight = () => {
+    console.log(editedFlightData);
+    fetch("http://localhost:8008/Tourism/updateFlight", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedFlightData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Flight Edited");
+        } else {
+          console.log("Flight not edited!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleEditClick = (flight) => {
+    setEditingFlightId(flight.flight_id);
+    setEditedFlightData({ ...flight }); // Initialize edited data with current room data
+  };
+
+  const handleSaveClick = () => {
+    if (editedFlightData.departure_date === "") {
+      setError("Please select a departure date!");
+      return;
+    }
+    if (editedFlightData.departure_time === "") {
+      setError("Please select a departure time!");
+      return;
+    }
+    if (editedFlightData.arrival_date === "") {
+      setError("Please select a arrival date!");
+      return;
+    }
+    if (editedFlightData.arrival_time === "") {
+      setError("Please select a arrival time!");
+      return;
+    }
+
+    setError("");
+    updateFlight(editedFlightData); // Call the update function
+    setEditingFlightId(null); // Exit edit mode
+    window.location.reload();
+  };
+
+  const handleCancelClick = () => {
+    setEditingFlightId(null); // Exit edit mode without saving changes
+  };
+  const handleToggleCheckboxes = () => {
+    setShowCheckboxes(!showCheckboxes);
+    setSelectedFlights([]);
+    if (editboxes) {
+      setEditboxes(false);
+    }
+  };
+  const toggleEditButton = () => {
+    setEditboxes(!editboxes);
+    if (editingFlightId) {
+      setEditingFlightId(null);
+    }
+    if (showCheckboxes) {
+      setShowCheckboxes(false);
+    }
+  };
   const [editboxes, setEditboxes] = useState(false);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
+  const [selectedFlights, setSelectedFlights] = useState([]);
+  const [editingFlightId, setEditingFlightId] = useState(null);
+  const [editedFlightData, setEditedFlightData] = useState({});
+  const handleInputChange = (event, field) => {
+    setEditedFlightData((prevData) => ({
+      ...prevData,
+      [field]: event.target.value,
+    }));
+  };
+  const handleCheckboxChange = (flightId) => {
+    setSelectedFlights((prevSelectedFlights) => {
+      if (prevSelectedFlights.includes(flightId)) {
+        return prevSelectedFlights.filter((id) => id !== flightId);
+      } else {
+        return [...prevSelectedFlights, flightId];
+      }
+    });
+  };
   const FlightContent = () => {
     return (
       <div>
@@ -536,111 +694,132 @@ function AirlineDashboard() {
             >
               Add Flight
             </FlightButton>
-            <FlightButton variant="outlined" startIcon={<EditIcon />}>
-              Edit Flight
+            <FlightButton
+              startIcon={<EditIcon />}
+              className="flight-option-AD"
+              onClick={toggleEditButton}
+            >
+              {editboxes ? "Cancel Edit" : "Edit Flight"}
             </FlightButton>
-            <FlightButton variant="outlined" startIcon={<DeleteIcon />}>
-              Delete Flight
+            <FlightButton
+              variant="outlined"
+              startIcon={<DeleteIcon />}
+              className="flight-option-AD"
+              onClick={handleToggleCheckboxes}
+            >
+              {showCheckboxes ? "Cancel Delete" : "Delete Flight"}
             </FlightButton>
           </div>
-          <div className="table-container-HD">
+          <div className="table-container-AD">
             {displayFlightData.length > 0 ? (
               <div>
-                <table className="room-table-HD">
-                  <thead className="table-head-HD">
+                <table className="flight-table-AD">
+                  <thead className="table-head-AD">
                     <tr>
                       {showCheckboxes && (
-                        <th className="table-header-HD">Select</th>
+                        <th className="table-header-AD">Select</th>
                       )}
-                      <th className="table-header-HD">Departure Country</th>
-                      <th className="table-header-HD">Departure City</th>
-                      <th className="table-header-HD">Departure Date</th>
-                      <th className="table-header-HD">Departure Time</th>
-                      <th className="table-header-HD">Arrival Country</th>
-                      <th className="table-header-HD">Arrival City</th>
-                      <th className="table-header-HD">Arrival Date</th>
-                      <th className="table-header-HD">Arrival Time</th>
-                      {editboxes && <th className="table-header-HD">Edit</th>}
+                      <th className="table-header-AD">Departure Country</th>
+                      <th className="table-header-AD">Departure City</th>
+                      <th className="table-header-AD">
+                        Departure Date(YYYY-MM-DD)
+                      </th>
+                      <th className="table-header-AD">
+                        Departure Time(Local Time)
+                      </th>
+                      <th className="table-header-AD">Arrival Country</th>
+                      <th className="table-header-AD">Arrival City</th>
+                      <th className="table-header-AD">
+                        Arrival Date(YYYY-MM-DD)
+                      </th>
+                      <th className="table-header-AD">
+                        Arrival Time(Local Time)
+                      </th>
+                      {editboxes && <th className="table-header-AD">Edit</th>}
                     </tr>
                   </thead>
-                  <tbody className="table-body-HD">
-                    {displayFlightData.map((room) => (
-                      <tr key={room.room_id} className="table-row-HD">
+                  <tbody className="table-body-AD">
+                    {displayFlightData.map((flight) => (
+                      <tr key={flight.flight_id} className="table-row-AD">
                         {showCheckboxes && (
                           <td>
                             <input
                               type="checkbox"
-                              checked={selectedRooms.includes(room.room_id)}
+                              checked={selectedFlights.includes(
+                                flight.flight_id
+                              )}
                               onChange={() =>
-                                handleCheckboxChange(room.room_id)
+                                handleCheckboxChange(flight.flight_id)
                               }
                             />
                           </td>
                         )}
-                        {editingRoomId === room.room_id ? ( // Edit mode
+                        {editingFlightId === flight.flight_id ? ( // Edit mode
                           <>
-                            <td>
-                              <select
-                                className="select-editroom-HD"
-                                value={editedRoomData.type}
-                                onChange={(e) => handleInputChange(e, "type")}
-                              >
-                                {roomType.map((option) => (
-                                  <option
-                                    className="select-menu-option-HD"
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </select>
+                            <td className="table-cell-AD">
+                              {flight.departure_country}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.departure_city}
                             </td>
                             <td>
                               <input
-                                className="input-editroom-HD"
-                                type="number"
-                                value={editedRoomData.price}
-                                onChange={(e) => handleInputChange(e, "price")}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                className="input-editroom-HD"
-                                type="number"
-                                value={editedRoomData.quantity}
+                                className="input-editflight-AD"
+                                type="date"
+                                value={editedFlightData.departure_date}
                                 onChange={(e) =>
-                                  handleInputChange(e, "quantity")
+                                  handleInputChange(e, "departure_date")
                                 }
                               />
                             </td>
                             <td>
-                              <select
-                                className="select-editroom-HD"
-                                value={editedRoomData.status}
-                                onChange={(e) => handleInputChange(e, "status")}
-                              >
-                                {statusType.map((option) => (
-                                  <option
-                                    className="select-menu-option-HD"
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </select>
+                              <input
+                                className="input-editflight-AD"
+                                type="time"
+                                value={editedFlightData.departure_time}
+                                onChange={(e) =>
+                                  handleInputChange(e, "departure_time")
+                                }
+                              />
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_country}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_city}
                             </td>
                             <td>
-                              <div className="button-group-HD">
+                              <input
+                                className="input-editflight-AD"
+                                type="date"
+                                value={editedFlightData.arrival_date}
+                                onChange={(e) =>
+                                  handleInputChange(e, "arrival_date")
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                className="input-editflight-AD"
+                                type="time"
+                                value={editedFlightData.arrival_time}
+                                onChange={(e) =>
+                                  handleInputChange(e, "arrival_time")
+                                }
+                              />
+                            </td>
+                            <td>
+                              <div className="button-group-AD">
                                 <button
-                                  className="save-button-HD"
-                                  onClick={() => handleSaveClick(room.room_id)}
+                                  className="save-button-AD"
+                                  onClick={() =>
+                                    handleSaveClick(flight.flight_id)
+                                  }
                                 >
                                   Save
                                 </button>
                                 <button
-                                  className="cancel-button-HD"
+                                  className="cancel-button-AD"
                                   onClick={handleCancelClick}
                                 >
                                   Cancel
@@ -650,15 +829,35 @@ function AirlineDashboard() {
                           </>
                         ) : (
                           <>
-                            <td className="table-cell-HD">{room.type}</td>
-                            <td className="table-cell-HD">{room.price}</td>
-                            <td className="table-cell-HD">{room.quantity}</td>
-                            <td className="table-cell-HD">{room.status}</td>
+                            <td className="table-cell-AD">
+                              {flight.departure_country}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.departure_city}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.departure_date}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.departure_time}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_country}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_city}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_date}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.arrival_time}
+                            </td>
                             {editboxes && (
                               <td>
                                 <button
-                                  className="edit-button-HD"
-                                  onClick={() => handleEditClick(room)}
+                                  className="edit-button-AD"
+                                  onClick={() => handleEditClick(flight)}
                                 >
                                   Edit
                                 </button>
@@ -672,16 +871,16 @@ function AirlineDashboard() {
                 </table>
                 {showCheckboxes && (
                   <button
-                    className="delete-selected-HD"
-                    onClick={handleDeleteSelectedRooms}
+                    className="delete-selected-AD"
+                    onClick={handleDeleteSelectedFlights}
                   >
-                    Delete Selected Rooms
+                    Delete Selected Flights
                   </button>
                 )}
-                {error && <p className="error-message-HD">{error}</p>}
+                {error && <p className="error-message-AD">{error}</p>}
               </div>
             ) : (
-              <p className="no-data-message-HD">No data available.</p>
+              <p className="no-data-message-AD">No data available.</p>
             )}
           </div>
         </div>
