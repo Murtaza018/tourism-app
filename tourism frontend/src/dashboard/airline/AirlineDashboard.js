@@ -1,5 +1,5 @@
 import "./AirlineDashboard.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -171,108 +171,32 @@ function AirlineDashboard() {
     },
   }));
   const [openFlightCard, setOpenFlightCard] = useState(false);
-  const [selectedDepartureCountry, setSelectedDepartureCountry] = useState("");
-  const [selectedArrivalCountry, setSelectedArrivalCountry] = useState("");
-  const [selectedDepartureCity, setSelectedDepartureCity] = useState("");
-  const [selectedArrivalCity, setSelectedArrivalCity] = useState("");
-  const [selectedDepartureCountryName, setSelectedDepartureCountryName] =
-    useState("");
-  const [selectedArrivalCountryName, setSelectedArrivalCountryName] =
-    useState("");
-  const [departureCities, setDepartureCities] = useState([]);
-  const [arrivalCities, setArrivalCities] = useState([]);
-  const [departureDate, setDepartureDate] = useState("");
-  const [arrivalDate, setArrivalDate] = useState("");
-  const [departureTime, setDepartureTime] = useState("");
-  const [arrivalTime, setArrivalTime] = useState("");
-  const [seatsAvailable, setSeatsAvailable] = useState("");
-  const [flightName, setFlightName] = useState("");
 
-  const handleDepartureDateChange = (event) => {
-    setDepartureDate(event.target.value);
-  };
-  const handleArrivalDateChange = (event) => {
-    setArrivalDate(event.target.value);
-  };
-
-  const handleDepartureTimeChange = (event) => {
-    setDepartureTime(event.target.value);
-  };
-  const handleArrivalTimeChange = (event) => {
-    setArrivalTime(event.target.value);
-  };
-  const handleFlightNameChange = (event) => {
-    setFlightName(event.target.value);
-  };
-  const handleSeatsAvailableChange = (event) => {
-    setSeatsAvailable(event.target.value);
-  };
   const handleClickOpenFlightCard = () => {
+    console.log("123");
     setOpenFlightCard(true);
   };
 
   const handleCloseFlightCard = () => {
+    // Use useCallback
+    console.log("456");
     setOpenFlightCard(false);
   };
-  const DepartureCountryChange = (event) => {
-    event.preventDefault();
-    if (event.target.value === "") {
-      return;
-    }
-    const countryIsoCode = event.target.value;
-    setSelectedDepartureCountry(countryIsoCode);
-    setSelectedDepartureCountryName(
-      Country.getCountryByCode(countryIsoCode).name
-    );
-    setSelectedDepartureCity(""); // Reset city when the country changes
 
-    // Fetch cities for the selected country
-    if (countryIsoCode) {
-      const countryCities = City.getCitiesOfCountry(countryIsoCode);
-      setDepartureCities(countryCities);
-    } else {
-      setDepartureCities([]); // Reset cities if no country is selected
-    }
-  };
-
-  const ArrivalCountryChange = (event) => {
-    event.preventDefault();
-    if (event.target.value === "") {
-      return;
-    }
-    const countryIsoCode = event.target.value;
-    setSelectedArrivalCountry(countryIsoCode);
-    setSelectedArrivalCountryName(
-      Country.getCountryByCode(countryIsoCode).name
-    );
-    setSelectedArrivalCity(""); // Reset city when the country changes
-
-    // Fetch cities for the selected country
-    if (countryIsoCode) {
-      const countryCities = City.getCitiesOfCountry(countryIsoCode);
-      setArrivalCities(countryCities);
-    } else {
-      setArrivalCities([]); // Reset cities if no country is selected
-    }
-  };
-  // Handle city selection
-  const DepartureCityChange = (event) => {
-    event.preventDefault();
-    if (event.target.value === "") {
-      return;
-    }
-    setSelectedDepartureCity(event.target.value);
-    console.log(selectedDepartureCountryName);
-  };
-  const ArrivalCityChange = (event) => {
-    event.preventDefault();
-    if (event.target.value === "") {
-      return;
-    }
-    setSelectedArrivalCity(event.target.value);
-    console.log(selectedArrivalCountryName);
-  };
-  const addFlightData = () => {
+  const addFlightData = (
+    flightName,
+    seatsAvailable,
+    seatType,
+    price,
+    selectedArrivalCity,
+    selectedArrivalCountryName,
+    selectedDepartureCity,
+    selectedDepartureCountryName,
+    departureDate,
+    departureTime,
+    arrivalDate,
+    arrivalTime
+  ) => {
     fetch("http://localhost:8008/Tourism/InsertFlight", {
       method: "POST",
       headers: {
@@ -290,6 +214,8 @@ function AirlineDashboard() {
         selectedDepartureCountryName,
         seatsAvailable,
         flightName,
+        seatType,
+        price,
       }),
     })
       .then((response) => response.json())
@@ -305,9 +231,23 @@ function AirlineDashboard() {
         console.log(err);
       });
   };
-  const addFlight = (event) => {
+  const addFlight = (
+    event,
+    flightName,
+    seatsAvailable,
+    seatType,
+    price,
+    selectedArrivalCity,
+    selectedArrivalCountryName,
+    selectedDepartureCity,
+    selectedDepartureCountryName,
+    departureDate,
+    departureTime,
+    arrivalDate,
+    arrivalTime
+  ) => {
     event.preventDefault();
-    if (selectedDepartureCountry === "") {
+    if (selectedDepartureCountryName === "") {
       setError("Select a valid departure country!");
       return;
     }
@@ -323,7 +263,7 @@ function AirlineDashboard() {
       setError("Select a valid time!");
       return;
     }
-    if (selectedArrivalCountry === "") {
+    if (selectedArrivalCountryName === "") {
       setError("Select a valid arrival country!");
       return;
     }
@@ -346,12 +286,35 @@ function AirlineDashboard() {
     }
     if (seatsAvailable < 1) {
       setError("Select a valid seat avaialble!");
+      return;
     }
     if (flightName === "") {
-      setError("Select a valid name!");
+      setError("Select a valid flight name!");
+      return;
+    }
+    if (seatType === "") {
+      setError("Select a valid type!");
+      return;
+    }
+    if (price <= 0) {
+      setError("Select a valid price!");
+      return;
     }
     setError("");
-    addFlightData();
+    addFlightData(
+      flightName,
+      seatsAvailable,
+      seatType,
+      price,
+      selectedArrivalCity,
+      selectedArrivalCountryName,
+      selectedDepartureCity,
+      selectedDepartureCountryName,
+      departureDate,
+      departureTime,
+      arrivalDate,
+      arrivalTime
+    );
   };
   const [displayFlightData, setDisplayFlightData] = useState([]);
   const getFlightData = async () => {
@@ -375,6 +338,115 @@ function AirlineDashboard() {
       });
   };
   const FlightCard = ({ open, onClose }) => {
+    const seat = [
+      { value: "Economy", label: "Economy" },
+      { value: "Premium Economy", label: "Premium Economy" },
+      { value: "Business", label: "Business" },
+      { value: "First Class", label: "First Class" },
+    ];
+    const [selectedDepartureCountry, setSelectedDepartureCountry] =
+      useState("");
+    const [selectedArrivalCountry, setSelectedArrivalCountry] = useState("");
+    const [selectedDepartureCity, setSelectedDepartureCity] = useState("");
+    const [selectedArrivalCity, setSelectedArrivalCity] = useState("");
+    const [selectedDepartureCountryName, setSelectedDepartureCountryName] =
+      useState("");
+    const [selectedArrivalCountryName, setSelectedArrivalCountryName] =
+      useState("");
+    const [departureCities, setDepartureCities] = useState([]);
+    const [arrivalCities, setArrivalCities] = useState([]);
+    const [departureDate, setDepartureDate] = useState("");
+    const [arrivalDate, setArrivalDate] = useState("");
+    const [departureTime, setDepartureTime] = useState("");
+    const [arrivalTime, setArrivalTime] = useState("");
+    const [seatsAvailable, setSeatsAvailable] = useState("");
+    const [flightName, setFlightName] = useState("");
+    const [seatType, setSeatType] = useState("");
+    const [price, setPrice] = useState("");
+
+    const handleDepartureDateChange = (event) => {
+      setDepartureDate(event.target.value);
+    };
+    const handleArrivalDateChange = (event) => {
+      setArrivalDate(event.target.value);
+    };
+    const handleSeatTypeChange = (event) => {
+      setSeatType(event.target.value);
+    };
+    const handlePriceChange = (event) => {
+      setPrice(event.target.value);
+    };
+
+    const handleDepartureTimeChange = (event) => {
+      setDepartureTime(event.target.value);
+    };
+    const handleArrivalTimeChange = (event) => {
+      setArrivalTime(event.target.value);
+    };
+    const handleFlightNameChange = (event) => {
+      setFlightName(event.target.value);
+    };
+    const handleSeatsAvailableChange = (event) => {
+      setSeatsAvailable(event.target.value);
+    };
+    const DepartureCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedDepartureCountry(countryIsoCode);
+      setSelectedDepartureCountryName(
+        Country.getCountryByCode(countryIsoCode).name
+      );
+      setSelectedDepartureCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setDepartureCities(countryCities);
+      } else {
+        setDepartureCities([]); // Reset cities if no country is selected
+      }
+    };
+
+    const ArrivalCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedArrivalCountry(countryIsoCode);
+      setSelectedArrivalCountryName(
+        Country.getCountryByCode(countryIsoCode).name
+      );
+      setSelectedArrivalCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setArrivalCities(countryCities);
+      } else {
+        setArrivalCities([]); // Reset cities if no country is selected
+      }
+    };
+    // Handle city selection
+    const DepartureCityChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      setSelectedDepartureCity(event.target.value);
+      console.log(selectedDepartureCountryName);
+    };
+    const ArrivalCityChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      setSelectedArrivalCity(event.target.value);
+      console.log(selectedArrivalCountryName);
+    };
     return (
       <Dialog open={open} onClose={onClose} className="dialog-container-AD">
         <div className="dialog-content-wrapper-AD">
@@ -402,6 +474,33 @@ function AirlineDashboard() {
                 value={seatsAvailable}
                 onChange={handleSeatsAvailableChange}
               ></TextField>
+              <FormControl className="top-div-input-menu-AD">
+                <InputLabel id="country-label">Select Seat Type</InputLabel>
+                <Select
+                  required
+                  labelId="seat-type-label"
+                  id="seat-type"
+                  size="small"
+                  value={seatType}
+                  label="Select Seat Type"
+                  fullWidth
+                  onChange={handleSeatTypeChange}
+                >
+                  <MenuItem value="">Select Seat Type</MenuItem>
+                  {seat.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                type="number"
+                className="seats-input-AD"
+                label="Price Per Seat($)"
+                value={price}
+                onChange={handlePriceChange}
+              ></TextField>
             </div>
             <div className="flight-card-div-AD">
               <Card className="flight-card-AD">
@@ -427,16 +526,14 @@ function AirlineDashboard() {
                   </Select>
                 </FormControl>
 
-                <FormControl
-                  className="input-menu-AD"
-                  disabled={!selectedDepartureCountry}
-                >
+                <FormControl className="input-menu-AD">
                   <InputLabel id="city-label">Select City</InputLabel>
 
                   <Select
                     required
                     labelId="city-label"
                     id="city"
+                    disabled={!selectedDepartureCountry}
                     fullWidth
                     value={selectedDepartureCity}
                     label="Select City"
@@ -462,7 +559,7 @@ function AirlineDashboard() {
                   onChange={handleDepartureDateChange}
                 />
 
-                <label htmlFor="time">Time(UTC):</label>
+                <label htmlFor="time">Time(Local Time):</label>
                 <input
                   required
                   type="time"
@@ -497,10 +594,7 @@ function AirlineDashboard() {
                   </Select>
                 </FormControl>
 
-                <FormControl
-                  className="input-menu-AD"
-                  disabled={!selectedArrivalCountry}
-                >
+                <FormControl className="input-menu-AD">
                   <InputLabel id="city-label">Select City</InputLabel>
 
                   <Select
@@ -509,6 +603,7 @@ function AirlineDashboard() {
                     labelId="city-label"
                     id="city"
                     fullWidth
+                    disabled={!selectedArrivalCountry}
                     value={selectedArrivalCity}
                     label="Select City"
                     onChange={ArrivalCityChange}
@@ -532,7 +627,7 @@ function AirlineDashboard() {
                   onChange={handleArrivalDateChange}
                 />
 
-                <label htmlFor="time">Time(UTC):</label>
+                <label htmlFor="time">Time(Local Time):</label>
                 <input
                   required
                   type="time"
@@ -545,7 +640,26 @@ function AirlineDashboard() {
               </Card>
             </div>
             {error && <p className="error-message-AD">{error}</p>}
-            <Button className="add-flight-button-AD" onClick={addFlight}>
+            <Button
+              className="add-flight-button-AD"
+              onClick={(e) =>
+                addFlight(
+                  e,
+                  flightName,
+                  seatsAvailable,
+                  seatType,
+                  price,
+                  selectedArrivalCity,
+                  selectedArrivalCountryName,
+                  selectedDepartureCity,
+                  selectedDepartureCountryName,
+                  departureDate,
+                  departureTime,
+                  arrivalDate,
+                  arrivalTime
+                )
+              }
+            >
               Submit
             </Button>
           </div>
@@ -633,6 +747,14 @@ function AirlineDashboard() {
       setError("Please select a arrival time!");
       return;
     }
+    if (editedFlightData.seats_available < 0) {
+      setError("Please select a valid seat amount!");
+      return;
+    }
+    if (editedFlightData.price <= 0) {
+      setError("Please select a valid price!");
+      return;
+    }
 
     setError("");
     updateFlight(editedFlightData); // Call the update function
@@ -641,6 +763,7 @@ function AirlineDashboard() {
   };
 
   const handleCancelClick = () => {
+    setError("");
     setEditingFlightId(null); // Exit edit mode without saving changes
   };
   const handleToggleCheckboxes = () => {
@@ -719,6 +842,10 @@ function AirlineDashboard() {
                       {showCheckboxes && (
                         <th className="table-header-AD">Select</th>
                       )}
+                      <th className="table-header-AD">Flight Name</th>
+                      <th className="table-header-AD">Seats Available</th>
+                      <th className="table-header-AD">Seat Type</th>
+                      <th className="table-header-AD">Price per Seat($)</th>
                       <th className="table-header-AD">Departure Country</th>
                       <th className="table-header-AD">Departure City</th>
                       <th className="table-header-AD">
@@ -756,6 +883,30 @@ function AirlineDashboard() {
                         )}
                         {editingFlightId === flight.flight_id ? ( // Edit mode
                           <>
+                            <td className="table-cell-AD">
+                              {flight.flight_name}
+                            </td>
+                            <td className="table-cell-AD">
+                              <input
+                                className="input-editflight-AD"
+                                type="number"
+                                value={editedFlightData.seats_available}
+                                onChange={(e) =>
+                                  handleInputChange(e, "seats_available")
+                                }
+                              />
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.seat_type}
+                            </td>
+                            <td className="table-cell-AD">
+                              <input
+                                className="input-editflight-AD"
+                                type="number"
+                                value={editedFlightData.price}
+                                onChange={(e) => handleInputChange(e, "price")}
+                              />
+                            </td>
                             <td className="table-cell-AD">
                               {flight.departure_country}
                             </td>
@@ -829,6 +980,16 @@ function AirlineDashboard() {
                           </>
                         ) : (
                           <>
+                            <td className="table-cell-AD">
+                              {flight.flight_name}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.seats_available}
+                            </td>
+                            <td className="table-cell-AD">
+                              {flight.seat_type}
+                            </td>
+                            <td className="table-cell-AD">{flight.price}</td>
                             <td className="table-cell-AD">
                               {flight.departure_country}
                             </td>

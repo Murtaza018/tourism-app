@@ -5,6 +5,8 @@ const FlightCheckTable = async () => {
         flight_name varchar(20) not null,
         seats_available int not null,
         seats_booked int not null default 0,
+        seat_type varchar(20) not null,
+        price float not null,
         email varchar(30) not null,
         departure_country varchar(30) not null,
         departure_city varchar(30) not null,
@@ -23,8 +25,8 @@ const insertFlight = async (req, res) => {
     `
    insert into flight (
         email, departure_date, departure_time, departure_city, departure_country,
-        arrival_date, arrival_time, arrival_city, arrival_country,flight_name,seats_available
-    ) values (?,?,?,?,?,?,?,?,?,?,?);
+        arrival_date, arrival_time, arrival_city, arrival_country,flight_name,seats_available,seat_type,price
+    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?);
 `,
     [
       req.body.email,
@@ -38,6 +40,8 @@ const insertFlight = async (req, res) => {
       req.body.selectedArrivalCountryName,
       req.body.flightName,
       req.body.seatsAvailable,
+      req.body.seatType,
+      req.body.price,
     ],
     (err, results) => {
       if (err) {
@@ -137,13 +141,14 @@ const DeleteFlight = async (req, res) => {
 const UpdateFlight = async (req, res) => {
   await FlightCheckTable();
   pool.query(
-    `update flight set departure_date=?,departure_time=?,arrival_date=?,arrival_time=?,seats_available=? where flight_id = (?);`,
+    `update flight set departure_date=?,departure_time=?,arrival_date=?,arrival_time=?,seats_available=?,price=? where flight_id = (?);`,
     [
       req.body.departure_date,
       req.body.departure_time,
       req.body.arrival_date,
       req.body.arrival_time,
       req.body.seats_available,
+      req.body.price,
       req.body.flight_id,
     ],
     (err, results) => {

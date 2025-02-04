@@ -1,4 +1,5 @@
 import "./GuideDashboard.css";
+import * as React from "react";
 
 function GuideDashboard() {
   return (
