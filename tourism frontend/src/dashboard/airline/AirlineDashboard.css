@@ -4,7 +4,13 @@
   transition: padding-left 0.3s ease;
   min-height: 100vh;
 }
-
+.details-container-AD {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 .main-container-AD.menu-open {
   padding-left: 250px;
 }
@@ -438,7 +444,7 @@ body.menu-open-AD {
   box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
 }
 
-label {
+.dialog-header-AD .MuiInputLabel-root {
   color: rgb(240, 182, 254) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
@@ -735,4 +741,62 @@ details[open] .feedback-summary::after {
 
 .star.empty {
   color: #484849;
+}
+
+.setting-container-AD {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 2vw;
+  height: 100px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}
+.locking-account-message-AD {
+  color: black;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #fff8e1;
+  border: 1px solid #ffeb3b;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-input-container-AD {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.seats-input2-AD .MuiOutlinedInput-root {
+  margin-top: 2vh !important;
+  margin-bottom: 3vh !important;
+  color: rgb(19, 0, 28) !important;
+}
+
+.seats-input2-AD .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(19, 0, 28) !important;
+}
+
+.seats-input2-AD .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(19, 0, 28) !important;
+}
+
+.seats-input2-AD
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(19, 0, 28) !important;
+}
+
+.edit-input-container-AD .MuiInputLabel-root {
+  color: rgb(19, 0, 28) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin: 10px 0 5px !important;
 }

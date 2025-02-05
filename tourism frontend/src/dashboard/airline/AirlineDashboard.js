@@ -24,6 +24,8 @@ import Dialog from "@mui/material/Dialog";
 import { Country, City } from "country-state-city";
 import CloseIcon from "@mui/icons-material/Close";
 import StarIcon from "@mui/icons-material/Star";
+import LockIcon from "@mui/icons-material/Lock";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -56,6 +58,8 @@ function AirlineDashboard() {
       getReservationData();
     } else if (activeCard === "Feedback") {
       getFeedbackData();
+    } else if (activeCard === "SettingUpdates") {
+      getAccountStatus();
     }
   }, [activeCard]);
   useEffect(() => {
@@ -115,7 +119,7 @@ function AirlineDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div>
+      <div className="details-container-AD">
         <h2 className="heading-AD">
           <strong>Details</strong>
         </h2>
@@ -1450,11 +1454,481 @@ function AirlineDashboard() {
       </div>
     );
   };
+  const getAccountStatus = () => {
+    fetch("http://localhost:8008/Tourism/AccountStatusRetreival", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          if (data.data[0].status === 0) {
+            setAccountStatus(false);
+          }
+        } else {
+          console.log("Status not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const [accountStatus, setAccountStatus] = useState(true);
+
   const SettingContent = () => {
+    const [updatedData, setUpdatedData] = useState({
+      first_name: "",
+      last_name: "",
+      age: "",
+      phone: "",
+      address: "",
+      password: "",
+      city: "",
+      country: "",
+    });
+    const updateData = () => {
+      console.log("Hello", updatedData);
+      fetch("http://localhost:8008/Tourism/updateUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("Airline Data updated!");
+          } else {
+            console.log("Airline Data not updated!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const [cities, setCities] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [selectedCountryName, setSelectedCountryName] = useState("");
+    const [editData, setEditData] = useState(false);
+
+    const saveChanges = (e) => {
+      e.preventDefault();
+      console.log(selectedCity);
+      console.log(selectedCountryName);
+      setUpdatedData((prevData) => ({
+        ...prevData,
+        city: selectedCity,
+        country: selectedCountryName,
+      }));
+
+      if (updatedData.first_name === "") {
+        setError("Enter a valid first name!");
+        return;
+      }
+      if (updatedData.last_name === "") {
+        setError("Enter a valid last name!");
+        return;
+      }
+      if (updatedData.age < 18 || updatedData.age > 150) {
+        setError("Enter a valid age!");
+        return;
+      }
+      if (updatedData.phone === "") {
+        setError("Enter a valid phone number!");
+        return;
+      }
+      if (updatedData.country === "") {
+        setError("Select a valid country!");
+        return;
+      }
+      if (updatedData.city === "") {
+        setError("Select a valid city!");
+        return;
+      }
+      if (updatedData.address === "") {
+        setError("Enter a valid address!");
+        return;
+      }
+      if (updatedData.password === "") {
+        setError("Enter a valid password!");
+        return;
+      }
+      if (updatedData.password !== confPassword) {
+        setError("Passwords do not match!");
+        return;
+      }
+
+      setError("");
+      console.log(updatedData);
+      updateData();
+      //window.location.reload();
+    };
+    const [confPassword, setConfPassword] = useState("");
+    const editDataButton = () => {
+      if (!editData) {
+        setError("");
+        setUpdatedData({
+          first_name: AccountData.first_name,
+          last_name: AccountData.last_name,
+          age: AccountData.age,
+          address: AccountData.address,
+          password: AccountData.password,
+          phone: AccountData.phone,
+          city: AccountData.city,
+          country: AccountData.country,
+        });
+        setConfPassword(AccountData.password);
+      }
+      setEditData(!editData);
+    };
+
+    const lockAccount = () => {
+      //lock Account
+      const confirmation = window.confirm("Select 'OK' to confirm");
+      if (confirmation) {
+        fetch("http://localhost:8008/Tourism/UpdateAccountStatus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: localStorage.getItem("email") }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              setAccountStatus(!accountStatus);
+            } else {
+              console.log("Status not updated!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    };
+    const [error2, setError2] = useState(null);
+    const deleteAccountAPI = () => {
+      fetch("http://localhost:8008/Tourism/DeleteUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: localStorage.getItem("email") }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            setError2("Account Deleted!");
+            setTimeout(logOut(), 3000);
+          } else {
+            console.log("API failed!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const deleteAccount = () => {
+      //delete Account
+      //check if there are reservations,if not,delete account
+      const confirmation = window.confirm(
+        "Delete Account(This action can NOT be reversed)? Select 'OK' to confirm"
+      );
+      if (confirmation) {
+        fetch("http://localhost:8008/Tourism/CheckFlightReservationCount", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: localStorage.getItem("email") }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              if (data.data[0].res_count > 0) {
+                setError2(
+                  "Deleting Account not possible when there are pending reservations!"
+                );
+              } else {
+                //delete account logic
+                deleteAccountAPI();
+              }
+            } else {
+              console.log("API failed!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    };
+
+    const handleCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedCountry(countryIsoCode);
+      setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
+      setSelectedCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setCities(countryCities);
+      } else {
+        setCities([]); // Reset cities if no country is selected
+      }
+    };
+    // Handle city selection
+    const handleCityChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      setSelectedCity(event.target.value);
+    };
+    const handleUpdatedDataInputChange = (event, field) => {
+      setUpdatedData((prevData) => ({
+        ...prevData,
+        [field]: event.target.value,
+      }));
+    };
     return (
       <div>
-        <p>Hello World</p>
-        <p>Hello World</p>
+        <h2 className="heading-AD">Settings</h2>
+        {editData === true ? (
+          <div className="edit-input-container-AD">
+            <TextField
+              type="text"
+              className="seats-input2-AD"
+              label="Flight Name"
+              value={updatedData.first_name}
+              onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
+              required
+            >
+              First Name
+            </TextField>
+            <TextField
+              type="text"
+              className="seats-input2-AD"
+              label="Last Name"
+              value={updatedData.last_name}
+              onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
+              required
+            >
+              Last Name
+            </TextField>
+            <p className="data-AD">
+              <strong>Email:</strong> {AccountData.email}
+            </p>
+
+            <TextField
+              type="number"
+              className="seats-input2-AD"
+              label="Age(18-150)"
+              value={updatedData.age}
+              onChange={(e) => handleUpdatedDataInputChange(e, "age")}
+              required
+            >
+              Age
+            </TextField>
+            <TextField
+              type="tel"
+              className="seats-input2-AD"
+              label="Phone"
+              value={updatedData.phone}
+              onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
+              required
+            >
+              Phone
+            </TextField>
+            <InputLabel id="country-label">Select Country</InputLabel>
+            <Select
+              required
+              labelId="country-label"
+              id="country"
+              size="small"
+              className="seats-input2-AD"
+              value={selectedCountry}
+              label="Select Country"
+              sx={{
+                marginBottom: "2.5vh",
+                paddingTop: "4vh !important",
+                paddingBottom: "4vh !important",
+                height: " 3vh !important",
+                width: "26% !important",
+              }}
+              fullWidth
+              onChange={handleCountryChange}
+            >
+              <MenuItem value="">Select Country</MenuItem>
+              {Country.getAllCountries().map((country) => (
+                <MenuItem key={country.isoCode} value={country.isoCode}>
+                  {country.name}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <InputLabel id="city-label">Select City</InputLabel>
+
+            <Select
+              required
+              labelId="city-label"
+              id="city"
+              className="seats-input2-AD"
+              disabled={!selectedCountry}
+              fullWidth
+              value={selectedCity}
+              label="Select City"
+              size="small"
+              sx={{
+                marginBottom: "2.5vh",
+                paddingTop: "4vh !important",
+                paddingBottom: "4vh !important",
+                height: " 3vh !important",
+                width: "26% !important",
+              }}
+              onChange={handleCityChange}
+            >
+              <MenuItem value="">Select City</MenuItem>
+              {cities.map((city) => (
+                <MenuItem key={city.name} value={city.name}>
+                  {city.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <TextField
+              type="text"
+              className="seats-input2-AD"
+              label="Complete Address"
+              value={updatedData.address}
+              onChange={(e) => handleUpdatedDataInputChange(e, "address")}
+              required
+            >
+              Address
+            </TextField>
+            <TextField
+              type="password"
+              className="seats-input2-AD"
+              label="Enter Password"
+              value={updatedData.password}
+              onChange={(e) => handleUpdatedDataInputChange(e, "password")}
+              required
+            >
+              Password
+            </TextField>
+            <TextField
+              type="password"
+              className="seats-input2-AD"
+              label="Confirm Password"
+              value={confPassword}
+              onChange={(e) => setConfPassword(e.target.value)}
+              required
+            >
+              Confirm Password
+            </TextField>
+
+            {error && <p className="error-message-AD">{error}</p>}
+          </div>
+        ) : (
+          <div className="details-container-AD">
+            <p className="data-AD">
+              <strong>First Name: {AccountData.first_name}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Last Name: {AccountData.last_name}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Email: {AccountData.email}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Age: {AccountData.age}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Phone: {AccountData.phone}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Country: {AccountData.country}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>City: {AccountData.city}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Address: {AccountData.address}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>
+                Password: {"*".repeat(AccountData.password.length)}
+              </strong>
+            </p>
+          </div>
+        )}
+        <div className="setting-container-AD">
+          {editData && (
+            <button className="save-button-AD" onClick={saveChanges}>
+              Save
+            </button>
+          )}
+          <button className="edit-button-AD" onClick={editDataButton}>
+            {editData ? "Cancel Edit" : "Edit Info"}
+          </button>
+        </div>
+
+        <div className="setting-container-AD">
+          <FlightButton
+            onClick={lockAccount}
+            sx={{
+              gap: "0.7vw",
+            }}
+          >
+            {accountStatus ? (
+              <>
+                <LockIcon /> Lock Account
+              </>
+            ) : (
+              <>
+                <LockOpenIcon /> Unlock Account
+              </>
+            )}
+          </FlightButton>
+          <FlightButton
+            sx={{
+              "&:hover": {
+                color: "red !important",
+                borderColor: "red !important",
+              },
+              gap: "0.7vw",
+            }}
+            onClick={deleteAccount}
+          >
+            <DeleteIcon />
+            Delete Account
+          </FlightButton>
+        </div>
+        <div className="setting-container-AD">
+          {error2 && <p className="error-message2-AD">{error2}</p>}
+        </div>
+
+        {accountStatus ? (
+          <p className="locking-account-message-AD">
+            <LockIcon />
+            Locking Account will NOT show your Airline to the Tourists for
+            reservations
+          </p>
+        ) : (
+          <p className="locking-account-message-AD">
+            <LockOpenIcon />
+            Unlocking Account will show your Airline to the Tourists for
+            reservations
+          </p>
+        )}
       </div>
     );
   };

@@ -60,6 +60,7 @@ const insertUser = async (req, res) => {
 };
 const updateUser = async (req, res) => {
   await UserCheckTable();
+  console.log(req.body);
   pool.query(
     `update user set first_name=?,last_name=?,phone=?,age=?,country=?,city=?,address=?,password=? where email=?;`,
     [
