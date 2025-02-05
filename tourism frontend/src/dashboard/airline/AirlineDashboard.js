@@ -1,5 +1,5 @@
 import "./AirlineDashboard.css";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
 import { Country, City } from "country-state-city";
 import CloseIcon from "@mui/icons-material/Close";
+import StarIcon from "@mui/icons-material/Star";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -48,11 +49,14 @@ function AirlineDashboard() {
   });
 
   useEffect(() => {
+    setError("");
     if (activeCard === "FlightUpdates") {
       getFlightData();
-    } // else if (activeCard === "ReservationUpdates") {
-    //   getReservationData();
-    // }
+    } else if (activeCard === "ReservationUpdates") {
+      getReservationData();
+    } else if (activeCard === "Feedback") {
+      getFeedbackData();
+    }
   }, [activeCard]);
   useEffect(() => {
     fetch("http://localhost:8008/Tourism/UserDataRetreival", {
@@ -173,13 +177,12 @@ function AirlineDashboard() {
   const [openFlightCard, setOpenFlightCard] = useState(false);
 
   const handleClickOpenFlightCard = () => {
-    console.log("123");
+    setError("");
     setOpenFlightCard(true);
   };
 
   const handleCloseFlightCard = () => {
-    // Use useCallback
-    console.log("456");
+    setError("");
     setOpenFlightCard(false);
   };
 
@@ -639,7 +642,7 @@ function AirlineDashboard() {
                 />
               </Card>
             </div>
-            {error && <p className="error-message-AD">{error}</p>}
+            {error && <p className="error-message2-AD">{error}</p>}
             <Button
               className="add-flight-button-AD"
               onClick={(e) =>
@@ -812,12 +815,14 @@ function AirlineDashboard() {
           <div className="flight-options-container-AD">
             <FlightButton
               variant="outlined"
+              className="flight-option-AD"
               startIcon={<AddIcon />}
               onClick={handleClickOpenFlightCard}
             >
               Add Flight
             </FlightButton>
             <FlightButton
+              variant="outlined"
               startIcon={<EditIcon />}
               className="flight-option-AD"
               onClick={toggleEditButton}
@@ -1049,19 +1054,399 @@ function AirlineDashboard() {
       </div>
     );
   };
+  const [selectedReservs, setSelectedReservs] = useState([]);
+  const [reservEditId, setReservEditId] = useState(null);
+  const [editedReservData, setEditedReservData] = useState({});
+  const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
+  const [displayReservationData, setDisplayReservationData] = useState([]);
+  const [reservEditboxes, setReserveEditboxes] = useState(false);
+  const FlightStatus = [
+    { value: "Pending", label: "Pending" },
+    { value: "Completed", label: "Completed" },
+  ];
+  const getReservationData = async () => {
+    fetch("http://localhost:8008/Tourism/getFlightReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          setDisplayReservationData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateReserv = () => {
+    fetch("http://localhost:8008/Tourism/updateFlightReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedReservData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Edited");
+        } else {
+          console.log("Reservation not edited!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const DeleteReservation = (selectedData) => {
+    fetch("http://localhost:8008/Tourism/deleteFlightReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Deleted");
+        } else {
+          console.log("Reservation not Deleted!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const toggleReservationEditButton = () => {
+    if (reservDeleteboxes) {
+      setReservDeleteboxes(false);
+    }
+    setReserveEditboxes(!reservEditboxes);
+    if (reservEditId) {
+      setReservEditId(null);
+    }
+  };
+  const handleReservEditClick = (reserv) => {
+    setReservEditId(reserv.reservation_id);
+    setEditedReservData({ ...reserv }); // Initialize edited data with current room data
+  };
+
+  const handleSaveReservClick = () => {
+    if (editedReservData.status === "") {
+      setError("Please select a status!");
+      return;
+    }
+    setError("");
+    updateReserv(editedReservData); // Call the update function
+    setReservEditId(null); // Exit edit mode
+    window.location.reload();
+  };
+
+  const handleCancelReservClick = () => {
+    setReservEditId(null); // Exit edit mode without saving changes
+  };
+
+  const handleReservInputChange = (event, field) => {
+    setEditedReservData((prevData) => ({
+      ...prevData,
+      [field]: event.target.value,
+    }));
+  };
+
+  const toggleReservationDeleteButton = () => {
+    setReservDeleteboxes(!reservDeleteboxes);
+    setSelectedFlights([]);
+    if (reservEditboxes) {
+      setReserveEditboxes(false);
+    }
+  };
+
+  const handleReservCheckboxChange = (reservId) => {
+    setSelectedReservs((prevSelectedReservs) => {
+      if (prevSelectedReservs.includes(reservId)) {
+        return prevSelectedReservs.filter((id) => id !== reservId);
+      } else {
+        return [...prevSelectedReservs, reservId];
+      }
+    });
+  };
+
+  const handleDeleteSelectedReserv = () => {
+    if (selectedReservs.length === 0) {
+      alert("Please select reservations to delete.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the selected reservations?"
+    );
+    if (confirmDelete) {
+      DeleteReservation(selectedReservs); // Call the onDeleteRooms function passed as a prop
+      setReservDeleteboxes(false); // Hide checkboxes after deletion
+      setSelectedReservs([]); // Clear selected rooms
+      window.location.reload();
+    }
+  };
   const ReservationContent = () => {
     return (
       <div>
-        <p>Hello World</p>
-        <p>Hello World</p>
+        <div className="flight-content-AD">
+          <h1 className="heading-AD">
+            <strong>Reservations</strong>
+          </h1>
+          <div className="flight-options-container-AD">
+            <FlightButton
+              variant="outlined"
+              sx={{
+                "&:hover": {
+                  color: "green !important",
+                  borderColor: "green !important",
+                },
+              }}
+              startIcon={<EditIcon />}
+              onClick={toggleReservationEditButton}
+            >
+              {reservEditboxes ? "Cancel Edit" : "Edit Booking"}
+            </FlightButton>
+            <FlightButton
+              variant="outlined"
+              sx={{
+                "&:hover": {
+                  color: "red !important",
+                  borderColor: "red !important",
+                },
+              }}
+              startIcon={<DeleteIcon />}
+              onClick={toggleReservationDeleteButton}
+            >
+              {reservDeleteboxes ? "Cancel Delete" : "Delete Booking"}
+            </FlightButton>
+          </div>
+          <div className="table-container-AD">
+            {displayReservationData.length > 0 ? (
+              <div>
+                <table className="flight-table-AD">
+                  <thead className="table-head-AD">
+                    <tr>
+                      {reservDeleteboxes && (
+                        <th className="table-header-AD">Select</th>
+                      )}
+                      <th className="table-header-AD">Flight Name</th>
+                      <th className="table-header-AD">Seat Type</th>
+                      <th className="table-header-AD">Seats Booked</th>
+                      <th className="table-header-AD">Status</th>
+                      <th className="table-header-AD">Passenger Name</th>
+                      <th className="table-header-AD">Passenger Phone</th>
+                      {reservEditboxes && (
+                        <th className="table-header-AD">Edit</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody className="table-body-AD">
+                    {displayReservationData.map((reserv) => (
+                      <tr key={reserv.reservation_id} className="table-row-AD">
+                        {reservDeleteboxes && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedReservs.includes(
+                                reserv.reservation_id
+                              )}
+                              onChange={() =>
+                                handleReservCheckboxChange(
+                                  reserv.reservation_id
+                                )
+                              }
+                            />
+                          </td>
+                        )}
+                        {reservEditId === reserv.reservation_id ? (
+                          <>
+                            <td className="table-cell-AD">
+                              {reserv.flight_name}
+                            </td>
+                            <td className="table-cell-AD">
+                              {reserv.seat_type}
+                            </td>
+                            <td className="table-cell-AD">
+                              {reserv.seats_booked}
+                            </td>
+                            <td>
+                              <Select
+                                required
+                                labelId="status-label"
+                                id="status"
+                                size="small"
+                                label="Select Status"
+                                fullWidth
+                                value={editedReservData.status}
+                                onChange={(e) =>
+                                  handleReservInputChange(e, "status")
+                                }
+                              >
+                                <MenuItem value="">Select Status</MenuItem>
+                                {FlightStatus.map((option) => (
+                                  <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </td>
+                            <td className="table-cell-AD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-AD">{reserv.phone}</td>
+
+                            <td>
+                              <div className="button-group-AD">
+                                <button
+                                  className="save-button-AD"
+                                  onClick={() =>
+                                    handleSaveReservClick(reserv.reservation_id)
+                                  }
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="cancel-button-AD"
+                                  onClick={handleCancelReservClick}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="table-cell-AD">
+                              {reserv.flight_name}
+                            </td>
+                            <td className="table-cell-AD">
+                              {reserv.seat_type}
+                            </td>
+                            <td className="table-cell-AD">
+                              {reserv.seats_booked}
+                            </td>
+                            <td className="table-cell-AD">{reserv.status}</td>
+                            <td className="table-cell-AD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-AD">{reserv.phone}</td>
+                            {reservEditboxes && (
+                              <td>
+                                <button
+                                  className="edit-button-AD"
+                                  onClick={() => handleReservEditClick(reserv)}
+                                >
+                                  Edit
+                                </button>
+                              </td>
+                            )}
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {reservDeleteboxes && (
+                  <button
+                    className="delete-selected-AD"
+                    onClick={handleDeleteSelectedReserv}
+                  >
+                    Delete Selected Reservations
+                  </button>
+                )}
+                {error && <p className="error-message2-AD">{error}</p>}
+              </div>
+            ) : (
+              <p className="no-data-message-AD">No data available.</p>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
+
+  const [displayFeedbackData, setDisplayFeedbackData] = useState([]);
+  const getFeedbackData = () => {
+    fetch("http://localhost:8008/Tourism/getFeedbackData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setDisplayFeedbackData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const StarRating = ({ rating }) => {
+    return (
+      <div className="star-rating">
+        {[...Array(5)].map((_, index) => (
+          <span
+            key={index}
+            className={`star ${index < rating ? "filled" : "empty"}`}
+          >
+            <StarIcon />
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   const FeedbackContent = () => {
     return (
       <div>
-        <p>Hello World</p>
-        <p>Hello World</p>
+        <div className="flight-content-AD">
+          <h2 className="heading-AD">
+            <strong>Feedback</strong>
+          </h2>
+          {displayFeedbackData.length > 0 ? (
+            <>
+              {displayFeedbackData.map((reserv) => (
+                <details className="feedback-details" key={reserv.feedback_id}>
+                  <summary className="feedback-summary">
+                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
+                    )
+                  </summary>
+                  <div className="feedback-content">
+                    <div className="feedback-rating">
+                      Rating: <StarRating rating={reserv.rating} />
+                    </div>
+
+                    <p className="feedback-text">
+                      Description:&nbsp;
+                      {reserv.description}
+                    </p>
+                  </div>
+                </details>
+              ))}
+            </>
+          ) : (
+            <p className="no-data-message-AD">No feedback available.</p>
+          )}
+        </div>
       </div>
     );
   };

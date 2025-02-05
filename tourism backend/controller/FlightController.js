@@ -4,7 +4,6 @@ const FlightCheckTable = async () => {
         flight_id int auto_increment primary key,
         flight_name varchar(20) not null,
         seats_available int not null,
-        seats_booked int not null default 0,
         seat_type varchar(20) not null,
         price float not null,
         email varchar(30) not null,

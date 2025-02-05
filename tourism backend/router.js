@@ -1,8 +1,10 @@
 const userController = require("./controller/UserController.js");
 const roomController = require("./controller/RoomController.js");
 const reservationController = require("./controller/ReservationController.js");
+const flightReservationController = require("./controller/FlightReservationController.js");
 const accountStatusController = require("./controller/StatusController.js");
 const flightController = require("./controller/FlightController.js");
+const feedbackController = require("./controller/FeedbackController.js");
 const express = require("express");
 const router = express.Router();
 
@@ -44,5 +46,24 @@ router.post("/InsertFlight", flightController.insertFlight);
 router.post("/getFlightData", flightController.getFlightData);
 router.post("/updateFlight", flightController.UpdateFlight);
 router.post("/DeleteFlight", flightController.DeleteFlight);
+
+router.post(
+  "/getFlightReservationData",
+  flightReservationController.getFlightReservationData
+);
+router.post(
+  "/updateFlightReservationData",
+  flightReservationController.updateFlightReservationData
+);
+router.post(
+  "/deleteFlightReservationData",
+  flightReservationController.deleteFlightReservationData
+);
+router.post(
+  "/CheckFlightReservationCount",
+  flightReservationController.CheckFlightReservationCount
+);
+
+router.post("/getFeedbackData", feedbackController.getFeedbackData);
 
 module.exports = router;

@@ -90,7 +90,6 @@ const UserDataRetreival = async (req, res) => {
     [req.body.email],
     (err, results) => {
       if (results) {
-        console.log("Hi", results);
         return res.json({ code: 200, data: results });
       } else {
         res.json({ code: 500, data: err });
