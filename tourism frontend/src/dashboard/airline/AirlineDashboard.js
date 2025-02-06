@@ -26,6 +26,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import StarIcon from "@mui/icons-material/Star";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
+import { StarOutline } from "@mui/icons-material";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -1407,14 +1409,28 @@ function AirlineDashboard() {
   const StarRating = ({ rating }) => {
     return (
       <div className="star-rating">
-        {[...Array(5)].map((_, index) => (
-          <span
-            key={index}
-            className={`star ${index < rating ? "filled" : "empty"}`}
-          >
-            <StarIcon />
-          </span>
-        ))}
+        {[...Array(5)].map((_, index) => {
+          const fullStars = Math.floor(rating);
+          const hasHalfStar = rating % 1 >= 0.5;
+          const starType =
+            index < fullStars
+              ? "full"
+              : index === fullStars && hasHalfStar
+              ? "half"
+              : "empty";
+
+          return (
+            <span key={index} className={`star ${starType}`}>
+              {starType === "full" ? (
+                <StarIcon />
+              ) : starType === "half" ? (
+                <StarHalfIcon />
+              ) : (
+                <StarOutline />
+              )}
+            </span>
+          );
+        })}
       </div>
     );
   };
@@ -1486,8 +1502,6 @@ function AirlineDashboard() {
       phone: "",
       address: "",
       password: "",
-      city: "",
-      country: "",
     });
     const updateData = () => {
       console.log("Hello", updatedData);
@@ -1496,12 +1510,18 @@ function AirlineDashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedData),
+        body: JSON.stringify({
+          ...updatedData,
+          email: localStorage.getItem("email"),
+          country: selectedCountryName,
+          city: selectedCity,
+        }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.code === 200) {
             console.log("Airline Data updated!");
+            window.location.reload();
           } else {
             console.log("Airline Data not updated!", data.data);
           }
@@ -1520,11 +1540,6 @@ function AirlineDashboard() {
       e.preventDefault();
       console.log(selectedCity);
       console.log(selectedCountryName);
-      setUpdatedData((prevData) => ({
-        ...prevData,
-        city: selectedCity,
-        country: selectedCountryName,
-      }));
 
       if (updatedData.first_name === "") {
         setError("Enter a valid first name!");
@@ -1542,11 +1557,11 @@ function AirlineDashboard() {
         setError("Enter a valid phone number!");
         return;
       }
-      if (updatedData.country === "") {
+      if (selectedCountryName === "") {
         setError("Select a valid country!");
         return;
       }
-      if (updatedData.city === "") {
+      if (selectedCity === "") {
         setError("Select a valid city!");
         return;
       }
@@ -1564,9 +1579,8 @@ function AirlineDashboard() {
       }
 
       setError("");
-      console.log(updatedData);
+      console.log("Updated-Data", updatedData);
       updateData();
-      //window.location.reload();
     };
     const [confPassword, setConfPassword] = useState("");
     const editDataButton = () => {
@@ -1579,8 +1593,6 @@ function AirlineDashboard() {
           address: AccountData.address,
           password: AccountData.password,
           phone: AccountData.phone,
-          city: AccountData.city,
-          country: AccountData.country,
         });
         setConfPassword(AccountData.password);
       }

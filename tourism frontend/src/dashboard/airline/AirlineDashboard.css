@@ -735,14 +735,22 @@ details[open] .feedback-summary::after {
   font-size: 1.2rem;
 }
 
-.star.filled {
+.star.full {
+  color: #ffc107;
+}
+
+.star.half {
   color: #ffc107;
 }
 
 .star.empty {
-  color: #484849;
+  color: #3c3c3d;
 }
 
+.star svg {
+  width: 1em;
+  height: 1em;
+}
 .setting-container-AD {
   display: flex;
   justify-content: flex-end;

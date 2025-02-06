@@ -4,7 +4,7 @@ const FeedbackCheckTable = async () => {
         feedback_id int auto_increment primary key,
         sender_email varchar(30) not null,
         receiver_email varchar(30) not null,
-        rating int not null,
+        rating float not null,
         description varchar(500) not null,
         foreign key (receiver_email) references user(email),
         foreign key (sender_email) references user(email));`);
