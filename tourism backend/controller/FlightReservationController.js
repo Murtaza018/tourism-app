@@ -9,7 +9,7 @@ const FlightReservationCheckTable = async () => {
         flight_id int not null,
         foreign key (flight_id) references flight(flight_id),
         foreign key(tourist_email) references user(email),
-        foreign key(airline_email) references user(email));`);
+        foreign key(airline_email) references user(email) on delete cascade);`);
 };
 
 const getFlightReservationData = async (req, res) => {

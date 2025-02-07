@@ -3,7 +3,7 @@ const AccountStatusCheckTable = async () => {
   await pool.query(`create table if not exists AccountStatus(
         email varchar(30) not null,
         status boolean default true,
-        foreign key (email) references user(email));`);
+        foreign key (email) references user(email) on delete cascade);`);
 };
 const AccountStatusRetreival = async (req, res) => {
   console.log(req.body);
