@@ -121,35 +121,35 @@ function AirlineDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div className="details-container-AD">
-        <h2 className="heading-AD">
+      <div className="details-container-GD">
+        <h2 className="heading-GD">
           <strong>Details</strong>
         </h2>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>First Name: {AccountData.first_name}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Last Name: {AccountData.last_name}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Email: {AccountData.email}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Age: {AccountData.age}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Phone: {AccountData.phone}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Country: {AccountData.country}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>City: {AccountData.city}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Address: {AccountData.address}</strong>
         </p>
-        <p className="data-AD">
+        <p className="data-GD">
           <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
         </p>
       </div>

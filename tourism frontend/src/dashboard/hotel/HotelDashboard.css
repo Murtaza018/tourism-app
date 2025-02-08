@@ -8,7 +8,11 @@
 .main-container-HD.menu-open {
   padding-left: 250px;
 }
-
+@media (max-width: 600px) {
+  .main-container-GD.menu-open {
+    padding-left: 50px;
+  }
+}
 .hamburger-menu-HD {
   position: absolute;
   top: 0;
