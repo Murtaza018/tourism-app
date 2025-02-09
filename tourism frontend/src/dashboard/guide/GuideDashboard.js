@@ -6,6 +6,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import Aurora from "./Aurora";
 
 function GuideDashboard() {
   const navigate = useNavigate();
@@ -169,7 +170,9 @@ function GuideDashboard() {
   };
   return (
     <div>
-      <div className="background-GD"></div>
+      <div className="background-GD">
+        <Aurora colorStops={["#00D8FF", "#7cff67", "#00D8FF"]} speed={0.9} />
+      </div>
       <div className="main-container-GD">
         <div className="hamburger-menu-GD">
           <button
