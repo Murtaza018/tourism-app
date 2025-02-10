@@ -237,3 +237,113 @@ body.menu-open-GD {
 .data-GD:nth-child(10) {
   --index: 10;
 }
+
+.guide-content-GD {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  position: relative;
+}
+.guide-options-container-GD {
+  display: flex;
+  gap: 3vw;
+}
+
+.table-container-GD {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.guide-table-GD {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-head-GD {
+  background-color: #f2f2f2;
+}
+
+.table-header-GD,
+.table-cell-GD {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table-header-GD {
+  font-weight: bold;
+}
+
+.no-data-message-GD {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.delete-selected-GD {
+  background-color: transparent;
+  border: 1px solid black;
+  font-size: 1.2em;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 20px;
+}
+.delete-selected-GD:hover {
+  color: red;
+  border-color: red;
+  transform: scale(1.1);
+}
+
+.edit-button-GD,
+.save-button-GD,
+.cancel-button-GD,
+.feedback-button-GD {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+.feedback-button-GD {
+  background-color: #a83bd6;
+  color: white;
+}
+.edit-button-GD {
+  background-color: #007bff;
+  color: white;
+}
+
+.save-button-GD {
+  background-color: #28a745;
+  color: white;
+}
+
+.cancel-button-GD {
+  background-color: #dc3545;
+  color: white;
+}
+.feedback-button-GD:hover {
+  background-color: #4b0082;
+}
+.edit-button-GD:hover {
+  background-color: #0056b3;
+}
+
+.save-button-GD:hover {
+  background-color: #1e7e34;
+}
+
+.cancel-button-GD:hover {
+  background-color: #bd2130;
+}
+.button-group-GD {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
+}

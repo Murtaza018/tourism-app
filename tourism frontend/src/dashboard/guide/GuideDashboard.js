@@ -7,6 +7,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import Aurora from "./Aurora";
+import { Button, MenuItem, Select, styled } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function GuideDashboard() {
   const navigate = useNavigate();
@@ -33,9 +36,9 @@ function GuideDashboard() {
 
   useEffect(() => {
     setError("");
-    //  if (activeCard === "ReservationUpdates") {
-    //     getReservationData();
-    //   } else if (activeCard === "Feedback") {
+    if (activeCard === "ReservationUpdates") {
+      getReservationData();
+    } // else if (activeCard === "Feedback") {
     //     getFeedbackData();
     //   } else if (activeCard === "SettingUpdates") {
     //     getAccountStatus();
@@ -132,13 +135,403 @@ function GuideDashboard() {
     );
   };
 
+  const [selectedReservs, setSelectedReservs] = useState([]);
+  const [reservEditId, setReservEditId] = useState(null);
+  const [editedReservData, setEditedReservData] = useState({});
+  const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
+  const [displayReservationData, setDisplayReservationData] = useState([]);
+  const [reservEditboxes, setReserveEditboxes] = useState(false);
+  const guideStatus = [
+    { value: "Pending", label: "Pending" },
+    { value: "Completed", label: "Completed" },
+  ];
+  const getReservationData = async () => {
+    fetch("http://localhost:8008/Tourism/getGuideReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          setDisplayReservationData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateReserv = () => {
+    fetch("http://localhost:8008/Tourism/updateGuideReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedReservData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Edited");
+        } else {
+          console.log("Reservation not edited!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const DeleteReservation = (selectedData) => {
+    fetch("http://localhost:8008/Tourism/deleteGuideReservationData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Reservation Deleted");
+        } else {
+          console.log("Reservation not Deleted!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const toggleReservationEditButton = () => {
+    if (reservDeleteboxes) {
+      setReservDeleteboxes(false);
+    }
+    if (feedbackButton) {
+      setFeedbackButton(false);
+    }
+    setReserveEditboxes(!reservEditboxes);
+    if (reservEditId) {
+      setReservEditId(null);
+    }
+  };
+  const handleReservEditClick = (reserv) => {
+    setReservEditId(reserv.reservation_id);
+    setEditedReservData({ ...reserv }); // Initialize edited data with current room data
+  };
+
+  const handleSaveReservClick = () => {
+    if (editedReservData.status === "") {
+      setError("Please select a status!");
+      return;
+    }
+    setError("");
+    updateReserv(editedReservData); // Call the update function
+    setReservEditId(null); // Exit edit mode
+    window.location.reload();
+  };
+
+  const handleCancelReservClick = () => {
+    setReservEditId(null); // Exit edit mode without saving changes
+  };
+
+  const handleReservInputChange = (event, field) => {
+    setEditedReservData((prevData) => ({
+      ...prevData,
+      [field]: event.target.value,
+    }));
+  };
+
+  const toggleReservationDeleteButton = () => {
+    setReservDeleteboxes(!reservDeleteboxes);
+
+    if (reservEditboxes) {
+      setReserveEditboxes(false);
+    }
+  };
+
+  const handleReservCheckboxChange = (reservId) => {
+    setSelectedReservs((prevSelectedReservs) => {
+      if (prevSelectedReservs.includes(reservId)) {
+        return prevSelectedReservs.filter((id) => id !== reservId);
+      } else {
+        return [...prevSelectedReservs, reservId];
+      }
+    });
+  };
+
+  const handleDeleteSelectedReserv = () => {
+    if (selectedReservs.length === 0) {
+      alert("Please select reservations to delete.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the selected reservations?"
+    );
+    if (confirmDelete) {
+      DeleteReservation(selectedReservs); // Call the onDeleteRooms function passed as a prop
+      setReservDeleteboxes(false); // Hide checkboxes after deletion
+      setSelectedReservs([]); // Clear selected rooms
+      window.location.reload();
+    }
+  };
+  const GuideButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "transparent",
+    border: "2px solid black",
+    color: "black",
+    fontSize: "1em",
+    padding: "5px 10px",
+    cursor: "pointer",
+    transition: "transform 0.5s ease, color 0.5s ease, border-color 0.5s ease",
+    marginTop: "5px",
+    "&:hover": {
+      transform: "scale(1.2)",
+    },
+    "&:nth-of-type(1):hover": {
+      color: "blue",
+      borderColor: "blue",
+    },
+    "&:nth-of-type(2):hover": {
+      color: "green",
+      borderColor: "green",
+    },
+    "&:nth-of-type(3):hover": {
+      color: "red",
+      borderColor: "red",
+    },
+  }));
+  const [feedbackButton, setFeedbackButton] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const handleFeedbackButton = () => {
+    setFeedbackButton(!feedbackButton);
+    if (selectedFilter !== "completed") {
+      setSelectedFilter("completed");
+    } else {
+      setSelectedFilter(null);
+    }
+    if (reservEditboxes) {
+      setReserveEditboxes(false);
+    }
+    if (reservEditId) {
+      setReservEditId(null);
+    }
+  };
+  const filteredReservations = displayReservationData.filter((reserv) => {
+    if (!selectedFilter) {
+      return true; // Show all if no filter is selected
+    }
+    return reserv.status.toLowerCase() === selectedFilter;
+  });
   const ReservationContent = () => {
     return (
       <div>
-        <h1>Hello Reservation</h1>
+        <div className="guide-content-GD">
+          <h1 className="heading-GD">
+            <strong>Reservations</strong>
+          </h1>
+          <div className="guide-options-container-GD">
+            <GuideButton
+              variant="outlined"
+              sx={{
+                "&:hover": {
+                  color: "blue !important",
+                  borderColor: "blue !important",
+                },
+              }}
+              startIcon={<EditIcon />}
+              onClick={toggleReservationEditButton}
+            >
+              {reservEditboxes ? "Cancel Edit" : "Edit Booking"}
+            </GuideButton>
+            <GuideButton
+              variant="outlined"
+              sx={{
+                "&:hover": {
+                  color: "red !important",
+                  borderColor: "red !important",
+                },
+              }}
+              startIcon={<DeleteIcon />}
+              onClick={toggleReservationDeleteButton}
+            >
+              {reservDeleteboxes ? "Cancel Delete" : "Delete Booking"}
+            </GuideButton>
+            <GuideButton
+              variant="outlined"
+              sx={{
+                "&:hover": {
+                  color: "yellow !important",
+                  borderColor: "yellow !important",
+                },
+              }}
+              startIcon={<FeedbackIcon />}
+              onClick={handleFeedbackButton}
+            >
+              {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
+            </GuideButton>
+          </div>
+          <div className="table-container-GD">
+            {displayReservationData.length > 0 ? (
+              <div>
+                <table className="guide-table-GD">
+                  <thead className="table-head-GD">
+                    <tr>
+                      {reservDeleteboxes && (
+                        <th className="table-header-GD">Select</th>
+                      )}
+                      <th className="table-header-GD">Start Date</th>
+                      <th className="table-header-GD">End Date</th>
+                      <th className="table-header-GD">Status</th>
+                      <th className="table-header-GD">Tourist Name</th>
+                      <th className="table-header-GD">Tourist Phone</th>
+                      <th className="table-header-GD">Tourist Email</th>
+                      {reservEditboxes && (
+                        <th className="table-header-GD">Edit</th>
+                      )}
+                      {feedbackButton && (
+                        <th className="table-header-GD">Feedback</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody className="table-body-GD">
+                    {filteredReservations.map((reserv) => (
+                      <tr key={reserv.reservation_id} className="table-row-GD">
+                        {reservDeleteboxes && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedReservs.includes(
+                                reserv.reservation_id
+                              )}
+                              onChange={() =>
+                                handleReservCheckboxChange(
+                                  reserv.reservation_id
+                                )
+                              }
+                            />
+                          </td>
+                        )}
+                        {reservEditId === reserv.reservation_id ? (
+                          <>
+                            <td className="table-cell-GD">
+                              {reserv.start_date}
+                            </td>
+                            <td className="table-cell-GD">{reserv.end_date}</td>
+
+                            <td>
+                              <Select
+                                required
+                                labelId="status-label"
+                                id="status"
+                                size="small"
+                                label="Select Status"
+                                fullWidth
+                                value={editedReservData.status}
+                                onChange={(e) =>
+                                  handleReservInputChange(e, "status")
+                                }
+                              >
+                                <MenuItem value="">Select Status</MenuItem>
+                                {guideStatus.map((option) => (
+                                  <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </td>
+                            <td className="table-cell-GD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-GD">{reserv.phone}</td>
+                            <td className="table-cell-GD">
+                              {reserv.tourist_email}
+                            </td>
+
+                            <td>
+                              <div className="button-group-GD">
+                                <button
+                                  className="save-button-GD"
+                                  onClick={() =>
+                                    handleSaveReservClick(reserv.reservation_id)
+                                  }
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="cancel-button-GD"
+                                  onClick={handleCancelReservClick}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="table-cell-GD">
+                              {reserv.start_date}
+                            </td>
+                            <td className="table-cell-GD">{reserv.end_date}</td>
+                            <td className="table-cell-GD">{reserv.status}</td>
+                            <td className="table-cell-GD">
+                              {reserv.first_name}
+                            </td>
+                            <td className="table-cell-GD">{reserv.phone}</td>
+                            <td className="table-cell-GD">
+                              {reserv.tourist_email}
+                            </td>
+                            {reservEditboxes && (
+                              <td>
+                                <button
+                                  className="edit-button-GD"
+                                  onClick={() => handleReservEditClick(reserv)}
+                                >
+                                  Edit
+                                </button>
+                              </td>
+                            )}
+                            {feedbackButton && (
+                              <td>
+                                <button
+                                  className="feedback-button-GD"
+                                  onClick={() => handleReservEditClick(reserv)}
+                                >
+                                  Feedback
+                                </button>
+                              </td>
+                            )}
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {reservDeleteboxes && (
+                  <button
+                    className="delete-selected-GD"
+                    onClick={handleDeleteSelectedReserv}
+                  >
+                    Delete Selected Reservations
+                  </button>
+                )}
+                {error && <p className="error-message2-GD">{error}</p>}
+              </div>
+            ) : (
+              <p className="no-data-message-GD">No data available.</p>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
+
   const FeedbackContent = () => {
     return (
       <div>

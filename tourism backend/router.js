@@ -5,6 +5,7 @@ const flightReservationController = require("./controller/FlightReservationContr
 const accountStatusController = require("./controller/StatusController.js");
 const flightController = require("./controller/FlightController.js");
 const feedbackController = require("./controller/FeedbackController.js");
+const guideReservationController = require("./controller/GuideReservationController.js");
 const express = require("express");
 const router = express.Router();
 
@@ -65,5 +66,22 @@ router.post(
 );
 
 router.post("/getFeedbackData", feedbackController.getFeedbackData);
+
+router.post(
+  "/getGuideReservationData",
+  guideReservationController.getGuideReservationData
+);
+router.post(
+  "/updateGuideReservationData",
+  guideReservationController.updateGuideReservationData
+);
+router.post(
+  "/deleteGuideReservationData",
+  guideReservationController.deleteGuideReservationData
+);
+router.post(
+  "/CheckGuideReservationCount",
+  guideReservationController.CheckGuideReservationCount
+);
 
 module.exports = router;
