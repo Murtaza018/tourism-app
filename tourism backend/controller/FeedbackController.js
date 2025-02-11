@@ -25,5 +25,21 @@ const getFeedbackData = async (req, res) => {
     }
   );
 };
+const insertFeedback = async (req, res) => {
+  await FeedbackCheckTable();
+  console.log(req.body);
+  pool.query(
+    `insert into feedback(sender_email,receiver_email,rating,description) values(?,?,?,?);`,
+    [req.body.email, req.body.t_email, req.body.rate, req.body.desc],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 
-module.exports = { getFeedbackData };
+module.exports = { getFeedbackData, insertFeedback };

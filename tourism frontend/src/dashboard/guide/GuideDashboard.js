@@ -7,9 +7,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import Aurora from "./Aurora";
-import { Button, MenuItem, Select, styled } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  MenuItem,
+  Select,
+  styled,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import StarIcon from "@mui/icons-material/Star";
 
 function GuideDashboard() {
   const navigate = useNavigate();
@@ -326,6 +334,137 @@ function GuideDashboard() {
     }
     return reserv.status.toLowerCase() === selectedFilter;
   });
+  const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
+  const [receiver, setReceiver] = useState([]);
+  const handleClickOpenFeedbackCard = (feedbackData) => {
+    setReceiver(feedbackData);
+    setError("");
+    setOpenFeedbackCard(true);
+  };
+
+  const handleCloseFeedbackCard = () => {
+    setError("");
+    setReceiver("");
+    setOpenFeedbackCard(false);
+  };
+  const FeedbackCard = ({ open, onClose }) => {
+    const SubmitFeedback = () => {
+      console.log("jhggjhgj");
+      fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: localStorage.getItem("email"),
+          t_email: receiver.tourist_email,
+          desc: feedbackDescription,
+          rate: rating,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            window.alert("Feedback Submitted!");
+            handleCloseFeedbackCard();
+          } else {
+            console.log("Feedback not Submitted!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const [feedbackDescription, setFeedbackDescription] = useState("");
+    const [rating, setRating] = useState(0);
+
+    const handleStarClick = (value) => {
+      setRating(value);
+    };
+
+    const handleStarHover = (value) => {
+      highlightStars(value);
+    };
+
+    const handleStarMouseOut = () => {
+      highlightStars(rating);
+    };
+
+    const highlightStars = (value) => {
+      const stars = document.querySelectorAll(".star");
+      stars.forEach((star) => {
+        const starValue = parseFloat(star.dataset.value);
+        if (starValue <= value) {
+          star.classList.add("selected");
+        } else {
+          star.classList.remove("selected");
+        }
+      });
+    };
+
+    const stars = [];
+    for (let i = 0; i <= 5; i += 0.5) {
+      stars.push(
+        <span
+          key={i}
+          className="star"
+          data-value={i}
+          onClick={() => handleStarClick(i)}
+          onMouseOver={() => handleStarHover(i)}
+          onMouseOut={() => handleStarMouseOut()}
+        >
+          <StarIcon sx={{ fontSize: "2.2rem !important" }} />
+        </span>
+      );
+    }
+
+    return (
+      <Dialog open={open} onClose={onClose} className="feedback-dialog">
+        <div className="dialog-content">
+          <h1 className="heading-GD">
+            <strong>Feedback</strong>
+          </h1>
+          <div className="rating-GD">
+            <div className="star-container">
+              {stars}
+              <p>Rating: {rating}</p>
+            </div>
+          </div>
+          <TextField
+            label="Receiver Name"
+            value={receiver.first_name}
+            disabled
+            className="dialog-field disabled-field"
+          />
+
+          <TextField
+            label="Sender Email"
+            value={localStorage.getItem("email")}
+            disabled
+            className="dialog-field disabled-field"
+          />
+
+          <div className="feedback-input-container">
+            <TextField
+              type="text"
+              label="Feedback Description"
+              inputProps={{ maxLength: 500, className: "expanding-input" }}
+              multiline
+              required
+              maxRows={4}
+              onChange={(e) => setFeedbackDescription(e.target.value)}
+              className="dialog-field feedback-input"
+            />
+            <p className="char-count">{feedbackDescription.length}/500</p>
+          </div>
+
+          <Button className="submit-button" onClick={SubmitFeedback}>
+            Submit
+          </Button>
+        </div>
+      </Dialog>
+    );
+  };
   const ReservationContent = () => {
     return (
       <div>
@@ -501,7 +640,9 @@ function GuideDashboard() {
                               <td>
                                 <button
                                   className="feedback-button-GD"
-                                  onClick={() => handleReservEditClick(reserv)}
+                                  onClick={() =>
+                                    handleClickOpenFeedbackCard(reserv)
+                                  }
                                 >
                                   Feedback
                                 </button>
@@ -528,6 +669,10 @@ function GuideDashboard() {
             )}
           </div>
         </div>
+        <FeedbackCard
+          open={openFeedbackCard}
+          onClose={handleCloseFeedbackCard}
+        />
       </div>
     );
   };

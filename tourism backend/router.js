@@ -66,6 +66,7 @@ router.post(
 );
 
 router.post("/getFeedbackData", feedbackController.getFeedbackData);
+router.post("/SubmitFeedback", feedbackController.insertFeedback);
 
 router.post(
   "/getGuideReservationData",
