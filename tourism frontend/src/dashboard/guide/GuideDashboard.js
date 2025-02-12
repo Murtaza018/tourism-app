@@ -18,6 +18,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
+import { StarHalfIcon } from "lucide-react";
+import { StarOutline } from "@mui/icons-material";
 
 function GuideDashboard() {
   const navigate = useNavigate();
@@ -41,14 +43,14 @@ function GuideDashboard() {
     age: "",
     password: "",
   });
-
+  const [price, setPrice] = useState(null);
   useEffect(() => {
     setError("");
     if (activeCard === "ReservationUpdates") {
       getReservationData();
-    } // else if (activeCard === "Feedback") {
-    //     getFeedbackData();
-    //   } else if (activeCard === "SettingUpdates") {
+    } else if (activeCard === "Feedback") {
+      getFeedbackData();
+    } // else if (activeCard === "SettingUpdates") {
     //     getAccountStatus();
     //   }
   }, [activeCard]);
@@ -75,6 +77,26 @@ function GuideDashboard() {
             city: data.data[0].city,
             password: data.data[0].password,
           }));
+          console.log("Account Data:", AccountData);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    fetch("http://localhost:8008/Tourism/getPrice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setPrice(data.data[0].price_per_day);
           console.log("Account Data:", AccountData);
         } else {
           console.log("Data not retreived!", data.data);
@@ -123,6 +145,9 @@ function GuideDashboard() {
         </p>
         <p className="data-GD">
           <strong>Age: {AccountData.age}</strong>
+        </p>
+        <p className="data-GD">
+          <strong>Price: {price}</strong>
         </p>
         <p className="data-GD">
           <strong>Phone: {AccountData.phone}</strong>
@@ -391,7 +416,7 @@ function GuideDashboard() {
     };
 
     const highlightStars = (value) => {
-      const stars = document.querySelectorAll(".star");
+      const stars = document.querySelectorAll(".star-GD");
       stars.forEach((star) => {
         const starValue = parseFloat(star.dataset.value);
         if (starValue <= value) {
@@ -407,7 +432,7 @@ function GuideDashboard() {
       stars.push(
         <span
           key={i}
-          className="star"
+          className="star-GD"
           data-value={i}
           onClick={() => handleStarClick(i)}
           onMouseOver={() => handleStarHover(i)}
@@ -419,13 +444,13 @@ function GuideDashboard() {
     }
 
     return (
-      <Dialog open={open} onClose={onClose} className="feedback-dialog">
-        <div className="dialog-content">
+      <Dialog open={open} onClose={onClose} className="feedback-dialog-GD">
+        <div className="dialog-content-GD">
           <h1 className="heading-GD">
             <strong>Feedback</strong>
           </h1>
           <div className="rating-GD">
-            <div className="star-container">
+            <div className="star-container-GD">
               {stars}
               <p>Rating: {rating}</p>
             </div>
@@ -434,31 +459,31 @@ function GuideDashboard() {
             label="Receiver Name"
             value={receiver.first_name}
             disabled
-            className="dialog-field disabled-field"
+            className="dialog-field-GD disabled-field-GD"
           />
 
           <TextField
             label="Sender Email"
             value={localStorage.getItem("email")}
             disabled
-            className="dialog-field disabled-field"
+            className="dialog-field-GD disabled-field-GD"
           />
 
-          <div className="feedback-input-container">
+          <div className="feedback-input-container-GD">
             <TextField
               type="text"
               label="Feedback Description"
-              inputProps={{ maxLength: 500, className: "expanding-input" }}
+              inputProps={{ maxLength: 500, className: "expanding-input-GD" }}
               multiline
               required
               maxRows={4}
               onChange={(e) => setFeedbackDescription(e.target.value)}
-              className="dialog-field feedback-input"
+              className="dialog-field-GD feedback-input-GD"
             />
-            <p className="char-count">{feedbackDescription.length}/500</p>
+            <p className="char-count-GD">{feedbackDescription.length}/500</p>
           </div>
 
-          <Button className="submit-button" onClick={SubmitFeedback}>
+          <Button className="submit-button-GD" onClick={SubmitFeedback}>
             Submit
           </Button>
         </div>
@@ -527,7 +552,6 @@ function GuideDashboard() {
                       <th className="table-header-GD">Status</th>
                       <th className="table-header-GD">Tourist Name</th>
                       <th className="table-header-GD">Tourist Phone</th>
-                      <th className="table-header-GD">Tourist Email</th>
                       {reservEditboxes && (
                         <th className="table-header-GD">Edit</th>
                       )}
@@ -589,9 +613,6 @@ function GuideDashboard() {
                               {reserv.first_name}
                             </td>
                             <td className="table-cell-GD">{reserv.phone}</td>
-                            <td className="table-cell-GD">
-                              {reserv.tourist_email}
-                            </td>
 
                             <td>
                               <div className="button-group-GD">
@@ -623,9 +644,7 @@ function GuideDashboard() {
                               {reserv.first_name}
                             </td>
                             <td className="table-cell-GD">{reserv.phone}</td>
-                            <td className="table-cell-GD">
-                              {reserv.tourist_email}
-                            </td>
+
                             {reservEditboxes && (
                               <td>
                                 <button
@@ -677,10 +696,92 @@ function GuideDashboard() {
     );
   };
 
+  const [displayFeedbackData, setDisplayFeedbackData] = useState([]);
+  const getFeedbackData = () => {
+    fetch("http://localhost:8008/Tourism/getFeedbackData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setDisplayFeedbackData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const StarRating = ({ rating }) => {
+    return (
+      <div className="star-rating-GD">
+        {[...Array(5)].map((_, index) => {
+          const fullStars = Math.floor(rating);
+          const hasHalfStar = rating % 1 >= 0.5;
+          const starType =
+            index < fullStars
+              ? "full"
+              : index === fullStars && hasHalfStar
+              ? "half"
+              : "empty";
+
+          return (
+            <span key={index} className={`star ${starType}`}>
+              {starType === "full" ? (
+                <StarIcon />
+              ) : starType === "half" ? (
+                <StarHalfIcon />
+              ) : (
+                <StarOutline />
+              )}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
   const FeedbackContent = () => {
     return (
       <div>
-        <h1>Hello Feedback</h1>
+        <div className="guide-content-GD">
+          <h2 className="heading-GD">
+            <strong>Feedback</strong>
+          </h2>
+          {displayFeedbackData.length > 0 ? (
+            <>
+              {displayFeedbackData.map((reserv) => (
+                <details
+                  className="feedback-details-GD"
+                  key={reserv.feedback_id}
+                >
+                  <summary className="feedback-summary-GD">
+                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
+                    )
+                  </summary>
+                  <div className="feedback-content-GD">
+                    <div className="feedback-rating-GD">
+                      Rating: <StarRating rating={reserv.rating} />
+                    </div>
+
+                    <p className="feedback-text-GD">
+                      Description:&nbsp;
+                      {reserv.description}
+                    </p>
+                  </div>
+                </details>
+              ))}
+            </>
+          ) : (
+            <p className="no-data-message-GD">No feedback available.</p>
+          )}
+        </div>
       </div>
     );
   };

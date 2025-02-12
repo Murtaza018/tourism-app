@@ -1408,7 +1408,7 @@ function AirlineDashboard() {
   };
   const StarRating = ({ rating }) => {
     return (
-      <div className="star-rating">
+      <div className="star-rating-AD">
         {[...Array(5)].map((_, index) => {
           const fullStars = Math.floor(rating);
           const hasHalfStar = rating % 1 >= 0.5;
@@ -1445,17 +1445,20 @@ function AirlineDashboard() {
           {displayFeedbackData.length > 0 ? (
             <>
               {displayFeedbackData.map((reserv) => (
-                <details className="feedback-details" key={reserv.feedback_id}>
-                  <summary className="feedback-summary">
+                <details
+                  className="feedback-details-AD"
+                  key={reserv.feedback_id}
+                >
+                  <summary className="feedback-summary-AD">
                     {reserv.first_name} {reserv.last_name}({reserv.sender_email}
                     )
                   </summary>
-                  <div className="feedback-content">
-                    <div className="feedback-rating">
+                  <div className="feedback-content-AD">
+                    <div className="feedback-rating-AD">
                       Rating: <StarRating rating={reserv.rating} />
                     </div>
 
-                    <p className="feedback-text">
+                    <p className="feedback-text-AD">
                       Description:&nbsp;
                       {reserv.description}
                     </p>

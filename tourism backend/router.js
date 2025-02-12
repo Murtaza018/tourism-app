@@ -6,6 +6,7 @@ const accountStatusController = require("./controller/StatusController.js");
 const flightController = require("./controller/FlightController.js");
 const feedbackController = require("./controller/FeedbackController.js");
 const guideReservationController = require("./controller/GuideReservationController.js");
+const priceController = require("./controller/PriceController.js");
 const express = require("express");
 const router = express.Router();
 
@@ -84,5 +85,7 @@ router.post(
   "/CheckGuideReservationCount",
   guideReservationController.CheckGuideReservationCount
 );
+
+router.post("/getPrice", priceController.getPrice);
 
 module.exports = router;
