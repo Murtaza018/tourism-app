@@ -87,5 +87,6 @@ router.post(
 );
 
 router.post("/getPrice", priceController.getPrice);
+router.post("/updatePrice", priceController.updatePrice);
 
 module.exports = router;

@@ -20,4 +20,19 @@ const getPrice = async (req, res) => {
     }
   );
 };
-module.exports = { getPrice };
+const updatePrice = async (req, res) => {
+  await PriceCheckTable();
+  pool.query(
+    `update price set price_per_day=? where email=?;`,
+    [req.body.price, req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = { getPrice, updatePrice };
