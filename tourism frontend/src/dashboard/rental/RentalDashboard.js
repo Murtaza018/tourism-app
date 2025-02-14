@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./GuideDashboard.css";
+import "./RentalDashboard.css";
 import { useState, useEffect, Suspense } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -23,7 +23,7 @@ import StarIcon from "@mui/icons-material/Star";
 import { LockIcon, LockOpenIcon, StarHalfIcon } from "lucide-react";
 import { StarOutline } from "@mui/icons-material";
 
-function GuideDashboard() {
+function RentalDashboard() {
   const navigate = useNavigate();
   const [activeCard, setActiveCard] = useState(() => {
     const storedCard = localStorage.getItem("activeCard");
@@ -44,6 +44,11 @@ function GuideDashboard() {
     phone: "",
     age: "",
     password: "",
+  });
+  const [CarData, setCarData] = useState({
+    capacity: "",
+    plate: "",
+    desc: "",
   });
   const [price, setPrice] = useState(null);
   useEffect(() => {
@@ -107,6 +112,29 @@ function GuideDashboard() {
       .catch((err) => {
         console.log(err);
       });
+    fetch("http://localhost:8008/Tourism/getCar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setCarData(() => ({
+            capacity: data.data[0].capacity,
+            plate: data.data[0].plate,
+            desc: data.data[0].description,
+          }));
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
   useEffect(() => {
     document.body.style.overflow = "auto";
@@ -116,7 +144,7 @@ function GuideDashboard() {
   }, [isOpen]);
 
   useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-GD");
+    const mainContainer = document.querySelector(".main-container-RD");
     if (mainContainer) {
       mainContainer.classList.toggle("menu-open", isOpen);
     }
@@ -132,39 +160,54 @@ function GuideDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div className="details-container-GD">
-        <h2 className="heading-GD">
+      <div className="details-container-RD">
+        <h2 className="heading-RD">
           <strong>Details</strong>
         </h2>
-        <p className="data-GD">
+        <h3 className="heading-RD">
+          <strong>Car Info</strong>
+        </h3>
+        <p className="data-RD">
           <strong>First Name: {AccountData.first_name}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Last Name: {AccountData.last_name}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Email: {AccountData.email}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Age: {AccountData.age}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Price Per Day: {price}$</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Phone: {AccountData.phone}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Country: {AccountData.country}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>City: {AccountData.city}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Address: {AccountData.address}</strong>
         </p>
-        <p className="data-GD">
+        <p className="data-RD">
           <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+        </p>
+        <h3 className="heading-RD">
+          <strong>Driver Info</strong>
+        </h3>
+        <p className="data-RD">
+          <strong>Plate Number: {CarData.plate}</strong>
+        </p>
+        <p className="data-RD">
+          <strong>Description: {CarData.desc}</strong>
+        </p>
+        <p className="data-RD">
+          <strong>Capacity: {CarData.capacity}</strong>
         </p>
       </div>
     );
@@ -176,7 +219,7 @@ function GuideDashboard() {
   const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
   const [displayReservationData, setDisplayReservationData] = useState([]);
   const [reservEditboxes, setReserveEditboxes] = useState(false);
-  const guideStatus = [
+  const RentalStatus = [
     { value: "Pending", label: "Pending" },
     { value: "Completed", label: "Completed" },
   ];
@@ -314,7 +357,7 @@ function GuideDashboard() {
       window.location.reload();
     }
   };
-  const GuideButton = styled(Button)(({ theme }) => ({
+  const RentalButton = styled(Button)(({ theme }) => ({
     backgroundColor: "transparent",
     border: "2px solid black",
     color: "black",
@@ -418,7 +461,7 @@ function GuideDashboard() {
     };
 
     const highlightStars = (value) => {
-      const stars = document.querySelectorAll(".star-GD");
+      const stars = document.querySelectorAll(".star-RD");
       stars.forEach((star) => {
         const starValue = parseFloat(star.dataset.value);
         if (starValue <= value) {
@@ -434,7 +477,7 @@ function GuideDashboard() {
       stars.push(
         <span
           key={i}
-          className="star-GD"
+          className="star-RD"
           data-value={i}
           onClick={() => handleStarClick(i)}
           onMouseOver={() => handleStarHover(i)}
@@ -446,13 +489,13 @@ function GuideDashboard() {
     }
 
     return (
-      <Dialog open={open} onClose={onClose} className="feedback-dialog-GD">
-        <div className="dialog-content-GD">
-          <h1 className="heading-GD">
+      <Dialog open={open} onClose={onClose} className="feedback-dialog-RD">
+        <div className="dialog-content-RD">
+          <h1 className="heading-RD">
             <strong>Feedback</strong>
           </h1>
-          <div className="rating-GD">
-            <div className="star-container-GD">
+          <div className="rating-RD">
+            <div className="star-container-RD">
               {stars}
               <p>Rating: {rating}</p>
             </div>
@@ -461,31 +504,31 @@ function GuideDashboard() {
             label="Receiver Name"
             value={receiver.first_name}
             disabled
-            className="dialog-field-GD disabled-field-GD"
+            className="dialog-field-RD disabled-field-RD"
           />
 
           <TextField
             label="Sender Email"
             value={localStorage.getItem("email")}
             disabled
-            className="dialog-field-GD disabled-field-GD"
+            className="dialog-field-RD disabled-field-RD"
           />
 
-          <div className="feedback-input-container-GD">
+          <div className="feedback-input-container-RD">
             <TextField
               type="text"
               label="Feedback Description"
-              inputProps={{ maxLength: 500, className: "expanding-input-GD" }}
+              inputProps={{ maxLength: 500, className: "expanding-input-RD" }}
               multiline
               required
               maxRows={4}
               onChange={(e) => setFeedbackDescription(e.target.value)}
-              className="dialog-field-GD feedback-input-GD"
+              className="dialog-field-RD feedback-input-RD"
             />
-            <p className="char-count-GD">{feedbackDescription.length}/500</p>
+            <p className="char-count-RD">{feedbackDescription.length}/500</p>
           </div>
 
-          <Button className="submit-button-GD" onClick={SubmitFeedback}>
+          <Button className="submit-button-RD" onClick={SubmitFeedback}>
             Submit
           </Button>
         </div>
@@ -495,12 +538,12 @@ function GuideDashboard() {
   const ReservationContent = () => {
     return (
       <div>
-        <div className="guide-content-GD">
-          <h1 className="heading-GD">
+        <div className="Rental-content-RD">
+          <h1 className="heading-RD">
             <strong>Reservations</strong>
           </h1>
-          <div className="guide-options-container-GD">
-            <GuideButton
+          <div className="Rental-options-container-RD">
+            <RentalButton
               variant="outlined"
               sx={{
                 "&:hover": {
@@ -512,8 +555,8 @@ function GuideDashboard() {
               onClick={toggleReservationEditButton}
             >
               {reservEditboxes ? "Cancel Edit" : "Edit Booking"}
-            </GuideButton>
-            <GuideButton
+            </RentalButton>
+            <RentalButton
               variant="outlined"
               sx={{
                 "&:hover": {
@@ -525,8 +568,8 @@ function GuideDashboard() {
               onClick={toggleReservationDeleteButton}
             >
               {reservDeleteboxes ? "Cancel Delete" : "Delete Booking"}
-            </GuideButton>
-            <GuideButton
+            </RentalButton>
+            <RentalButton
               variant="outlined"
               sx={{
                 "&:hover": {
@@ -538,33 +581,33 @@ function GuideDashboard() {
               onClick={handleFeedbackButton}
             >
               {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
-            </GuideButton>
+            </RentalButton>
           </div>
-          <div className="table-container-GD">
+          <div className="table-container-RD">
             {displayReservationData.length > 0 ? (
               <div>
-                <table className="guide-table-GD">
-                  <thead className="table-head-GD">
+                <table className="Rental-table-RD">
+                  <thead className="table-head-RD">
                     <tr>
                       {reservDeleteboxes && (
-                        <th className="table-header-GD">Select</th>
+                        <th className="table-header-RD">Select</th>
                       )}
-                      <th className="table-header-GD">Start Date</th>
-                      <th className="table-header-GD">End Date</th>
-                      <th className="table-header-GD">Status</th>
-                      <th className="table-header-GD">Tourist Name</th>
-                      <th className="table-header-GD">Tourist Phone</th>
+                      <th className="table-header-RD">Start Date</th>
+                      <th className="table-header-RD">End Date</th>
+                      <th className="table-header-RD">Status</th>
+                      <th className="table-header-RD">Tourist Name</th>
+                      <th className="table-header-RD">Tourist Phone</th>
                       {reservEditboxes && (
-                        <th className="table-header-GD">Edit</th>
+                        <th className="table-header-RD">Edit</th>
                       )}
                       {feedbackButton && (
-                        <th className="table-header-GD">Feedback</th>
+                        <th className="table-header-RD">Feedback</th>
                       )}
                     </tr>
                   </thead>
-                  <tbody className="table-body-GD">
+                  <tbody className="table-body-RD">
                     {filteredReservations.map((reserv) => (
-                      <tr key={reserv.reservation_id} className="table-row-GD">
+                      <tr key={reserv.reservation_id} className="table-row-RD">
                         {reservDeleteboxes && (
                           <td>
                             <input
@@ -582,10 +625,10 @@ function GuideDashboard() {
                         )}
                         {reservEditId === reserv.reservation_id ? (
                           <>
-                            <td className="table-cell-GD">
+                            <td className="table-cell-RD">
                               {reserv.start_date}
                             </td>
-                            <td className="table-cell-GD">{reserv.end_date}</td>
+                            <td className="table-cell-RD">{reserv.end_date}</td>
 
                             <td>
                               <Select
@@ -601,7 +644,7 @@ function GuideDashboard() {
                                 }
                               >
                                 <MenuItem value="">Select Status</MenuItem>
-                                {guideStatus.map((option) => (
+                                {RentalStatus.map((option) => (
                                   <MenuItem
                                     key={option.value}
                                     value={option.value}
@@ -611,15 +654,15 @@ function GuideDashboard() {
                                 ))}
                               </Select>
                             </td>
-                            <td className="table-cell-GD">
+                            <td className="table-cell-RD">
                               {reserv.first_name}
                             </td>
-                            <td className="table-cell-GD">{reserv.phone}</td>
+                            <td className="table-cell-RD">{reserv.phone}</td>
 
                             <td>
-                              <div className="button-group-GD">
+                              <div className="button-group-RD">
                                 <button
-                                  className="save-button-GD"
+                                  className="save-button-RD"
                                   onClick={() =>
                                     handleSaveReservClick(reserv.reservation_id)
                                   }
@@ -627,7 +670,7 @@ function GuideDashboard() {
                                   Save
                                 </button>
                                 <button
-                                  className="cancel-button-GD"
+                                  className="cancel-button-RD"
                                   onClick={handleCancelReservClick}
                                 >
                                   Cancel
@@ -637,20 +680,20 @@ function GuideDashboard() {
                           </>
                         ) : (
                           <>
-                            <td className="table-cell-GD">
+                            <td className="table-cell-RD">
                               {reserv.start_date}
                             </td>
-                            <td className="table-cell-GD">{reserv.end_date}</td>
-                            <td className="table-cell-GD">{reserv.status}</td>
-                            <td className="table-cell-GD">
+                            <td className="table-cell-RD">{reserv.end_date}</td>
+                            <td className="table-cell-RD">{reserv.status}</td>
+                            <td className="table-cell-RD">
                               {reserv.first_name}
                             </td>
-                            <td className="table-cell-GD">{reserv.phone}</td>
+                            <td className="table-cell-RD">{reserv.phone}</td>
 
                             {reservEditboxes && (
                               <td>
                                 <button
-                                  className="edit-button-GD"
+                                  className="edit-button-RD"
                                   onClick={() => handleReservEditClick(reserv)}
                                 >
                                   Edit
@@ -660,7 +703,7 @@ function GuideDashboard() {
                             {feedbackButton && (
                               <td>
                                 <button
-                                  className="feedback-button-GD"
+                                  className="feedback-button-RD"
                                   onClick={() =>
                                     handleClickOpenFeedbackCard(reserv)
                                   }
@@ -677,16 +720,16 @@ function GuideDashboard() {
                 </table>
                 {reservDeleteboxes && (
                   <button
-                    className="delete-selected-GD"
+                    className="delete-selected-RD"
                     onClick={handleDeleteSelectedReserv}
                   >
                     Delete Selected Reservations
                   </button>
                 )}
-                {error && <p className="error-message2-GD">{error}</p>}
+                {error && <p className="error-message2-RD">{error}</p>}
               </div>
             ) : (
-              <p className="no-data-message-GD">No data available.</p>
+              <p className="no-data-message-RD">No data available.</p>
             )}
           </div>
         </div>
@@ -722,7 +765,7 @@ function GuideDashboard() {
   };
   const StarRating = ({ rating }) => {
     return (
-      <div className="star-rating-GD">
+      <div className="star-rating-RD">
         {[...Array(5)].map((_, index) => {
           const fullStars = Math.floor(rating);
           const hasHalfStar = rating % 1 >= 0.5;
@@ -752,27 +795,27 @@ function GuideDashboard() {
   const FeedbackContent = () => {
     return (
       <div>
-        <div className="guide-content-GD">
-          <h2 className="heading-GD">
+        <div className="Rental-content-RD">
+          <h2 className="heading-RD">
             <strong>Feedback</strong>
           </h2>
           {displayFeedbackData.length > 0 ? (
             <>
               {displayFeedbackData.map((reserv) => (
                 <details
-                  className="feedback-details-GD"
+                  className="feedback-details-RD"
                   key={reserv.feedback_id}
                 >
-                  <summary className="feedback-summary-GD">
+                  <summary className="feedback-summary-RD">
                     {reserv.first_name} {reserv.last_name}({reserv.sender_email}
                     )
                   </summary>
-                  <div className="feedback-content-GD">
-                    <div className="feedback-rating-GD">
+                  <div className="feedback-content-RD">
+                    <div className="feedback-rating-RD">
                       Rating: <StarRating rating={reserv.rating} />
                     </div>
 
-                    <p className="feedback-text-GD">
+                    <p className="feedback-text-RD">
                       Description:&nbsp;
                       {reserv.description}
                     </p>
@@ -781,7 +824,7 @@ function GuideDashboard() {
               ))}
             </>
           ) : (
-            <p className="no-data-message-GD">No feedback available.</p>
+            <p className="no-data-message-RD">No feedback available.</p>
           )}
         </div>
       </div>
@@ -1061,14 +1104,14 @@ function GuideDashboard() {
     };
     return (
       <div>
-        <div className="details-container-GD">
-          <h2 className="heading-GD">Settings</h2>
+        <div className="details-container-RD">
+          <h2 className="heading-RD">Settings</h2>
         </div>
         {editData === true ? (
-          <div className="edit-input-container-GD">
+          <div className="edit-input-container-RD">
             <TextField
               type="text"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="First Name"
               value={updatedData.first_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
@@ -1078,7 +1121,7 @@ function GuideDashboard() {
             </TextField>
             <TextField
               type="text"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Last Name"
               value={updatedData.last_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
@@ -1086,13 +1129,13 @@ function GuideDashboard() {
             >
               Last Name
             </TextField>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Email:</strong> {AccountData.email}
             </p>
 
             <TextField
               type="number"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Age(18-150)"
               value={updatedData.age}
               onChange={(e) => handleUpdatedDataInputChange(e, "age")}
@@ -1102,7 +1145,7 @@ function GuideDashboard() {
             </TextField>
             <TextField
               type="number"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Price Per Day($)"
               value={updatePrice}
               onChange={(e) => setUpdatePrice(e.target.value)}
@@ -1112,7 +1155,7 @@ function GuideDashboard() {
             </TextField>
             <TextField
               type="tel"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Phone"
               value={updatedData.phone}
               onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
@@ -1126,7 +1169,7 @@ function GuideDashboard() {
               labelId="country-label"
               id="country"
               size="small"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               value={selectedCountry}
               label="Select Country"
               sx={{
@@ -1153,7 +1196,7 @@ function GuideDashboard() {
               required
               labelId="city-label"
               id="city"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               disabled={!selectedCountry}
               fullWidth
               value={selectedCity}
@@ -1177,7 +1220,7 @@ function GuideDashboard() {
             </Select>
             <TextField
               type="text"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Complete Address"
               value={updatedData.address}
               onChange={(e) => handleUpdatedDataInputChange(e, "address")}
@@ -1187,7 +1230,7 @@ function GuideDashboard() {
             </TextField>
             <TextField
               type="password"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Enter Password"
               value={updatedData.password}
               onChange={(e) => handleUpdatedDataInputChange(e, "password")}
@@ -1197,7 +1240,7 @@ function GuideDashboard() {
             </TextField>
             <TextField
               type="password"
-              className="seats-input2-GD"
+              className="seats-input2-RD"
               label="Confirm Password"
               value={confPassword}
               onChange={(e) => setConfPassword(e.target.value)}
@@ -1206,57 +1249,57 @@ function GuideDashboard() {
               Confirm Password
             </TextField>
 
-            {error && <p className="error-message-GD">{error}</p>}
+            {error && <p className="error-message-RD">{error}</p>}
           </div>
         ) : (
-          <div className="details-container-GD">
-            <p className="data-GD">
+          <div className="details-container-RD">
+            <p className="data-RD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Last Name: {AccountData.last_name}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Email: {AccountData.email}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Age: {AccountData.age}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Price Per Day($): {price}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Phone: {AccountData.phone}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Country: {AccountData.country}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>City: {AccountData.city}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>Address: {AccountData.address}</strong>
             </p>
-            <p className="data-GD">
+            <p className="data-RD">
               <strong>
                 Password: {"*".repeat(AccountData.password.length)}
               </strong>
             </p>
           </div>
         )}
-        <div className="setting-container-GD">
+        <div className="setting-container-RD">
           {editData && (
-            <button className="save-button-GD" onClick={saveChanges}>
+            <button className="save-button-RD" onClick={saveChanges}>
               Save
             </button>
           )}
-          <button className="edit-button-GD" onClick={editDataButton}>
+          <button className="edit-button-RD" onClick={editDataButton}>
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
 
-        <div className="setting-container-GD">
-          <GuideButton
+        <div className="setting-container-RD">
+          <RentalButton
             onClick={lockAccount}
             sx={{
               gap: "0.7vw",
@@ -1271,8 +1314,8 @@ function GuideDashboard() {
                 <LockOpenIcon /> Unlock Account
               </>
             )}
-          </GuideButton>
-          <GuideButton
+          </RentalButton>
+          <RentalButton
             sx={{
               "&:hover": {
                 color: "red !important",
@@ -1284,20 +1327,20 @@ function GuideDashboard() {
           >
             <DeleteIcon />
             Delete Account
-          </GuideButton>
+          </RentalButton>
         </div>
-        <div className="setting-container-GD">
-          {error2 && <p className="error-message2-GD">{error2}</p>}
+        <div className="setting-container-RD">
+          {error2 && <p className="error-message2-RD">{error2}</p>}
         </div>
 
         {accountStatus ? (
-          <p className="locking-account-message-GD">
+          <p className="locking-account-message-RD">
             <LockIcon />
             Locking Account will NOT show your Profile to the Tourists for
             reservations
           </p>
         ) : (
-          <p className="locking-account-message-GD">
+          <p className="locking-account-message-RD">
             <LockOpenIcon />
             Unlocking Account will show your Profile to the Tourists for
             reservations
@@ -1323,31 +1366,31 @@ function GuideDashboard() {
   };
   return (
     <div>
-      <div className="background-GD">
+      <div className="background-RD">
         <Aurora colorStops={["#00D8FF", "#7cff67", "#00D8FF"]} speed={0.9} />
       </div>
-      <div className="main-container-GD">
-        <div className="hamburger-menu-GD">
+      <div className="main-container-RD">
+        <div className="hamburger-menu-RD">
           <button
-            className={`hamburger-icon-GD ${isOpen ? "open-GD" : ""}`}
+            className={`hamburger-icon-RD ${isOpen ? "open-RD" : ""}`}
             onClick={toggleMenu}
           >
             <span
-              className={`line-GD line-top-GD ${isOpen ? "open-GD" : ""}`}
+              className={`line-RD line-top-RD ${isOpen ? "open-RD" : ""}`}
             ></span>
             <span
-              className={`line-GD line-middle-GD ${isOpen ? "open-GD" : ""}`}
+              className={`line-RD line-middle-RD ${isOpen ? "open-RD" : ""}`}
             ></span>
             <span
-              className={`line-GD line-bottom-GD ${isOpen ? "open-GD" : ""}`}
+              className={`line-RD line-bottom-RD ${isOpen ? "open-RD" : ""}`}
             ></span>
           </button>
 
-          <nav className={`menu-GD ${isOpen ? "open-GD" : ""}`}>
+          <nav className={`menu-RD ${isOpen ? "open-RD" : ""}`}>
             <ul>
               <li>
                 <button
-                  className="button-GD"
+                  className="button-RD"
                   onClick={() => {
                     setActiveCard("Home");
                     localStorage.setItem("activeCard", "Home");
@@ -1359,7 +1402,7 @@ function GuideDashboard() {
               </li>
               <li>
                 <button
-                  className="button-GD"
+                  className="button-RD"
                   onClick={() => {
                     setActiveCard("ReservationUpdates");
                     localStorage.setItem("activeCard", "ReservationUpdates");
@@ -1371,7 +1414,7 @@ function GuideDashboard() {
               </li>
               <li>
                 <button
-                  className="button-GD"
+                  className="button-RD"
                   onClick={() => {
                     setActiveCard("Feedback");
                     localStorage.setItem("activeCard", "Feedback");
@@ -1383,7 +1426,7 @@ function GuideDashboard() {
               </li>
               <li>
                 <button
-                  className="button-GD"
+                  className="button-RD"
                   onClick={() => {
                     setActiveCard("SettingUpdates");
                     localStorage.setItem("activeCard", "SettingUpdates");
@@ -1394,7 +1437,7 @@ function GuideDashboard() {
                 </button>
               </li>
               <li>
-                <button className="button-GD" onClick={logOut}>
+                <button className="button-RD" onClick={logOut}>
                   <LogoutIcon />
                   Logout
                 </button>
@@ -1402,12 +1445,12 @@ function GuideDashboard() {
             </ul>
           </nav>
         </div>
-        <div className="content-GD">
-          <div className="details-GD">{renderContent()}</div>
+        <div className="content-RD">
+          <div className="details-RD">{renderContent()}</div>
         </div>
       </div>
     </div>
   );
 }
 
-export default GuideDashboard;
+export default RentalDashboard;

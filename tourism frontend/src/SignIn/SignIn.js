@@ -340,6 +340,89 @@ function SignIn() {
       </div>
     </div>
   );
+  const RentalData = useRef({
+    email: "",
+    password: "",
+  });
+  const signInRental = async () => {
+    console.log(RentalData);
+    fetch("http://localhost:8008/Tourism/signInUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(RentalData.current),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          if (
+            data.data[0].password &&
+            data.data[0].password === RentalData.current.password
+          ) {
+            localStorage.setItem("loggedIn", true);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("email", data.data[0].email);
+
+            navigate("/RentalDashboard");
+          } else {
+            setError("Incorrect Password!");
+          }
+        } else {
+          setError("Email does not exist!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleRentalDataSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted");
+
+    // Store data in ref instead of state
+    RentalData.current = {
+      email: emailRef.current.value,
+      password: RentalData.current.password, // Store existing password
+    };
+
+    // Store password in RentalData
+    RentalData.current.password = passRef.current.value;
+
+    signInRental();
+  };
+
+  const RentalCard = () => (
+    <div className="card2-signin">
+      <button className="close-icon-signin" onClick={() => setActiveCard(null)}>
+        ✕
+      </button>
+      <div className="form-container-signin">
+        <div className="heading-signin">Rental Sign In</div>
+        <form onSubmit={handleRentalDataSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            ref={emailRef}
+            className="form-input-signin"
+            defaultValue={RentalData.current.email}
+          />
+          <input
+            type="password"
+            placeholder="Enter password"
+            ref={passRef}
+            className="form-input-signin"
+            defaultValue={RentalData.current.password}
+          />
+          {error && <p className="error-message-signin">{error}</p>}
+          <button type="submit" className="form-button-signin">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+  );
   const AdminData = useRef({
     email: "",
     password: "",
@@ -433,6 +516,8 @@ function SignIn() {
         return <AirlineCard />;
       case "GuideCard":
         return <GuideCard />;
+      case "RentalCard":
+        return <RentalCard />;
       case "AdminCard":
         return <AdminCard />;
       default:
@@ -471,12 +556,18 @@ function SignIn() {
           </Button>
           <Button
             className="button-signin"
+            onClick={() => setActiveCard("RentalCard")}
+          >
+            Car Rental
+          </Button>
+          <Button
+            className="button-signin"
             onClick={() => setActiveCard("AdminCard")}
           >
             Admin
           </Button>
           <Button className="button-signin" onClick={() => navigate("/signup")}>
-            Do not have an account? Sign Up
+            Sign Up
           </Button>
         </div>
       </Card>

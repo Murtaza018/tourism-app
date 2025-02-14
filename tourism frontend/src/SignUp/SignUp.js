@@ -687,6 +687,7 @@ function SignUp() {
       last_name: "",
       email: "",
       age: "",
+      price: "",
       phone: "",
       country: "",
       city: "",
@@ -739,6 +740,10 @@ function SignUp() {
         setError("Invalid age!");
         return;
       }
+      if (formData.price <= 0) {
+        setError("Invalid price!");
+        return;
+      }
       if (formData.country === "") {
         setError("Select a valid country!");
         return;
@@ -752,6 +757,7 @@ function SignUp() {
       formData.password = passRef.current.value;
       console.log(formData);
       insertGuide(formData);
+      insertPrice(formData.email, formData.price);
       localStorage.setItem("loggedIn", true);
       localStorage.setItem("email", formData.email);
       navigate("/GuideDashboard");
@@ -764,6 +770,26 @@ function SignUp() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("User created");
+          } else {
+            console.log("User not created!P", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const insertPrice = async (email, price) => {
+      fetch("http://localhost:8008/Tourism/insertPrice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email, price: price }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -809,6 +835,15 @@ function SignUp() {
               placeholder="Age(18-150)"
               name="age"
               value={formData.age}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Price Per Day($)"
+              name="price"
+              value={formData.price}
               onChange={handleInputChange}
               className="form-input"
               required
@@ -905,11 +940,338 @@ function SignUp() {
       </div>
     );
   };
+  const RentalCard = () => {
+    const [formData, setFormData] = useState({
+      first_name: "",
+      last_name: "",
+      email: "",
+      age: "",
+      price: "",
+      phone: "",
+      country: "",
+      city: "",
+      address: "",
+      password: "",
+      plate: "",
+      desc: "",
+      capacity: "",
+      role_ID: 6,
+    });
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [cities, setCities] = useState([]);
+    const [error, setError] = useState("");
+    const passRef = useRef();
+    const confPassRef = useRef();
+
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      setFormData({ ...formData, [name]: value });
+    };
+
+    const RentalCountryChange = (event) => {
+      const countryIsoCode = event.target.value;
+      setSelectedCountry(countryIsoCode);
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setCities(countryCities);
+      } else {
+        setCities([]); // Reset cities if no country is selected
+      }
+      setFormData({
+        ...formData,
+        country: Country.getCountryByCode(countryIsoCode)?.name || "",
+        city: "",
+      });
+    };
+
+    const RentalCityChange = (event) => {
+      const selectedCityName = event.target.value;
+      setFormData({ ...formData, city: selectedCityName });
+    };
+
+    const handleRentalDataSubmit = async (e) => {
+      e.preventDefault();
+
+      if (passRef.current.value !== confPassRef.current.value) {
+        setError("Passwords do not match!");
+        return;
+      }
+      if (formData.age < 18 || formData.age > 150) {
+        setError("Invalid age!");
+        return;
+      }
+      if (formData.price <= 0) {
+        setError("Invalid price!");
+        return;
+      }
+      if (formData.country === "") {
+        setError("Select a valid country!");
+        return;
+      }
+      if (formData.city === "") {
+        setError("Select a valid city!");
+        return;
+      }
+      if (formData.capacity < 1 || formData.capacity > 100) {
+        setError("Invalid Capacity!");
+        return;
+      }
+      setError("");
+
+      formData.password = passRef.current.value;
+      console.log(formData);
+      await insertRental(formData);
+      await insertPrice(formData.email, formData.price);
+      await insertCar(
+        formData.email,
+        formData.capacity,
+        formData.desc,
+        formData.plate
+      );
+      localStorage.setItem("loggedIn", true);
+      localStorage.setItem("email", formData.email);
+      navigate("/RentalDashboard");
+    };
+
+    const insertCar = async (email, capacity, desc, plate) => {
+      fetch("http://localhost:8008/Tourism/insertCar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          capacity: capacity,
+          email: email,
+          desc: desc,
+          plate: plate,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("User created");
+          } else {
+            console.log("User not created!P", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const insertRental = async (data) => {
+      fetch("http://localhost:8008/Tourism/insertUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("User created");
+          } else {
+            console.log("User not created!P", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const insertPrice = async (email, price) => {
+      fetch("http://localhost:8008/Tourism/insertPrice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email, price: price }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("User created");
+          } else {
+            console.log("User not created!P", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    return (
+      <div className="card2">
+        <button className="close-icon" onClick={() => setActiveCard(null)}>
+          ✕
+        </button>
+        <div className="form-container">
+          <div className="heading">Rental Sign Up</div>
+          <div className="heading">Driver Info</div>
+          <form onSubmit={handleRentalDataSubmit}>
+            <input
+              type="text"
+              placeholder="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Age(18-150)"
+              name="age"
+              value={formData.age}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Price Per Day($)"
+              name="price"
+              value={formData.price}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <select
+              className="input-menu"
+              id="country"
+              value={selectedCountry}
+              onChange={RentalCountryChange}
+            >
+              <option className="select-menu-option" value="">
+                Select Country
+              </option>
+              {Country.getAllCountries().map((country) => (
+                <option
+                  className="select-menu-option"
+                  key={country.isoCode}
+                  value={country.isoCode}
+                >
+                  {country.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="input-menu"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={RentalCityChange}
+              disabled={!selectedCountry}
+            >
+              <option className="select-menu-option" value="">
+                Select City
+              </option>
+              {cities.map((city) => (
+                <option
+                  className="select-menu-option"
+                  key={city.name}
+                  value={city.name}
+                >
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Complete Address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Enter password"
+              ref={passRef}
+              className="form-input"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              ref={confPassRef}
+              className="form-input"
+              required
+            />
+            <div className="heading">Car Info</div>
+            <input
+              type="number"
+              placeholder="Seat Capacity"
+              name="capacity"
+              value={formData.capacity}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Plate Number"
+              name="plate"
+              value={formData.plate}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Description(e.g: Black Honda Civic)"
+              name="desc"
+              value={formData.desc}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+            {error && <p className="error-message">{error}</p>}
+
+            <button type="submit" className="form-button">
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
   const cardComponents = {
     TouristCard: TouristCard,
     HotelCard: HotelCard,
     AirlineCard: AirlineCard,
     GuideCard: GuideCard,
+    RentalCard: RentalCard,
   };
 
   const renderCardContent = () => {
@@ -951,11 +1313,16 @@ function SignUp() {
             >
               Tour Guide
             </Button>
+            <Button
+              className="button"
+              onClick={() => setActiveCard("RentalCard")}
+            >
+              Car Rental
+            </Button>
           </div>
         </Card>
         <div>{renderCardContent()}</div>
       </div>
-      <div className="back"></div>
     </div>
   );
 }

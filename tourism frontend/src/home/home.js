@@ -73,6 +73,9 @@ function Home() {
     if (roleID === 5) {
       navigate("/AdminDashboard");
     }
+    if (roleID === 6) {
+      navigate("/RentalDashboard");
+    }
   };
   return (
     <div>

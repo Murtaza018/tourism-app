@@ -19,6 +19,9 @@ const createAndPopulateRole = async () => {
   await pool.query(
     `insert ignore into role(role_ID, name) values(5, 'Admin');`
   );
+  await pool.query(
+    `insert ignore into role(role_ID, name) values(6, 'Car Rental');`
+  );
   console.log("Role table created and populated successfully.");
 };
 module.exports = { createAndPopulateRole };
