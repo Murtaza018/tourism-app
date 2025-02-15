@@ -110,7 +110,7 @@ body.menu-open-RD {
 .menu-RD {
   width: 250px;
   height: 100%;
-  background-color: rgba(102, 205, 170, 0.5);
+  background-color: rgba(255, 183, 77, 0.5);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 20;
@@ -126,7 +126,7 @@ body.menu-open-RD {
   overflow-x: auto;
 }
 .details-RD {
-  background-color: rgba(80, 200, 120, 0.5);
+  background-color: rgba(255, 209, 177, 0.5);
   border: 1px solid #ccebff;
   border-radius: 8px;
   padding: 50px;
@@ -159,8 +159,8 @@ body.menu-open-RD {
 }
 
 .details-RD:hover {
-  box-shadow: 0 0 20px 5px rgba(9, 112, 64, 0.7),
-    inset 0 0 20px 5px rgba(9, 112, 64, 0.7);
+  box-shadow: 0 0 20px 5px rgba(255, 164, 8, 0.7),
+    inset 0 0 20px 5px rgba(255, 164, 8, 0.7);
 }
 
 .details-container-RD {
@@ -172,11 +172,11 @@ body.menu-open-RD {
 }
 
 .heading-RD {
-  color: #045322;
+  color: rgb(142, 70, 8);
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(0, 166, 22, 0.78);
+  border-bottom: 2px solid rgba(220, 102, 0, 0.78);
 }
 
 .data-RD {
@@ -188,7 +188,7 @@ body.menu-open-RD {
   opacity: 0;
   justify-content: center;
   overflow: hidden;
-  background-image: linear-gradient(to right, #014f01, #a7ffa7);
+  background-image: linear-gradient(to right, #ffb74d, #e67e22, #fff5ee);
   padding: 10px 0px;
 }
 

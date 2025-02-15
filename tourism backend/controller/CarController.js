@@ -38,4 +38,20 @@ const getCar = async (req, res) => {
     }
   );
 };
-module.exports = { insertCar, getCar };
+const updateCar = async (req, res) => {
+  await CarCheckTable();
+  pool.query(
+    `update car set description=?,plate=?,capacity=? where email=?;`,
+    [req.body.desc, req.body.plate, req.body.capacity, req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+
+module.exports = { insertCar, updateCar, getCar };

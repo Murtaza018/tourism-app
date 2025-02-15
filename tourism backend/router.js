@@ -93,5 +93,6 @@ router.post("/insertPrice", priceController.insertPrice);
 
 router.post("/insertCar", carController.insertCar);
 router.post("/getCar", carController.getCar);
+router.post("/updateCar", carController.updateCar);
 
 module.exports = router;

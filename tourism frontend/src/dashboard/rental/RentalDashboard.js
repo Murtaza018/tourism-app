@@ -10,6 +10,7 @@ import Aurora from "../../components/Aurora";
 import { Country, City } from "country-state-city";
 import {
   Button,
+  Card,
   Dialog,
   InputLabel,
   MenuItem,
@@ -855,6 +856,7 @@ function RentalDashboard() {
   const [accountStatus, setAccountStatus] = useState(true);
 
   const SettingContent = () => {
+    const [error, setError] = useState("");
     const [updatePrice, setUpdatePrice] = useState(null);
     const [updatedData, setUpdatedData] = useState({
       first_name: "",
@@ -863,6 +865,11 @@ function RentalDashboard() {
       phone: "",
       address: "",
       password: "",
+    });
+    const [updatedCar, setUpdatedCar] = useState({
+      capacity: "",
+      plate: "",
+      desc: "",
     });
     const updateData = () => {
       console.log("Hello", updatedData);
@@ -913,6 +920,29 @@ function RentalDashboard() {
           console.log(err);
         });
     };
+    const updateCarAPI = () => {
+      fetch("http://localhost:8008/Tourism/updateCar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...updatedCar,
+          email: localStorage.getItem("email"),
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("Airline Data updated!");
+          } else {
+            console.log("Airline Data not updated!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     const [cities, setCities] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
@@ -921,8 +951,6 @@ function RentalDashboard() {
 
     const saveChanges = (e) => {
       e.preventDefault();
-      console.log(selectedCity);
-      console.log(selectedCountryName);
 
       if (updatedData.first_name === "") {
         setError("Enter a valid first name!");
@@ -964,17 +992,30 @@ function RentalDashboard() {
         setError("Passwords do not match!");
         return;
       }
+      if (updatedCar.capacity < 1) {
+        setError("Enter a valid capacity!");
+        return;
+      }
+      if (updatedCar.plate === "") {
+        setError("Enter a valid plate!");
+        return;
+      }
+      if (updatedCar.desc === "") {
+        setError("Enter a valid description!");
+        return;
+      }
 
       setError("");
       console.log("Updated-Data", updatedData);
       updateData();
       updatePriceAPI();
+      updateCarAPI();
       window.location.reload();
     };
     const [confPassword, setConfPassword] = useState("");
     const editDataButton = () => {
+      console.log("Hello");
       if (!editData) {
-        setError("");
         setUpdatedData({
           first_name: AccountData.first_name,
           last_name: AccountData.last_name,
@@ -985,6 +1026,11 @@ function RentalDashboard() {
         });
         setConfPassword(AccountData.password);
         setUpdatePrice(price);
+        setUpdatedCar({
+          capacity: CarData.capacity,
+          desc: CarData.desc,
+          plate: CarData.plate,
+        });
       }
       setEditData(!editData);
     };
@@ -1102,10 +1148,19 @@ function RentalDashboard() {
         [field]: event.target.value,
       }));
     };
+    const handleUpdatedCarInputChange = (event, field) => {
+      setUpdatedCar((prevData) => ({
+        ...prevData,
+        [field]: event.target.value,
+      }));
+    };
     return (
       <div>
         <div className="details-container-RD">
           <h2 className="heading-RD">Settings</h2>
+        </div>
+        <div className="details-container-RD">
+          <h2 className="heading-RD">Driver Info</h2>
         </div>
         {editData === true ? (
           <div className="edit-input-container-RD">
@@ -1249,6 +1304,40 @@ function RentalDashboard() {
               Confirm Password
             </TextField>
 
+            <div className="details-container-RD">
+              <h2 className="heading-RD">Car Info</h2>
+            </div>
+
+            <TextField
+              type="text"
+              className="seats-input2-RD"
+              label="Plate Number"
+              value={updatedCar.plate}
+              onChange={(e) => handleUpdatedCarInputChange(e, "plate")}
+              required
+            >
+              Plate Number
+            </TextField>
+            <TextField
+              type="text"
+              className="seats-input2-RD"
+              label="Description"
+              value={updatedCar.desc}
+              onChange={(e) => handleUpdatedCarInputChange(e, "desc")}
+              required
+            >
+              Description
+            </TextField>
+            <TextField
+              type="number"
+              className="seats-input2-RD"
+              label="Capacity"
+              value={updatedCar.capacity}
+              onChange={(e) => handleUpdatedCarInputChange(e, "capacity")}
+              required
+            >
+              Capacity
+            </TextField>
             {error && <p className="error-message-RD">{error}</p>}
           </div>
         ) : (
@@ -1284,6 +1373,17 @@ function RentalDashboard() {
               <strong>
                 Password: {"*".repeat(AccountData.password.length)}
               </strong>
+            </p>
+            <h2 className="heading-RD">Car Info</h2>
+
+            <p className="data-RD">
+              <strong>Plate: {CarData.plate}</strong>
+            </p>
+            <p className="data-RD">
+              <strong>Description: {CarData.desc}</strong>
+            </p>
+            <p className="data-RD">
+              <strong>Capacity: {CarData.capacity}</strong>
             </p>
           </div>
         )}
@@ -1367,7 +1467,10 @@ function RentalDashboard() {
   return (
     <div>
       <div className="background-RD">
-        <Aurora colorStops={["#00D8FF", "#7cff67", "#00D8FF"]} speed={0.9} />
+        <Aurora
+          colorStops={["#FFB74D", "#E67E22", "#FFF5EE", "#FFB74D"]}
+          speed={0.9}
+        />
       </div>
       <div className="main-container-RD">
         <div className="hamburger-menu-RD">
