@@ -13,7 +13,7 @@ function TouristDashboard() {
 
   return (
     <div>
-      <h1>Hello {firstName}</h1>
+      <h1>Hello Tourist {firstName}</h1>
     </div>
   );
 }
