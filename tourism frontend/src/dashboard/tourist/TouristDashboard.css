@@ -67,12 +67,15 @@
 
 .menu-TD ul {
   list-style: none;
-  padding: 50px 20px;
+  padding: 50px 18px;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .menu-TD li {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .button-TD {
@@ -681,4 +684,11 @@ details[open] .feedback-summary-TD::after {
 
 .travel-btn-animated:hover .btn-icon {
   transform: translateX(5px);
+}
+
+.stepper-div-TD {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
