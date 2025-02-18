@@ -11,17 +11,16 @@ import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import {
   Button,
-  Dialog,
   InputLabel,
   MenuItem,
   Select,
   styled,
   TextField,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
-import { LockIcon, LockOpenIcon, StarHalfIcon } from "lucide-react";
+import { ChevronRight, LockIcon, LockOpenIcon } from "lucide-react";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
 
 function TouristDashboard() {
@@ -34,7 +33,7 @@ function TouristDashboard() {
     return "Home";
   });
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState("");
+
   const [AccountData, setAccountData] = useState({
     first_name: "",
     last_name: "",
@@ -48,7 +47,6 @@ function TouristDashboard() {
   });
 
   useEffect(() => {
-    setError("");
     if (activeCard === "Feedback") {
       getFeedbackData();
     } else if (activeCard === "SettingUpdates") {
@@ -145,21 +143,35 @@ function TouristDashboard() {
       </div>
     );
   };
-  const PastPackages = () => {
+  const Packages = () => {
     return (
       <div className="Tourist-content-TD">
         <h2 className="heading-TD">
-          <strong>Your Previous Packages</strong>
+          <strong>Your Packages</strong>
         </h2>
       </div>
     );
   };
+
   const TravelPackages = () => {
+    const [stepperDisplay, setStepperDisplay] = useState(false);
     return (
       <div className="Tourist-content-TD">
         <h2 className="heading-TD">
           <strong>Travel The World!</strong>
         </h2>
+        <button
+          onClick={() => {
+            setStepperDisplay(!stepperDisplay);
+          }}
+          className={"travel-btn travel-btn-animated"}
+        >
+          <span className="btn-content">
+            Let's Travel
+            <ChevronRight className="btn-icon" size={18} />
+          </span>
+        </button>
+        <div className="stepper-div-TD"></div>
       </div>
     );
   };
@@ -734,7 +746,7 @@ function TouristDashboard() {
 
   const cardComponents = {
     Home: HomeContent,
-    PastPackages: PastPackages,
+    Packages: Packages,
     TravelPackages: TravelPackages,
     Feedback: FeedbackContent,
     SettingUpdates: SettingContent,
@@ -790,12 +802,12 @@ function TouristDashboard() {
                 <button
                   className="button-TD"
                   onClick={() => {
-                    setActiveCard("PastPackages");
-                    localStorage.setItem("activeCard", "PastPackages");
+                    setActiveCard("Packages");
+                    localStorage.setItem("activeCard", "Packages");
                   }}
                 >
                   <HistoryIcon />
-                  Previous Pacakges
+                  Packages
                 </button>
               </li>
               <li>
