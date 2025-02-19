@@ -692,3 +692,61 @@ details[open] .feedback-summary-TD::after {
   justify-content: center;
   width: 100%;
 }
+/*
+
+
+
+
+
+
+
+
+*/
+.travel-btn.travel-btn-animated.override-padding {
+  padding: 10px 16px;
+}
+
+/* .dialog-container-TD {
+  backdrop-filter: blur(10px) saturate(150%);
+  background: rgba(0, 0, 50, 0.7) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5) !important;
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+} */
+.dialog-container-TD {
+  box-shadow: 20px 20px 20px orange !important;
+}
+.dialog-container-TD .MuiPaper-root {
+  box-shadow: 0 0 20px 0 rgba(0, 255, 255, 0.5);
+  animation: pulse-TD 4s infinite ease-in-out;
+  border-radius: 1rem;
+  z-index: 20;
+  max-width: 70vw !important;
+}
+@keyframes pulse-TD {
+  0% {
+    transform: translateY(6px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(6px);
+  }
+}
+
+.dialog-content-TD {
+  color: rgb(0, 0, 0) !important;
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 1.1rem;
+}
+
+.dialog-actions-TD {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  padding-bottom: 15px !important;
+  width: 95%;
+}

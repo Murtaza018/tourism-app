@@ -12,6 +12,9 @@ import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
   InputLabel,
   MenuItem,
   Select,
@@ -25,6 +28,7 @@ import {
   ChevronLeft,
   LockIcon,
   LockOpenIcon,
+  Box,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
@@ -158,31 +162,92 @@ function TouristDashboard() {
       </div>
     );
   };
+
   const [stepperDisplay, setStepperDisplay] = useState(false);
-  const TravelPackages = () => {
-    const [name, setName] = useState("");
+  // const PackageStepper = () => {
+  //   const [name, setName] = useState("");
+  //   return (
+  //     <div className="stepper-div-TD">
+  //       <Stepper
+  //         sx={{ width: "100%" }}
+  //         initialStep={1}
+  //         onStepChange={(step) => {
+  //           console.log(step);
+  //         }}
+  //         onFinalStepCompleted={() => console.log("All steps completed!")}
+  //         backButtonText={<ChevronLeft />}
+  //         nextButtonText={<ChevronRight />}
+  //       >
+  //         <Step>
+  //           <h2>Welcome to the React Bits stepper!</h2>
+  //           <p>Check out the next step!</p>
+  //         </Step>
+  //         <Step>
+  //           <h2>Step 2</h2>
+
+  //           <p>Custom step content!</p>
+  //         </Step>
+  //         <Step>
+  //           <h2>How about an input?</h2>
+  //           <input
+  //             value={name}
+  //             onChange={(e) => setName(e.target.value)}
+  //             placeholder="Your name?"
+  //             required
+  //           />
+  //         </Step>
+  //         <Step>
+  //           <h2>Final Step 4</h2>
+  //           <p>You made it!</p>
+  //         </Step>
+  //         <Step>
+  //           <h2>Final Step 5 {name}</h2>
+  //           <p>You made it!</p>
+  //         </Step>
+  //         <Step>
+  //           <h2>Final Step</h2>
+  //           <p>You made it!</p>
+  //         </Step>
+  //       </Stepper>
+  //     </div>
+  //   );
+  // };
+  const StyledDialog = ({ open, onClose, children }) => {
     return (
-      <>
-        <div className="Tourist-content-TD">
-          <h2 className="heading-TD">
-            <strong>Travel The World!</strong>
-          </h2>
-          <button
-            onClick={() => {
-              setStepperDisplay(!stepperDisplay);
-            }}
-            className={"travel-btn travel-btn-animated"}
-          >
-            <span className="btn-content">
-              Let's Travel
-              <ChevronRight className="btn-icon" size={18} />
-            </span>
-          </button>
-        </div>
-        {stepperDisplay && (
-          <div className="stepper-div-TD">
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        className="dialog-container-TD"
+        PaperProps={{
+          className: "dialog-paper-TD",
+        }}
+      >
+        {children}
+        <DialogActions className="dialog-actions-TD">
+          <Button onClick={onClose} className="close-button-TD">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+  const handleOpenPackageStepper = () => {
+    setStepperDisplay(true);
+  };
+
+  const handleClosePackageStepper = () => {
+    setStepperDisplay(false);
+  };
+  const PackageStepper = ({ open, onClose }) => {
+    const [name, setName] = useState("");
+
+    return (
+      <div>
+        <Dialog open={open} onClose={onClose} className="dialog-container-TD">
+          <DialogContent className="dialog-content-TD">
             <Stepper
-              sx={{ width: "100%" }}
               initialStep={1}
               onStepChange={(step) => {
                 console.log(step);
@@ -197,7 +262,6 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2>Step 2</h2>
-
                 <p>Custom step content!</p>
               </Step>
               <Step>
@@ -210,11 +274,11 @@ function TouristDashboard() {
                 />
               </Step>
               <Step>
-                <h2>Final Step</h2>
+                <h2>Final Step 4</h2>
                 <p>You made it!</p>
               </Step>
               <Step>
-                <h2>Final Step</h2>
+                <h2>Final Step 5 {name}</h2>
                 <p>You made it!</p>
               </Step>
               <Step>
@@ -222,8 +286,43 @@ function TouristDashboard() {
                 <p>You made it!</p>
               </Step>
             </Stepper>
-          </div>
-        )}
+          </DialogContent>
+          <DialogActions className="dialog-actions-TD">
+            <button
+              sx={{ padding: "6px 16px" }}
+              className="travel-btn travel-btn-animated override-padding"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  };
+  const TravelPackages = () => {
+    return (
+      <>
+        <div className="Tourist-content-TD">
+          <h2 className="heading-TD">
+            <strong>Travel The World!</strong>
+          </h2>
+          <button
+            onClick={handleOpenPackageStepper}
+            className={"travel-btn travel-btn-animated"}
+          >
+            <span className="btn-content">
+              Let's Travel
+              <ChevronRight className="btn-icon" size={18} />
+            </span>
+          </button>
+        </div>
+        {
+          <PackageStepper
+            open={stepperDisplay}
+            onClose={handleClosePackageStepper}
+          />
+        }
       </>
     );
   };
