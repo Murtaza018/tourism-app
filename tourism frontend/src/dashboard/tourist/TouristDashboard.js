@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  FormControl,
   InputLabel,
   MenuItem,
   Select,
@@ -29,9 +30,11 @@ import {
   LockIcon,
   LockOpenIcon,
   Box,
+  Plane,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
 
 function TouristDashboard() {
   const navigate = useNavigate();
@@ -240,8 +243,43 @@ function TouristDashboard() {
   const handleClosePackageStepper = () => {
     setStepperDisplay(false);
   };
+
   const PackageStepper = ({ open, onClose }) => {
     const [name, setName] = useState("");
+    const [selectedCity, setSelectedCity] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedCountryName, setSelectedCountryName] = useState("");
+    const [cities, setCities] = useState([]);
+
+    const handleCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedCountry(countryIsoCode);
+      setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
+      setSelectedCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setCities(countryCities);
+      } else {
+        setCities([]); // Reset cities if no country is selected
+      }
+    };
+    // Handle city selection
+    const handleCityChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const {
+        target: { value },
+      } = event;
+      setSelectedCity(typeof value === "string" ? value.split(",") : value);
+    };
 
     return (
       <div>
@@ -255,19 +293,113 @@ function TouristDashboard() {
               onFinalStepCompleted={() => console.log("All steps completed!")}
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
+              validateStep={async (step) => {
+                if (step === 3) {
+                  if (selectedCountryName === "") {
+                    return "Enter Country!";
+                  }
+                  if (selectedCity === "") {
+                    return "Select at least 1 City!";
+                  }
+                }
+                return true;
+              }}
             >
               <Step>
-                <h2>Welcome to the React Bits stepper!</h2>
-                <p>Check out the next step!</p>
+                <h2>
+                  Select Country to visit <Plane />
+                </h2>
+                <FormControl>
+                  <InputLabel id="country-label">Select Country</InputLabel>
+                  <Select
+                    required
+                    labelId="country-label"
+                    id="country"
+                    size="small"
+                    className="seats-input2-RD"
+                    value={selectedCountry}
+                    label="Select Country"
+                    sx={{
+                      marginBottom: "2.5vh",
+                      paddingTop: "4vh !important",
+                      paddingBottom: "4vh !important",
+                      height: " 3vh !important",
+                      width: "12% !important",
+                    }}
+                    fullWidth
+                    onChange={handleCountryChange}
+                  >
+                    <MenuItem value="">Select Country</MenuItem>
+                    {Country.getAllCountries().map((country) => (
+                      <MenuItem key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <InputLabel id="city-label">Select City</InputLabel>
+
+                  <Select
+                    required
+                    labelId="city-label"
+                    id="city"
+                    multiple
+                    className="seats-input2-RD"
+                    disabled={!selectedCountry}
+                    fullWidth
+                    value={selectedCity}
+                    label="Select City"
+                    size="small"
+                    sx={{
+                      marginBottom: "2.5vh",
+                      paddingTop: "4vh !important",
+                      paddingBottom: "4vh !important",
+                      height: " 3vh !important",
+                      width: "26% !important",
+                    }}
+                    onChange={handleCityChange}
+                  >
+                    <MenuItem value="">Select City</MenuItem>
+                    {cities.map((city) => (
+                      <MenuItem key={city.name} value={city.name}>
+                        {city.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Step>
               <Step>
                 <h2>Step 2</h2>
-                <p>Custom step content!</p>
+                {/* <p>{selectedCountryName}</p>
+                {selectedCity && selectedCity.length > 0 ? (
+                  selectedCity.map((city) => <p key={city.name}>{city.name}</p>)
+                ) : (
+                  <p>No cities selected.</p>
+                )} */}
+                <FormControl>
+                  <InputLabel id="city-label">City</InputLabel>
+                  <Select
+                    labelId="city-label"
+                    id="city"
+                    multiple
+                    value={selectedCity}
+                    label="City"
+                    onChange={handleCityChange}
+                  >
+                    {cities.map((city) => (
+                      <MenuItem key={city.name} value={city.name}>
+                        {city.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Step>
               <Step>
                 <h2>How about an input?</h2>
                 <input
                   value={name}
+                  id="name-input"
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name?"
                   required

@@ -18,6 +18,7 @@ export default function Stepper({
   nextButtonText = "Continue",
   disableStepIndicators = false,
   renderStepIndicator,
+  validateStep = () => Promise.resolve(true),
   ...rest
 }) {
   const [currentStep, setCurrentStep] = useState(initialStep);
@@ -26,9 +27,11 @@ export default function Stepper({
   const totalSteps = stepsArray.length;
   const isCompleted = currentStep > totalSteps;
   const isLastStep = currentStep === totalSteps;
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const updateStep = (newStep) => {
     setCurrentStep(newStep);
+    setErrorMessage(null);
     if (newStep > totalSteps) {
       onFinalStepCompleted();
     } else {
@@ -43,10 +46,23 @@ export default function Stepper({
     }
   };
 
-  const handleNext = () => {
-    if (!isLastStep) {
-      setDirection(1);
-      updateStep(currentStep + 1);
+  const handleNext = async () => {
+    try {
+      const isValid = await validateStep(currentStep);
+
+      if (isValid === true) {
+        if (!isLastStep) {
+          setDirection(1);
+          updateStep(currentStep + 1);
+        }
+      } else if (typeof isValid === "string") {
+        setErrorMessage(isValid); // Set the error message
+      } else {
+        setErrorMessage("Please complete the required fields.");
+      }
+    } catch (error) {
+      console.error("Validation error:", error);
+      setErrorMessage("An error occurred during validation. Please try again.");
     }
   };
 
@@ -102,6 +118,7 @@ export default function Stepper({
           className={`step-content-default ${contentClassName}`}
         >
           {stepsArray[currentStep - 1]}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
         </StepContentWrapper>
 
         {!isCompleted && (
