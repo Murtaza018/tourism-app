@@ -246,41 +246,43 @@ function TouristDashboard() {
 
   const PackageStepper = ({ open, onClose }) => {
     const [name, setName] = useState("");
-    const [selectedCity, setSelectedCity] = useState([]);
-    const [selectedCountry, setSelectedCountry] = useState("");
-    const [selectedCountryName, setSelectedCountryName] = useState("");
-    const [cities, setCities] = useState([]);
-
+    const [selectedPackageCity, setSelectedPackageCity] = useState([]);
+    const [selectedPackageCountry, setSelectedPackageCountry] = useState("");
+    const [selectedPackageCountryName, setSelectedPackageCountryName] =
+      useState("");
+    const [Packagecities, setPackageCities] = useState([]);
+    const [loading, setLoading] = useState(true);
     const handleCountryChange = (event) => {
       event.preventDefault();
       if (event.target.value === "") {
         return;
       }
       const countryIsoCode = event.target.value;
-      setSelectedCountry(countryIsoCode);
-      setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
-      setSelectedCity(""); // Reset city when the country changes
+      setSelectedPackageCountry(countryIsoCode);
+      setSelectedPackageCountryName(
+        Country.getCountryByCode(countryIsoCode).name
+      );
+      setSelectedPackageCity(""); // Reset city when the country changes
 
       // Fetch cities for the selected country
       if (countryIsoCode) {
-        const countryCities = City.getCitiesOfCountry(countryIsoCode);
-        setCities(countryCities);
+        const countryCitiesObject = City.getCitiesOfCountry(countryIsoCode);
+        const cityNamesArray = Object.values(countryCitiesObject);
+        setPackageCities(cityNamesArray); // Set the city *data*
+        setSelectedPackageCity([]); // Reset selection when country changes
+        setLoading(false); // Set loading to false *after* data is fetched
       } else {
-        setCities([]); // Reset cities if no country is selected
+        setPackageCities([]);
+        setSelectedPackageCity([]);
+        setLoading(false); // Also set loading to false if no country is chosen
       }
     };
+
     // Handle city selection
     const handleCityChange = (event) => {
       event.preventDefault();
-      if (event.target.value === "") {
-        return;
-      }
-      const {
-        target: { value },
-      } = event;
-      setSelectedCity(typeof value === "string" ? value.split(",") : value);
+      setSelectedPackageCity(event.target.value || []); // Correctly handle multiple selections
     };
-
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -295,10 +297,10 @@ function TouristDashboard() {
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
                 if (step === 3) {
-                  if (selectedCountryName === "") {
+                  if (selectedPackageCountryName === "") {
                     return "Enter Country!";
                   }
-                  if (selectedCity === "") {
+                  if (selectedPackageCity === "") {
                     return "Select at least 1 City!";
                   }
                 }
@@ -309,91 +311,80 @@ function TouristDashboard() {
                 <h2>
                   Select Country to visit <Plane />
                 </h2>
-                <FormControl>
-                  <InputLabel id="country-label">Select Country</InputLabel>
-                  <Select
-                    required
-                    labelId="country-label"
-                    id="country"
-                    size="small"
-                    className="seats-input2-RD"
-                    value={selectedCountry}
-                    label="Select Country"
-                    sx={{
-                      marginBottom: "2.5vh",
-                      paddingTop: "4vh !important",
-                      paddingBottom: "4vh !important",
-                      height: " 3vh !important",
-                      width: "12% !important",
-                    }}
-                    fullWidth
-                    onChange={handleCountryChange}
-                  >
-                    <MenuItem value="">Select Country</MenuItem>
-                    {Country.getAllCountries().map((country) => (
-                      <MenuItem key={country.isoCode} value={country.isoCode}>
-                        {country.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <InputLabel id="city-label">Select City</InputLabel>
+                <div className="step1-div-TD">
+                  <FormControl>
+                    <InputLabel id="country-label">Select Country</InputLabel>
+                    <Select
+                      required
+                      labelId="country-label"
+                      id="country"
+                      size="small"
+                      className="seats-input2-RD"
+                      value={selectedPackageCountry}
+                      label="Select Country"
+                      sx={{
+                        marginBottom: "2.5vh",
+                        paddingTop: "4vh !important",
+                        paddingBottom: "4vh !important",
+                        height: " 3vh !important",
+                        width: "12% !important",
+                      }}
+                      fullWidth
+                      onChange={handleCountryChange}
+                    >
+                      <MenuItem value="">Select Country</MenuItem>
+                      {Country.getAllCountries().map((country) => (
+                        <MenuItem key={country.isoCode} value={country.isoCode}>
+                          {country.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  {loading ? ( // Conditionally render the Select
+                    <></> // Or a spinner, or any loading indicator
+                  ) : (
+                    <FormControl>
+                      <InputLabel id="city-label">Select City</InputLabel>
 
-                  <Select
-                    required
-                    labelId="city-label"
-                    id="city"
-                    multiple
-                    className="seats-input2-RD"
-                    disabled={!selectedCountry}
-                    fullWidth
-                    value={selectedCity}
-                    label="Select City"
-                    size="small"
-                    sx={{
-                      marginBottom: "2.5vh",
-                      paddingTop: "4vh !important",
-                      paddingBottom: "4vh !important",
-                      height: " 3vh !important",
-                      width: "26% !important",
-                    }}
-                    onChange={handleCityChange}
-                  >
-                    <MenuItem value="">Select City</MenuItem>
-                    {cities.map((city) => (
-                      <MenuItem key={city.name} value={city.name}>
-                        {city.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                      <Select
+                        required
+                        labelId="city-label"
+                        id="city"
+                        multiple
+                        className="seats-input2-RD"
+                        disabled={!selectedPackageCountry}
+                        fullWidth
+                        value={selectedPackageCity}
+                        label="Select City"
+                        size="small"
+                        sx={{
+                          marginBottom: "2.5vh",
+                          paddingTop: "4vh !important",
+                          paddingBottom: "4vh !important",
+                          height: " 3vh !important",
+                          width: "26% !important",
+                        }}
+                        onChange={handleCityChange}
+                      >
+                        <MenuItem value="">Select City</MenuItem>
+                        {Packagecities.map((city) => (
+                          <MenuItem key={city.name} value={city.name}>
+                            {city.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                </div>
               </Step>
               <Step>
                 <h2>Step 2</h2>
-                {/* <p>{selectedCountryName}</p>
-                {selectedCity && selectedCity.length > 0 ? (
-                  selectedCity.map((city) => <p key={city.name}>{city.name}</p>)
+                <p>{selectedPackageCountryName}</p>
+                {selectedPackageCity && selectedPackageCity.length > 0 ? (
+                  selectedPackageCity.map((city) => <p key={city}>{city}</p>)
                 ) : (
                   <p>No cities selected.</p>
-                )} */}
-                <FormControl>
-                  <InputLabel id="city-label">City</InputLabel>
-                  <Select
-                    labelId="city-label"
-                    id="city"
-                    multiple
-                    value={selectedCity}
-                    label="City"
-                    onChange={handleCityChange}
-                  >
-                    {cities.map((city) => (
-                      <MenuItem key={city.name} value={city.name}>
-                        {city.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                )}
               </Step>
               <Step>
                 <h2>How about an input?</h2>
