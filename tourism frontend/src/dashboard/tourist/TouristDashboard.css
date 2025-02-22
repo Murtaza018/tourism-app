@@ -692,38 +692,22 @@ details[open] .feedback-summary-TD::after {
   justify-content: center;
   width: 100%;
 }
-/*
 
-
-
-
-
-
-
-
-*/
-.travel-btn.travel-btn-animated.override-padding {
-  padding: 10px 16px;
-}
-
-/* .dialog-container-TD {
-  backdrop-filter: blur(10px) saturate(150%);
-  background: rgba(0, 0, 50, 0.7) !important;
-  border-radius: 15px !important;
-  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5) !important;
-  padding: 20px;
-  transition: all 0.3s ease-in-out;
-} */
 .dialog-container-TD {
   box-shadow: 20px 20px 20px orange !important;
 }
 .dialog-container-TD .MuiPaper-root {
   box-shadow: 0 0 20px 0 rgba(0, 255, 255, 0.5);
+  background-color: transparent;
+  backdrop-filter: blur(100px);
+  filter: saturate(350%);
   animation: pulse-TD 4s infinite ease-in-out;
   border-radius: 1rem;
   z-index: 20;
-  max-width: 70vw !important;
-  max-height: 70vh;
+  max-width: 85vw !important;
+  min-width: 85vw !important;
+  max-height: 85vh !important;
+  min-height: 85vh !important;
   overflow: auto;
 }
 @keyframes pulse-TD {
@@ -753,4 +737,82 @@ details[open] .feedback-summary-TD::after {
   width: 95%;
 }
 .step1-div-TD {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+}
+.seats-input3-TD .MuiInputBase-root {
+  height: 5vh !important;
+  padding-top: 4vh !important;
+  padding-bottom: 4vh !important;
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  min-width: 15vw !important;
+  max-width: 15vw !important;
+}
+
+.seats-input3-TD .MuiSelect-select {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  min-width: 15vw !important;
+  max-width: 15vw !important;
+  border: 1px solid #ffffff !important;
+  height: 5vh !important;
+  color: white !important;
+}
+
+.seats-input3-TD .MuiSelect-icon {
+  color: #007bff;
+}
+
+.seats-input3-TD .MuiList-root {
+  background-color: #fff;
+}
+
+.seats-input3-TD .MuiMenuItem-root {
+  font-size: 14px;
+}
+
+.seats-input3-TD .MuiInputLabel-root {
+  color: black !important;
+  font-size: 16px;
+  max-width: 15vw !important;
+  min-width: 15vw !important;
+}
+
+.seats-input3-TD.city-select.Mui-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  border-color: #d0d0d0;
+}
+.step1-div-TD .seats-input3-TD .MuiOutlinedInput-root {
+  border: 1px solid rgb(255, 255, 255) !important;
+}
+
+.step1-div-TD .seats-input3-TD .MuiOutlinedInput-root .MuiInputLabel-root {
+  color: rgb(255, 255, 255) !important;
+}
+
+.step1-div-TD .seats-input3-TD .MuiInputBase-input::-webkit-input-placeholder {
+  color: rgb(255, 255, 255) !important;
+}
+
+.step1-div-TD .seats-input3-TD .MuiInputBase-input::placeholder {
+  color: rgb(255, 255, 255) !important;
+}
+
+.step1-div-TD .seats-input3-TD .MuiOutlinedInput-root.Mui-focused {
+  border: 1px solid rgb(254, 250, 250) !important;
+}
+
+.step1-div-TD .seats-input3-TD .MuiInputLabel-root {
+  color: rgb(255, 255, 255) !important;
+}
+.step-heading-TD {
+  color: cyan;
 }

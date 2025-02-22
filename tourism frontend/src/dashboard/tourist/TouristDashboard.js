@@ -12,6 +12,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -308,31 +309,32 @@ function TouristDashboard() {
               }}
             >
               <Step>
-                <h2>
+                <h2 className="step-heading-TD">
                   Select Country to visit <Plane />
                 </h2>
                 <div className="step1-div-TD">
                   <FormControl>
-                    <InputLabel id="country-label">Select Country</InputLabel>
+                    <InputLabel id="country-label" sx={{ color: "white" }}>
+                      Select Country
+                    </InputLabel>
                     <Select
                       required
                       labelId="country-label"
                       id="country"
                       size="small"
-                      className="seats-input2-RD"
+                      className="seats-input3-TD"
                       value={selectedPackageCountry}
                       label="Select Country"
-                      sx={{
-                        marginBottom: "2.5vh",
-                        paddingTop: "4vh !important",
-                        paddingBottom: "4vh !important",
-                        height: " 3vh !important",
-                        width: "12% !important",
-                      }}
                       fullWidth
                       onChange={handleCountryChange}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 48 * 4.5 + 8,
+                          },
+                        },
+                      }}
                     >
-                      <MenuItem value="">Select Country</MenuItem>
                       {Country.getAllCountries().map((country) => (
                         <MenuItem key={country.isoCode} value={country.isoCode}>
                           {country.name}
@@ -341,32 +343,34 @@ function TouristDashboard() {
                     </Select>
                   </FormControl>
                   {loading ? ( // Conditionally render the Select
-                    <></> // Or a spinner, or any loading indicator
+                    <></>
                   ) : (
                     <FormControl>
-                      <InputLabel id="city-label">Select City</InputLabel>
+                      <InputLabel id="city-label" sx={{ color: "white" }}>
+                        Select City
+                      </InputLabel>
 
                       <Select
                         required
                         labelId="city-label"
                         id="city"
                         multiple
-                        className="seats-input2-RD"
+                        className="seats-input3-TD"
                         disabled={!selectedPackageCountry}
                         fullWidth
                         value={selectedPackageCity}
                         label="Select City"
                         size="small"
-                        sx={{
-                          marginBottom: "2.5vh",
-                          paddingTop: "4vh !important",
-                          paddingBottom: "4vh !important",
-                          height: " 3vh !important",
-                          width: "26% !important",
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 48 * 4.5 + 8,
+                              width: 250,
+                            },
+                          },
                         }}
                         onChange={handleCityChange}
                       >
-                        <MenuItem value="">Select City</MenuItem>
                         {Packagecities.map((city) => (
                           <MenuItem key={city.name} value={city.name}>
                             {city.name}
@@ -410,15 +414,6 @@ function TouristDashboard() {
               </Step>
             </Stepper>
           </DialogContent>
-          <DialogActions className="dialog-actions-TD">
-            <button
-              sx={{ padding: "6px 16px" }}
-              className="travel-btn travel-btn-animated override-padding"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </DialogActions>
         </Dialog>
       </div>
     );

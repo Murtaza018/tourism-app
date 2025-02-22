@@ -110,17 +110,6 @@ export default function Stepper({
             );
           })}
         </div>
-
-        <StepContentWrapper
-          isCompleted={isCompleted}
-          currentStep={currentStep}
-          direction={direction}
-          className={`step-content-default ${contentClassName}`}
-        >
-          {stepsArray[currentStep - 1]}
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </StepContentWrapper>
-
         {!isCompleted && (
           <div className={`footer-container ${footerClassName}`}>
             <div
@@ -147,6 +136,15 @@ export default function Stepper({
             </div>
           </div>
         )}
+        <StepContentWrapper
+          isCompleted={isCompleted}
+          currentStep={currentStep}
+          direction={direction}
+          className={`step-content-default ${contentClassName}`}
+        >
+          {stepsArray[currentStep - 1]}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </StepContentWrapper>
       </div>
     </div>
   );
