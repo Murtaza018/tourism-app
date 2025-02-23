@@ -277,6 +277,8 @@ function TouristDashboard() {
         setSelectedPackageCity([]);
         setLoading(false); // Also set loading to false if no country is chosen
       }
+
+      console.log(selectedPackageCity);
     };
 
     // Handle city selection
@@ -297,11 +299,11 @@ function TouristDashboard() {
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
-                if (step === 3) {
+                if (step === 1) {
                   if (selectedPackageCountryName === "") {
                     return "Enter Country!";
                   }
-                  if (selectedPackageCity === "") {
+                  if (selectedPackageCity.length <= 0) {
                     return "Select at least 1 City!";
                   }
                 }
