@@ -113,7 +113,23 @@ const DeleteUser = async (req, res) => {
     }
   );
 };
+const getHotels = async (req, res) => {
+  await UserCheckTable();
+  console.log(req.body);
+  pool.query(
+    `select * from user where role_ID=2 and country=? and city in (?)`,
+    [req.body.selectedPackageCountry, req.body.selectedPackageCity],
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: "user deleted" });
+      }
+    }
+  );
+};
 module.exports = {
+  getHotels,
   insertUser,
   signInUser,
   updateUser,
