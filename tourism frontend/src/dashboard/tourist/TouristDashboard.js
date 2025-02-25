@@ -385,9 +385,14 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2>Step 2</h2>
-                <p>{selectedPackageCountryName}</p>
+                <p>Country to Visit:{selectedPackageCountryName}</p>
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
-                  selectedPackageCity.map((city) => <p key={city}>{city}</p>)
+                  selectedPackageCity.map((city) => (
+                    <details key={city}>
+                      <summary>{city}</summary>
+                      <p>city name: {city}</p>
+                    </details>
+                  ))
                 ) : (
                   <p>No cities selected.</p>
                 )}
