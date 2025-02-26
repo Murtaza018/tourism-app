@@ -816,3 +816,53 @@ details[open] .feedback-summary-TD::after {
 .step-heading-TD {
   color: cyan;
 }
+
+.feedback-details2-TD {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  margin: 0.5rem 0;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feedback-details2-TD:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(22, 99, 194, 0.15);
+  transform: translateY(-2px);
+}
+
+.feedback-summary2-TD {
+  padding: 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: cyan;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.feedback-summary2-TD::-webkit-details-marker {
+  display: none;
+}
+
+.feedback-summary2-TD::after {
+  content: "▼";
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: cyan;
+}
+
+details[open] .feedback-summary2-TD::after {
+  transform: rotate(180deg);
+}
+
+details[open] .feedback-content2-TD {
+  overflow-x: visible;
+  overflow-y: visible;
+}
+.feedback-content2-TD {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}

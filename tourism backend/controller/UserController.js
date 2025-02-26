@@ -117,7 +117,7 @@ const getHotels = async (req, res) => {
   await UserCheckTable();
   console.log(req.body);
   pool.query(
-    `select * from user where role_ID=2 and country=? and city in (?)`,
+    `select * from user where role_ID=(select role_ID from role where name="Hotel Management") and country=? and city in (?)`,
     [req.body.selectedPackageCountry, req.body.selectedPackageCity],
     (err, results) => {
       if (err) {

@@ -286,6 +286,7 @@ function TouristDashboard() {
       event.preventDefault();
       setSelectedPackageCity(event.target.value || []); // Correctly handle multiple selections
     };
+
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -384,13 +385,16 @@ function TouristDashboard() {
                 </div>
               </Step>
               <Step>
-                <h2>Step 2</h2>
-                <p>Country to Visit:{selectedPackageCountryName}</p>
+                <h2 className="step-heading-TD">
+                  Country to Visit:{selectedPackageCountryName}
+                </h2>
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
                   selectedPackageCity.map((city) => (
-                    <details key={city}>
-                      <summary>{city}</summary>
-                      <p>city name: {city}</p>
+                    <details className="feedback-details2-TD" key={city}>
+                      <summary className="feedback-summary2-TD">{city}</summary>
+                      <div className="feedback-content2-TD">
+                        <p>city name: {city}</p>
+                      </div>
                     </details>
                   ))
                 ) : (
