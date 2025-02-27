@@ -150,6 +150,58 @@ export default function Stepper({
   );
 }
 
+// function StepContentWrapper({
+//   isCompleted,
+//   currentStep,
+//   direction,
+//   children,
+//   className,
+// }) {
+//   const [parentHeight, setParentHeight] = useState(0);
+
+//   return (
+//     <motion.div
+//       className={className}
+//       style={{ position: "relative", overflow: "hidden" }}
+//       animate={{ height: isCompleted ? 0 : parentHeight }}
+//       transition={{ type: "spring", duration: 0.4 }}
+//     >
+//       <AnimatePresence initial={false} mode="sync" custom={direction}>
+//         {!isCompleted && (
+//           <SlideTransition
+//             key={currentStep}
+//             direction={direction}
+//             onHeightReady={(h) => setParentHeight(h)}
+//           >
+//             {children}
+//           </SlideTransition>
+//         )}
+//       </AnimatePresence>
+//     </motion.div>
+//   );
+// }
+
+// function StepContentWrapper({
+//   isCompleted,
+//   currentStep,
+//   direction,
+//   children,
+//   className,
+// }) {
+//   return (
+//     <div
+//       className={`${className} step-content-scrollable`}
+//       style={{
+//         position: "relative",
+//         overflow: "visible" /* Change from hidden to visible */,
+//         height: "auto" /* Let content determine height */,
+//       }}
+//     >
+//       {!isCompleted && children}
+//     </div>
+//   );
+// }
+
 function StepContentWrapper({
   isCompleted,
   currentStep,
@@ -157,12 +209,42 @@ function StepContentWrapper({
   children,
   className,
 }) {
-  const [parentHeight, setParentHeight] = useState(0);
+  const [parentHeight, setParentHeight] = useState("auto");
+
+  // Modified onHeightReady function that will handle details elements
+  const handleHeightReady = (height) => {
+    setParentHeight(height);
+
+    // Set up a small delay to check for changes in height after initial render
+    setTimeout(() => {
+      const detailsElements = document.querySelectorAll(
+        ".step-circle-container details"
+      );
+
+      // Add toggle listener to all details elements
+      detailsElements.forEach((details) => {
+        details.addEventListener("toggle", () => {
+          // When any details toggle, update the height with a small delay
+          setTimeout(() => {
+            if (document.querySelector(".step-content-default")) {
+              const newHeight = document.querySelector(
+                ".step-content-default"
+              ).scrollHeight;
+              setParentHeight(newHeight);
+            }
+          }, 50);
+        });
+      });
+    }, 100);
+  };
 
   return (
     <motion.div
       className={className}
-      style={{ position: "relative", overflow: "hidden" }}
+      style={{
+        position: "relative",
+        overflow: "visible", // Changed from hidden to visible
+      }}
       animate={{ height: isCompleted ? 0 : parentHeight }}
       transition={{ type: "spring", duration: 0.4 }}
     >
@@ -171,7 +253,7 @@ function StepContentWrapper({
           <SlideTransition
             key={currentStep}
             direction={direction}
-            onHeightReady={(h) => setParentHeight(h)}
+            onHeightReady={handleHeightReady}
           >
             {children}
           </SlideTransition>
@@ -181,11 +263,48 @@ function StepContentWrapper({
   );
 }
 
+// function SlideTransition({ children, direction, onHeightReady }) {
+//   const containerRef = useRef(null);
+
+//   useLayoutEffect(() => {
+//     if (containerRef.current) onHeightReady(containerRef.current.offsetHeight);
+//   }, [children, onHeightReady]);
+
+//   return (
+//     <motion.div
+//       ref={containerRef}
+//       custom={direction}
+//       variants={stepVariants}
+//       initial="enter"
+//       animate="center"
+//       exit="exit"
+//       transition={{ duration: 0.4 }}
+//       style={{ position: "absolute", left: 0, right: 0, top: 0 }}
+//     >
+//       {children}
+//     </motion.div>
+//   );
+// }
 function SlideTransition({ children, direction, onHeightReady }) {
   const containerRef = useRef(null);
 
   useLayoutEffect(() => {
-    if (containerRef.current) onHeightReady(containerRef.current.offsetHeight);
+    if (containerRef.current) {
+      onHeightReady(containerRef.current.scrollHeight);
+
+      // Set up a ResizeObserver to detect content size changes
+      const resizeObserver = new ResizeObserver(() => {
+        if (containerRef.current) {
+          onHeightReady(containerRef.current.scrollHeight);
+        }
+      });
+
+      resizeObserver.observe(containerRef.current);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
   }, [children, onHeightReady]);
 
   return (
@@ -206,7 +325,7 @@ function SlideTransition({ children, direction, onHeightReady }) {
 
 const stepVariants = {
   enter: (dir) => ({
-    x: dir >= 0 ? "-100%" : "100%",
+    x: dir >= 0 ? "100%" : "-100%",
     opacity: 0,
   }),
   center: {
@@ -214,11 +333,10 @@ const stepVariants = {
     opacity: 1,
   },
   exit: (dir) => ({
-    x: dir >= 0 ? "50%" : "-50%",
+    x: dir <= 0 ? "100%" : "-100%",
     opacity: 0,
   }),
 };
-
 export function Step({ children }) {
   return <div className="step-default">{children}</div>;
 }

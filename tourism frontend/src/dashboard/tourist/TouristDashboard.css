@@ -815,6 +815,10 @@ details[open] .feedback-summary-TD::after {
 }
 .step-heading-TD {
   color: cyan;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6vw;
 }
 
 .feedback-details2-TD {
@@ -865,4 +869,33 @@ details[open] .feedback-content2-TD {
 .feedback-content2-TD {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   overflow-y: auto;
+}
+.feedback-details2-TD {
+  transition: height 0.3s ease-out;
+}
+
+.feedback-details2-TD[open] {
+  height: auto;
+}
+
+.feedback-content2-TD {
+  padding: 1rem;
+}
+.feedback-details2-TD {
+  width: 100%;
+  overflow: visible;
+}
+
+.feedback-content2-TD {
+  overflow: visible;
+  padding: 1rem;
+}
+.stepper-end-message-TD {
+  font-size: 18px;
+  color: #007bff;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #e0f7fa;
+  border-radius: 8px;
+  font-weight: 600;
 }

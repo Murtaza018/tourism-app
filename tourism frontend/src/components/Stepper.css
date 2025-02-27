@@ -9,7 +9,7 @@
   border-color: rgb(40, 53, 147);
 }
 
-.step-circle-container {
+/* .step-circle-container {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -20,8 +20,70 @@
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow-y: auto;
   overflow-x: hidden;
+} */
+.step-circle-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 75vh;
+  border-radius: 2rem;
+  border-color: rgb(40, 53, 147) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow-y: auto !important; /* Force overflow */
+  overflow-x: hidden;
+  position: relative; /* This is important */
+}
+.step-content-scrollable {
+  min-height: 200px; /* Ensure minimum space */
+  width: 100%;
+}
+/* Modern Custom Scrollbar for Step Circle Container */
+.step-circle-container {
+  /* Make sure scrollbar styling works */
+  scrollbar-width: thin; /* Firefox compatibility */
+  scrollbar-color: #00d8ff #ffffff; /* Firefox colors: thumb, track */
 }
 
+/* Modern Custom Scrollbar for Step Circle Container with Transparent Background */
+.step-circle-container {
+  /* Make sure scrollbar styling works */
+  scrollbar-width: thin; /* Firefox compatibility */
+  scrollbar-color: #00d8ff transparent; /* Firefox colors: thumb, track */
+}
+
+/* Chrome, Edge, and Safari scrollbar styling */
+.step-circle-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.step-circle-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.step-circle-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #0080ff, #00d8ff);
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0, 216, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.step-circle-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #00d8ff, #0047ab);
+  box-shadow: 0 0 10px rgba(0, 216, 255, 0.8);
+}
+
+/* Add a subtle glow effect on scrolling */
+.step-circle-container::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(45deg, #00d8ff, #0047ab);
+  box-shadow: 0 0 15px rgba(0, 216, 255, 1);
+}
+
+/* For Edge and IE compatibility */
+.step-circle-container {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
 .step-indicator-row {
   display: flex;
   width: 93%;

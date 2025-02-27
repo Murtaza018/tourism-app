@@ -32,6 +32,7 @@ import {
   LockOpenIcon,
   Box,
   Plane,
+  Calendar1Icon,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
@@ -252,6 +253,11 @@ function TouristDashboard() {
     const [selectedPackageCountryName, setSelectedPackageCountryName] =
       useState("");
     const [Packagecities, setPackageCities] = useState([]);
+    const [selectedCurrentCity, setSelectedCurrentCity] = useState("");
+    const [selectedCurrentCountry, setSelectedCurrentCountry] = useState("");
+    const [selectedCurrentCountryName, setSelectedCurrentCountryName] =
+      useState("");
+    const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     const handleCountryChange = (event) => {
       event.preventDefault();
@@ -286,6 +292,34 @@ function TouristDashboard() {
       event.preventDefault();
       setSelectedPackageCity(event.target.value || []); // Correctly handle multiple selections
     };
+    const handleCurrentCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedCurrentCountry(countryIsoCode);
+      setSelectedCurrentCountryName(
+        Country.getCountryByCode(countryIsoCode).name
+      );
+      setSelectedCurrentCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setCities(countryCities);
+      } else {
+        setSelectedCurrentCity("");
+      }
+
+      console.log(selectedPackageCity);
+    };
+
+    // Handle city selection
+    const handleCurrentCityChange = (event) => {
+      event.preventDefault();
+      setSelectedCurrentCity(event.target.value || []); // Correctly handle multiple selections
+    };
 
     return (
       <div>
@@ -300,7 +334,7 @@ function TouristDashboard() {
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
-                if (step === 1) {
+                if (step === 3) {
                   if (selectedPackageCountryName === "") {
                     return "Enter Country!";
                   }
@@ -313,7 +347,78 @@ function TouristDashboard() {
             >
               <Step>
                 <h2 className="step-heading-TD">
+                  Select Current Country
+                  <PublicIcon />
+                </h2>
+                <div className="step1-div-TD">
+                  <FormControl>
+                    <InputLabel id="country-label" sx={{ color: "white" }}>
+                      Select Country
+                    </InputLabel>
+                    <Select
+                      required
+                      labelId="country-label"
+                      id="country"
+                      size="small"
+                      className="seats-input3-TD"
+                      value={selectedCurrentCountry}
+                      label="Select Country"
+                      fullWidth
+                      onChange={handleCurrentCountryChange}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 48 * 4.5 + 8,
+                          },
+                        },
+                      }}
+                    >
+                      {Country.getAllCountries().map((country) => (
+                        <MenuItem key={country.isoCode} value={country.isoCode}>
+                          {country.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel id="city-label" sx={{ color: "white" }}>
+                      Select City
+                    </InputLabel>
+
+                    <Select
+                      required
+                      labelId="city-label"
+                      id="city"
+                      className="seats-input3-TD"
+                      disabled={!selectedCurrentCountry}
+                      fullWidth
+                      value={selectedCurrentCity}
+                      label="Select City"
+                      size="small"
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 48 * 4.5 + 8,
+                            width: 250,
+                          },
+                        },
+                      }}
+                      onChange={handleCurrentCityChange}
+                    >
+                      {cities.map((city) => (
+                        <MenuItem key={city.name} value={city.name}>
+                          {city.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </Step>
+              <Step>
+                <h2 className="step-heading-TD">
                   Select Country to visit <Plane />
+                  {selectedCurrentCountryName}
+                  {selectedCurrentCity}
                 </h2>
                 <div className="step1-div-TD">
                   <FormControl>
@@ -382,12 +487,14 @@ function TouristDashboard() {
                       </Select>
                     </FormControl>
                   )}
+                  <p className="stepper-end-message-TD">
+                    Select in the order you want to visit
+                  </p>
                 </div>
               </Step>
               <Step>
-                {/* hello world */}
                 <h2 className="step-heading-TD">
-                  Country to Visit:{selectedPackageCountryName}
+                  Select Hotel in {selectedPackageCountryName}
                 </h2>
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
                   selectedPackageCity.map((city) => (
