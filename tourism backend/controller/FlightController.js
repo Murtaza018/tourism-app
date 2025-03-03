@@ -160,5 +160,91 @@ const UpdateFlight = async (req, res) => {
     }
   );
 };
+const getFlights = async (req, res) => {
+  console.log(req.body);
+  await FlightCheckTable();
+  pool.query(
+    `select * from flight where departure_date = ? and departure_country=? and departure_city=?
+    and arrival_country=? and arrival_city=? and seats_available>?;`,
+    [
+      req.body.date,
+      req.body.departure_country,
+      req.body.departure_city,
+      req.body.arrival_country,
+      req.body.arrival_city,
+      req.body.quantity,
+    ],
+    (err, results) => {
+      if (results) {
+        console.log(results);
+        const flights = results;
 
-module.exports = { insertFlight, getFlightData, UpdateFlight, DeleteFlight };
+        const parsedFlights = flights.map((flight) => {
+          const departureTime = flight.departure_time;
+
+          let formattedDepartureTime = null;
+
+          if (departureTime) {
+            //Check if it is not null or undefined
+            if (typeof departureTime === "string") {
+              //Check if it is a string
+              formattedDepartureTime = new Date(
+                `1970-01-01T${departureTime}`
+              ).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+              });
+            } else if (departureTime instanceof Date) {
+              //Check if it is a Date object
+              formattedDepartureTime = departureTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+              });
+            } else {
+              console.error(
+                "Unexpected departure time type:",
+                typeof departureTime,
+                departureTime
+              );
+            }
+          }
+          return {
+            ...flight,
+            departure_date: flight.departure_date
+              ? flight.departure_date.toISOString().split("T")[0]
+              : null,
+            departure_time: formattedDepartureTime, // Use the formatted time
+            arrival_date: flight.arrival_date
+              ? flight.arrival_date.toISOString().split("T")[0]
+              : null,
+            arrival_time: flight.arrival_time
+              ? new Date(
+                  `1970-01-01T${flight.arrival_time}`
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })
+              : null,
+          };
+        });
+        console.log(parsedFlights);
+        return res.json({ code: 200, data: parsedFlights });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+module.exports = {
+  insertFlight,
+  getFlightData,
+  UpdateFlight,
+  DeleteFlight,
+  getFlights,
+};

@@ -271,14 +271,19 @@ body.menu-open-TD {
 .table-head-TD {
   background-color: #f2f2f2;
 }
-
+.table-head2-TD {
+  background-color: black;
+  color: white;
+}
 .table-header-TD,
 .table-cell-TD {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
 }
-
+.table-cell2-TD {
+  color: cyan;
+}
 .table-header-TD {
   font-weight: bold;
 }
@@ -286,6 +291,7 @@ body.menu-open-TD {
 .no-data-message-TD {
   text-align: center;
   margin: 10px 0;
+  color: cyan;
 }
 
 .delete-selected-TD {
@@ -704,8 +710,8 @@ details[open] .feedback-summary-TD::after {
   animation: pulse-TD 4s infinite ease-in-out;
   border-radius: 1rem;
   z-index: 20;
-  max-width: 85vw !important;
-  min-width: 85vw !important;
+  max-width: 90vw !important;
+  min-width: 90vw !important;
   max-height: 85vh !important;
   min-height: 85vh !important;
   overflow: auto;
@@ -748,7 +754,6 @@ details[open] .feedback-summary-TD::after {
   height: 5vh !important;
   padding-top: 4vh !important;
   padding-bottom: 4vh !important;
-  background-color: #ffffff;
   border: 1px solid #ced4da;
   min-width: 15vw !important;
   max-width: 15vw !important;
@@ -898,4 +903,11 @@ details[open] .feedback-content2-TD {
   background-color: #e0f7fa;
   border-radius: 8px;
   font-weight: 600;
+}
+.flight-data-stepper-input-div-TD {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5vw;
 }

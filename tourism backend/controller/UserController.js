@@ -122,7 +122,8 @@ const getHotels = async (req, res) => {
     u.last_name, 
     u.phone, 
     u.address, 
-    u.email, 
+    u.email,
+    u.city, 
     COALESCE(AVG(f.rating), 0) AS rating 
 FROM 
     user u

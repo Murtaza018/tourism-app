@@ -12,9 +12,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import {
   Button,
-  CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
   FormControl,
   InputLabel,
@@ -30,13 +28,10 @@ import {
   ChevronLeft,
   LockIcon,
   LockOpenIcon,
-  Box,
   Plane,
-  Calendar1Icon,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
-import { useTheme } from "@emotion/react";
 
 function TouristDashboard() {
   const navigate = useNavigate();
@@ -217,27 +212,6 @@ function TouristDashboard() {
   //     </div>
   //   );
   // };
-  const StyledDialog = ({ open, onClose, children }) => {
-    return (
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="sm"
-        className="dialog-container-TD"
-        PaperProps={{
-          className: "dialog-paper-TD",
-        }}
-      >
-        {children}
-        <DialogActions className="dialog-actions-TD">
-          <Button onClick={onClose} className="close-button-TD">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
   const handleOpenPackageStepper = () => {
     setStepperDisplay(true);
   };
@@ -248,15 +222,24 @@ function TouristDashboard() {
 
   const PackageStepper = ({ open, onClose }) => {
     const [name, setName] = useState("");
-    const [selectedPackageCity, setSelectedPackageCity] = useState([]);
+    const [selectedPackageCity, setSelectedPackageCity] = useState([
+      "Karachi",
+      "Quetta",
+    ]);
+    // const [selectedPackageCity, setSelectedPackageCity] = useState([]);
     const [selectedPackageCountry, setSelectedPackageCountry] = useState("");
+    // const [selectedPackageCountryName, setSelectedPackageCountryName] =
+    //   useState("");
     const [selectedPackageCountryName, setSelectedPackageCountryName] =
-      useState("");
+      useState("Pakistan");
     const [Packagecities, setPackageCities] = useState([]);
-    const [selectedCurrentCity, setSelectedCurrentCity] = useState("");
-    const [selectedCurrentCountry, setSelectedCurrentCountry] = useState("");
+    const [selectedCurrentCity, setSelectedCurrentCity] = useState("Lahore");
+    // const [selectedCurrentCity, setSelectedCurrentCity] = useState("");
+    const [selectedCurrentCountry, setSelectedCurrentCountry] =
+      useState("Pakistan");
+    // const [selectedCurrentCountry, setSelectedCurrentCountry] = useState("");
     const [selectedCurrentCountryName, setSelectedCurrentCountryName] =
-      useState("");
+      useState("Pakistan");
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     const handleCountryChange = (event) => {
@@ -345,6 +328,7 @@ function TouristDashboard() {
       email: "",
       rating: "",
       address: "",
+      city: "",
     });
     const getHotels = (city_param) => {
       fetch("http://localhost:8008/Tourism/getHotels", {
@@ -370,6 +354,39 @@ function TouristDashboard() {
           console.log(err);
         });
     };
+    const getFlights = (date, quantity) => {
+      console.log("date:", date);
+      fetch("http://localhost:8008/Tourism/getFlights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: date,
+          departure_country: selectedCurrentCountryName,
+          departure_city: selectedCurrentCity,
+          arrival_country: selectedPackageCountryName,
+          arrival_city: selectedPackageCity[0],
+          quantity: quantity,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setFlightData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const [flightDate, setFlightDate] = useState(null);
+    const [touristQuantity, setTouristQuantity] = useState(null);
+    const [flightData, setFlightData] = useState({});
+    const [openSummary, setOpenSummary] = useState();
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -383,22 +400,22 @@ function TouristDashboard() {
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
-                if (step === 1) {
-                  if (selectedCurrentCountryName === "") {
-                    return "Select Country!";
-                  }
-                  if (selectedCurrentCity.length <= 0 && !noCurrentCity) {
-                    return "Select City!";
-                  }
-                }
-                if (step === 2) {
-                  if (selectedPackageCountryName === "") {
-                    return "Enter Country!";
-                  }
-                  if (selectedPackageCity.length <= 0 && !noPackageCity) {
-                    return "Select at least 1 City!";
-                  }
-                }
+                // if (step === 1) {
+                //   if (selectedCurrentCountryName === "") {
+                //     return "Select Country!";
+                //   }
+                //   if (selectedCurrentCity.length <= 0 && !noCurrentCity) {
+                //     return "Select City!";
+                //   }
+                // }
+                // if (step === 2) {
+                //   if (selectedPackageCountryName === "") {
+                //     return "Enter Country!";
+                //   }
+                //   if (selectedPackageCity.length <= 0 && !noPackageCity) {
+                //     return "Select at least 1 City!";
+                //   }
+                // }
 
                 return true;
               }}
@@ -552,15 +569,139 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2 className="step-heading-TD">
+                  Select Flight for {selectedPackageCountryName}
+                </h2>
+                <div className="flight-data-stepper-input-div-TD">
+                  <TextField
+                    type="date"
+                    className="seats-input3-TD"
+                    value={flightDate}
+                    onChange={(e) => {
+                      setFlightDate(e.target.value);
+                      getFlights(e.target.value, touristQuantity);
+                    }}
+                    sx={{
+                      backgroundColor: "transparent !important",
+                      color: "cyan !important",
+                      "& .MuiInputBase-input": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      '& input[type="date"]::-webkit-calendar-picker-indicator':
+                        {
+                          filter:
+                            "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                        },
+                    }}
+                  ></TextField>
+                  <TextField
+                    type="number"
+                    className="seats-input3-TD"
+                    value={touristQuantity}
+                    placeholder="Number of persons"
+                    onChange={(e) => {
+                      setTouristQuantity(e.target.value);
+                      getFlights(flightDate, e.target.value);
+                    }}
+                    sx={{
+                      backgroundColor: "transparent !important",
+                      color: "cyan !important",
+                      "& .MuiInputBase-input": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      '& input[type="date"]::-webkit-calendar-picker-indicator':
+                        {
+                          filter:
+                            "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                        },
+                    }}
+                  ></TextField>
+                </div>
+                <div className="table-container-TD">
+                  {flightData && flightData.length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">Flight Name</th>
+                            <th className="table-header-TD">Departure</th>
+                            <th className="table-header-TD">Departure Time</th>
+                            <th className="table-header-TD">Arrival</th>
+                            <th className="table-header-TD">Arrival Time</th>
+                            <th className="table-header-TD">Available Seats</th>
+                            <th className="table-header-TD">Seat Type</th>
+                            <th className="table-header-TD">Price($)</th>
+                            <th className="table-header-TD">Booking</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {flightData.map((flight) => (
+                            <tr key={flight.flight_id} className="table-row-TD">
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.flight_name}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.departure_city},
+                                {flight.departure_country}
+                              </td>
+
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.departure_date},{flight.departure_time}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.arrival_city},{flight.arrival_country}
+                              </td>
+
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.arrival_date},{flight.arrival_time}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.seats_available}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.seat_type}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {flight.price}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {/* button to book */}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Flights available.</p>
+                  )}
+                </div>
+              </Step>
+              <Step>
+                <h2 className="step-heading-TD">
                   Select Hotel in {selectedPackageCountryName}
                 </h2>
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
                   selectedPackageCity.map((city) => (
-                    <details className="feedback-details2-TD" key={city}>
+                    <details
+                      className="feedback-details2-TD"
+                      key={city}
+                      open={openSummary === city}
+                    >
                       <summary
                         className="feedback-summary2-TD"
                         onClick={() => {
                           getHotels(city);
+                          setOpenSummary(city);
                         }}
                       >
                         {city}
@@ -580,7 +721,8 @@ function TouristDashboard() {
                               </summary>
                               <div className="feedback-content2-TD">
                                 <p>
-                                  {hotel.rating} {hotel.email} {hotel.phone}
+                                  {hotel.rating} {hotel.email} {hotel.phone}{" "}
+                                  {hotel.city}
                                 </p>
                               </div>
                             </details>
