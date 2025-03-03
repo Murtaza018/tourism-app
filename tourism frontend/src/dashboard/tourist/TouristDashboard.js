@@ -275,6 +275,14 @@ function TouristDashboard() {
       if (countryIsoCode) {
         const countryCitiesObject = City.getCitiesOfCountry(countryIsoCode);
         const cityNamesArray = Object.values(countryCitiesObject);
+        if (cityNamesArray.length === 0) {
+          setNoPackageCity(true);
+          setSelectedPackageCity(selectedPackageCountryName);
+          console.log(selectedPackageCity);
+        } else {
+          setNoPackageCity(false);
+          console.log("yes package cities");
+        }
         setPackageCities(cityNamesArray); // Set the city *data*
         setSelectedPackageCity([]); // Reset selection when country changes
         setLoading(false); // Set loading to false *after* data is fetched
@@ -307,6 +315,14 @@ function TouristDashboard() {
       // Fetch cities for the selected country
       if (countryIsoCode) {
         const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        if (countryCities.length === 0) {
+          setNoCurrentCity(true);
+          setSelectedCurrentCity(selectedCurrentCountryName);
+          console.log(selectedCurrentCity);
+        } else {
+          setNoCurrentCity(false);
+          console.log("yes current cities");
+        }
         setCities(countryCities);
       } else {
         setSelectedCurrentCity("");
@@ -320,7 +336,40 @@ function TouristDashboard() {
       event.preventDefault();
       setSelectedCurrentCity(event.target.value || []); // Correctly handle multiple selections
     };
-
+    const [noPackageCity, setNoPackageCity] = useState(false);
+    const [noCurrentCity, setNoCurrentCity] = useState(false);
+    const [hotelData, setHotelData] = useState({
+      first_name: "",
+      last_name: "",
+      phone: "",
+      email: "",
+      rating: "",
+      address: "",
+    });
+    const getHotels = (city_param) => {
+      fetch("http://localhost:8008/Tourism/getHotels", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          city: city_param,
+          country: selectedPackageCountryName,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setHotelData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -334,14 +383,23 @@ function TouristDashboard() {
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
-                if (step === 3) {
+                if (step === 1) {
+                  if (selectedCurrentCountryName === "") {
+                    return "Select Country!";
+                  }
+                  if (selectedCurrentCity.length <= 0 && !noCurrentCity) {
+                    return "Select City!";
+                  }
+                }
+                if (step === 2) {
                   if (selectedPackageCountryName === "") {
                     return "Enter Country!";
                   }
-                  if (selectedPackageCity.length <= 0) {
+                  if (selectedPackageCity.length <= 0 && !noPackageCity) {
                     return "Select at least 1 City!";
                   }
                 }
+
                 return true;
               }}
             >
@@ -499,9 +557,37 @@ function TouristDashboard() {
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
                   selectedPackageCity.map((city) => (
                     <details className="feedback-details2-TD" key={city}>
-                      <summary className="feedback-summary2-TD">{city}</summary>
+                      <summary
+                        className="feedback-summary2-TD"
+                        onClick={() => {
+                          getHotels(city);
+                        }}
+                      >
+                        {city}
+                      </summary>
                       <div className="feedback-content2-TD">
-                        <p>city name: {city}</p>
+                        {hotelData && hotelData.length > 0 ? (
+                          hotelData.map((hotel) => (
+                            <details
+                              className="feedback-details2-TD"
+                              key={hotel.email}
+                            >
+                              <summary
+                                className="feedback-summary2-TD"
+                                // onClick={() => getHotels(city)}
+                              >
+                                {hotel.first_name} {hotel.last_name}
+                              </summary>
+                              <div className="feedback-content2-TD">
+                                <p>
+                                  {hotel.rating} {hotel.email} {hotel.phone}
+                                </p>
+                              </div>
+                            </details>
+                          ))
+                        ) : (
+                          <p>No Hotels Available in this city.</p>
+                        )}
                       </div>
                     </details>
                   ))

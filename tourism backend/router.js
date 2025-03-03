@@ -16,6 +16,7 @@ router.post("/signInUser", userController.signInUser);
 router.post("/updateUser", userController.updateUser);
 router.post("/UserDataRetreival", userController.UserDataRetreival);
 router.post("/DeleteUser", userController.DeleteUser);
+router.post("/getHotels", userController.getHotels);
 
 router.post("/insertRoom", roomController.insertRoom);
 router.post("/getRoomData", roomController.getRoomData);

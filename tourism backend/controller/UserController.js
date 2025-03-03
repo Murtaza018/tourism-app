@@ -115,15 +115,34 @@ const DeleteUser = async (req, res) => {
 };
 const getHotels = async (req, res) => {
   await UserCheckTable();
-  console.log(req.body);
+  console.log("Hello ", req.body);
   pool.query(
-    `select * from user where role_ID=(select role_ID from role where name="Hotel Management") and country=? and city in (?)`,
-    [req.body.selectedPackageCountry, req.body.selectedPackageCity],
+    `SELECT 
+    u.first_name, 
+    u.last_name, 
+    u.phone, 
+    u.address, 
+    u.email, 
+    COALESCE(AVG(f.rating), 0) AS rating 
+FROM 
+    user u
+LEFT JOIN 
+    feedback f ON u.email = f.receiver_email 
+LEFT JOIN
+    accountStatus a ON u.email = a.email     
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Hotel Management')
+    AND u.country = ?  
+    AND u.city = ?    
+    AND a.status = 1   
+GROUP BY 
+    u.email; `,
+    [req.body.country, req.body.city],
     (err, results) => {
       if (err) {
         res.json({ code: 500, data: err });
       } else {
-        return res.json({ code: 200, data: "user deleted" });
+        return res.json({ code: 200, data: results });
       }
     }
   );
