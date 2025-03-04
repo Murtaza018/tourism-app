@@ -168,7 +168,9 @@ const getFlights = async (req, res) => {
     await FlightCheckTable();
 
     pool.query(
-      `select * from flight where departure_date = ? and departure_country=? and departure_city=? and arrival_country=? and arrival_city=? and seats_available>?;`,
+      `SELECT u.*,COALESCE((SELECT AVG(f.rating) FROM feedback f WHERE f.receiver_email = u.email),0) AS rating FROM flight u 
+      LEFT JOIN accountStatus a ON u.email = a.email WHERE u.departure_date = ? AND u.departure_country = ? AND u.departure_city = ? 
+      AND u.arrival_country = ? AND u.arrival_city = ? AND a.status=1 and seats_available>?;`,
       [
         req.body.date,
         req.body.departure_country,

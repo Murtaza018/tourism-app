@@ -849,6 +849,7 @@ details[open] .feedback-summary-TD::after {
   font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -922,4 +923,43 @@ details[open] .feedback-content2-TD {
   transition: background-color 0.3s ease;
   background-color: #007bff;
   color: white;
+}
+.summary-rating-TD {
+  color: yellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+.hotel-details-TD {
+  display: flex;
+  align-items: flex-start; /* Align to the top */
+  justify-content: space-between; /* Space between details and button */
+  gap: 16px; /* Add some space between details and button */
+  background: none; /* Remove background */
+  padding: 0; /* Remove padding */
+}
+
+.hotel-details-TD .details2-TD {
+  display: flex;
+  flex-direction: column; /* Stack details vertically */
+}
+
+.hotel-details-TD p {
+  margin: 0;
+}
+
+.hotel-details-TD .summary-rating2-TD {
+  display: inline-flex; /* Display rating and stars in the same line */
+  align-items: center; /* Vertically align items within the rating */
+}
+
+.hotel-details-TD .summary-rating2-TD .MuiSvgIcon-root {
+  color: yellow;
+  font-size: 1.2em;
+  margin-left: 4px;
+}
+
+.hotel-details-TD button {
+  align-self: flex-start; /* Align button to the top */
 }

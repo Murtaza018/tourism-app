@@ -243,6 +243,22 @@ function TouristDashboard() {
       useState("Pakistan");
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
+    // const [flightDate, setFlightDate] = useState(null);
+    const [flightDate, setFlightDate] = useState("2025-03-07");
+    // const [touristQuantity, setTouristQuantity] = useState(null);
+    const [touristQuantity, setTouristQuantity] = useState(4);
+    // const [selectedFlightID, setSelectedFlightID] = useState(null);
+    const [selectedFlightID, setSelectedFlightID] = useState(1);
+    // const [flightSelected, setFlightSelected] = useState(false);
+    const [flightSelected, setFlightSelected] = useState(true);
+    // const [selectedReturnFlightID, setSelectedReturnFlightID] = useState(null);
+    // const [returnFlightSelected, setReturnFlightSelected] = useState(false);
+    const [selectedReturnFlightID, setSelectedReturnFlightID] = useState(4);
+    const [returnFlightSelected, setReturnFlightSelected] = useState(true);
+    const [flightData, setFlightData] = useState({});
+    const [returnFlightData, setReturnFlightData] = useState({});
+    const [openSummary, setOpenSummary] = useState();
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const handleCountryChange = (event) => {
       event.preventDefault();
       if (event.target.value === "") {
@@ -384,13 +400,62 @@ function TouristDashboard() {
           console.log(err);
         });
     };
-    const [flightDate, setFlightDate] = useState(null);
-    const [touristQuantity, setTouristQuantity] = useState(null);
-    const [selectedFlightID, setSelectedFlightID] = useState(null);
-    const [flightSelected, setFlightSelected] = useState(false);
-    const [flightData, setFlightData] = useState({});
-    const [openSummary, setOpenSummary] = useState();
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const getReturnFlights = (date, quantity) => {
+      console.log("date:", date);
+      fetch("http://localhost:8008/Tourism/getFlights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: date,
+          departure_country: selectedPackageCountryName,
+          departure_city: selectedPackageCity[selectedPackageCity.length - 1],
+          arrival_country: selectedCurrentCountryName,
+          arrival_city: selectedCurrentCity,
+          quantity: quantity,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setReturnFlightData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    function isDateBeforeOtherDate(date1, date2) {
+      // Create Date objects for the given dates
+      const givenDate1 = new Date(date1);
+      const givenDate2 = new Date(date2);
+
+      // Set the time components to 00:00:00 for accurate comparison
+      givenDate1.setHours(0, 0, 0, 0);
+      givenDate2.setHours(0, 0, 0, 0);
+
+      // Compare the dates
+      return givenDate1 < givenDate2;
+    }
+    function getDaysBetweenDates(date1, date2) {
+      // Create Date objects from the input strings
+      const d1 = new Date(date1);
+      const d2 = new Date(date2);
+
+      // Calculate the difference in milliseconds
+      const diffInMs = Math.abs(d2 - d1);
+
+      // Convert milliseconds to days
+      const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+      return diffInDays;
+    }
+    const [flightReturnDate, setFlightReturnDate] = useState(null);
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -420,19 +485,38 @@ function TouristDashboard() {
                 //     return "Select at least 1 City!";
                 //   }
                 // }
-                if (step === 3) {
-                  if (!flightDate) {
-                    return "Select a Date!";
-                  }
-                  if (!selectedFlightID) {
-                    if (
-                      window.confirm("You have not selected a flight,continue?")
-                    ) {
-                      return true;
-                    }
-                    return "Select a flight!";
-                  }
-                }
+                // if (step === 3) {
+                // if(touristQuantity<=0){
+                //   return "Quantity can not be less than 0";
+                // }
+                //   if (!flightDate) {
+                //     return "Select a Date!";
+                //   }
+                //   if (!selectedFlightID) {
+                //     if (
+                //       window.confirm("You have not selected a flight,continue?")
+                //     ) {
+                //       return true;
+                //     }
+                //     return "Select a flight!";
+                //   }
+                // }
+                // if (step === 4) {
+                //   if (touristQuantity <= 0) {
+                //     return "Quantity can not be less than 0";
+                //   }
+
+                //   if (!selectedReturnFlightID) {
+                //     if (
+                //       window.confirm(
+                //         "You have not selected a return flight,continue?"
+                //       )
+                //     ) {
+                //       return true;
+                //     }
+                //     return "Select a flight!";
+                //   }
+                // }
 
                 return true;
               }}
@@ -586,7 +670,7 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2 className="step-heading-TD">
-                  Select Flight for {selectedPackageCountryName}
+                  Select Departure Flight to {selectedCurrentCountryName}
                 </h2>
                 <div className="flight-data-stepper-input-div-TD">
                   <TextField
@@ -594,6 +678,10 @@ function TouristDashboard() {
                     className="seats-input3-TD"
                     value={flightDate}
                     onChange={(e) => {
+                      if (isDateBeforeOtherDate(e.target.value, new Date())) {
+                        window.alert("Date can not be in the past!");
+                        return;
+                      }
                       setFlightDate(e.target.value);
                       getFlights(e.target.value, touristQuantity);
                     }}
@@ -657,6 +745,7 @@ function TouristDashboard() {
                             <th className="table-header-TD">Available Seats</th>
                             <th className="table-header-TD">Seat Type</th>
                             <th className="table-header-TD">Price($)</th>
+                            <th className="table-header-TD">Airline Rating</th>
                             <th className="table-header-TD">Booking</th>
                           </tr>
                         </thead>
@@ -717,6 +806,9 @@ function TouristDashboard() {
                                   {flight.price}
                                 </td>
                                 <td className="table-cell-TD table-cell2-TD">
+                                  {flight.rating}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
                                   {flightSelected ? (
                                     <>
                                       {selectedFlightID === flight.flight_id ? (
@@ -760,6 +852,202 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2 className="step-heading-TD">
+                  Select Return Flight to {selectedPackageCountryName}
+                </h2>
+                <div className="flight-data-stepper-input-div-TD">
+                  <TextField
+                    type="date"
+                    className="seats-input3-TD"
+                    value={flightReturnDate}
+                    onChange={(e) => {
+                      if (isDateBeforeOtherDate(e.target.value, flightDate)) {
+                        window.alert("Date can not be in the past!");
+                        return;
+                      } else if (
+                        getDaysBetweenDates(e.target.value, flightDate) <
+                        selectedPackageCity.length
+                      ) {
+                        window.alert(
+                          "spend at least 1 day in each city,increase the number of days between :)"
+                        );
+                      } else {
+                        setFlightReturnDate(e.target.value);
+                        getReturnFlights(e.target.value, touristQuantity);
+                      }
+                    }}
+                    sx={{
+                      backgroundColor: "transparent !important",
+                      color: "cyan !important",
+                      "& .MuiInputBase-input": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      '& input[type="date"]::-webkit-calendar-picker-indicator':
+                        {
+                          filter:
+                            "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                        },
+                    }}
+                  ></TextField>
+                  <TextField
+                    type="number"
+                    className="seats-input3-TD"
+                    value={touristQuantity}
+                    disabled
+                    placeholder="Number of persons"
+                    onChange={(e) => {
+                      setTouristQuantity(e.target.value);
+                      getReturnFlights(flightReturnDate, e.target.value);
+                    }}
+                    sx={{
+                      backgroundColor: "transparent !important",
+                      color: "cyan !important",
+                      "& .MuiInputBase-input": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                      },
+                      '& input[type="date"]::-webkit-calendar-picker-indicator':
+                        {
+                          filter:
+                            "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                        },
+                    }}
+                  ></TextField>
+                </div>
+                <div className="table-container-TD">
+                  {returnFlightData && returnFlightData.length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">Flight Name</th>
+                            <th className="table-header-TD">Departure</th>
+                            <th className="table-header-TD">Departure Time</th>
+                            <th className="table-header-TD">Arrival</th>
+                            <th className="table-header-TD">Arrival Time</th>
+                            <th className="table-header-TD">Available Seats</th>
+                            <th className="table-header-TD">Seat Type</th>
+                            <th className="table-header-TD">Price($)</th>
+                            <th className="table-header-TD">Airline Rating</th>
+
+                            <th className="table-header-TD">Booking</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {returnFlightData.map((flight) => {
+                            const localDepartureDateTime = DateTime.fromISO(
+                              flight.departure_date +
+                                "T" +
+                                flight.departure_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
+
+                            // Format date/time for display
+                            const formattedDepartureDateTime =
+                              localDepartureDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            const localArrivalDateTime = DateTime.fromISO(
+                              flight.arrival_date + "T" + flight.arrival_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
+
+                            // Format date/time for display
+                            const formattedArrivalDateTime =
+                              localArrivalDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            return (
+                              <tr
+                                key={flight.flight_id}
+                                className="table-row-TD"
+                              >
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.flight_name}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.departure_city},
+                                  {flight.departure_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedDepartureDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.arrival_city},{flight.arrival_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedArrivalDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seats_available}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seat_type}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.price}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.rating}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {returnFlightSelected ? (
+                                    <>
+                                      {selectedReturnFlightID ===
+                                      flight.flight_id ? (
+                                        <>
+                                          <button
+                                            className="edit-button-TD"
+                                            onClick={() => {
+                                              setSelectedReturnFlightID(null);
+                                              setReturnFlightSelected(false);
+                                            }}
+                                          >
+                                            Selected
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <button
+                                      className="edit-button-TD"
+                                      onClick={() => {
+                                        setSelectedReturnFlightID(
+                                          flight.flight_id
+                                        );
+                                        setReturnFlightSelected(true);
+                                      }}
+                                    >
+                                      Select
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Flights available.</p>
+                  )}
+                </div>
+              </Step>
+
+              <Step>
+                <h2 className="step-heading-TD">
                   Select Hotel in {selectedPackageCountryName}
                 </h2>
                 {selectedPackageCity && selectedPackageCity.length > 0 ? (
@@ -790,12 +1078,25 @@ function TouristDashboard() {
                                 // onClick={() => getHotels(city)}
                               >
                                 {hotel.first_name} {hotel.last_name}
+                                <p className="summary-rating-TD">
+                                  ({hotel.rating}
+                                  <StarIcon />)
+                                </p>
                               </summary>
                               <div className="feedback-content2-TD">
-                                <p>
-                                  {hotel.rating} {hotel.email} {hotel.phone}{" "}
-                                  {hotel.city}
-                                </p>
+                                <div className="hotel-details-TD">
+                                  <div className="details2-TD">
+                                    <p className="summary-rating2-TD">
+                                      Rating: ({hotel.rating}
+                                      <StarIcon />)
+                                    </p>
+                                    <p> Phone:{hotel.phone}</p>
+                                    <p>Address:{hotel.address}</p>
+                                  </div>
+                                  <button className="edit-button-TD">
+                                    Select
+                                  </button>
+                                </div>
                               </div>
                             </details>
                           ))
