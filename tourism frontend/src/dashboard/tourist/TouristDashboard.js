@@ -10,6 +10,7 @@ import Stepper, { Step } from "../../components/Stepper";
 import { Country, City } from "country-state-city";
 import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
+import { DateTime } from "luxon";
 import {
   Button,
   Dialog,
@@ -385,8 +386,11 @@ function TouristDashboard() {
     };
     const [flightDate, setFlightDate] = useState(null);
     const [touristQuantity, setTouristQuantity] = useState(null);
+    const [selectedFlightID, setSelectedFlightID] = useState(null);
+    const [flightSelected, setFlightSelected] = useState(false);
     const [flightData, setFlightData] = useState({});
     const [openSummary, setOpenSummary] = useState();
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -416,6 +420,19 @@ function TouristDashboard() {
                 //     return "Select at least 1 City!";
                 //   }
                 // }
+                if (step === 3) {
+                  if (!flightDate) {
+                    return "Select a Date!";
+                  }
+                  if (!selectedFlightID) {
+                    if (
+                      window.confirm("You have not selected a flight,continue?")
+                    ) {
+                      return true;
+                    }
+                    return "Select a flight!";
+                  }
+                }
 
                 return true;
               }}
@@ -644,40 +661,95 @@ function TouristDashboard() {
                           </tr>
                         </thead>
                         <tbody className="table-body-TD">
-                          {flightData.map((flight) => (
-                            <tr key={flight.flight_id} className="table-row-TD">
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.flight_name}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.departure_city},
-                                {flight.departure_country}
-                              </td>
+                          {flightData.map((flight) => {
+                            const localDepartureDateTime = DateTime.fromISO(
+                              flight.departure_date +
+                                "T" +
+                                flight.departure_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
 
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.departure_date},{flight.departure_time}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.arrival_city},{flight.arrival_country}
-                              </td>
+                            // Format date/time for display
+                            const formattedDepartureDateTime =
+                              localDepartureDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            const localArrivalDateTime = DateTime.fromISO(
+                              flight.arrival_date + "T" + flight.arrival_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
 
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.arrival_date},{flight.arrival_time}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.seats_available}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.seat_type}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {flight.price}
-                              </td>
-                              <td className="table-cell-TD table-cell2-TD">
-                                {/* button to book */}
-                              </td>
-                            </tr>
-                          ))}
+                            // Format date/time for display
+                            const formattedArrivalDateTime =
+                              localArrivalDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            return (
+                              <tr
+                                key={flight.flight_id}
+                                className="table-row-TD"
+                              >
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.flight_name}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.departure_city},
+                                  {flight.departure_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedDepartureDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.arrival_city},{flight.arrival_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedArrivalDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seats_available}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seat_type}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.price}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flightSelected ? (
+                                    <>
+                                      {selectedFlightID === flight.flight_id ? (
+                                        <>
+                                          <button
+                                            className="edit-button-TD"
+                                            onClick={() => {
+                                              setSelectedFlightID(null);
+                                              setFlightSelected(false);
+                                            }}
+                                          >
+                                            Selected
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <button
+                                      className="edit-button-TD"
+                                      onClick={() => {
+                                        setSelectedFlightID(flight.flight_id);
+                                        setFlightSelected(true);
+                                      }}
+                                    >
+                                      Select
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

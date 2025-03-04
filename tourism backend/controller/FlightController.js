@@ -17,6 +17,7 @@ const FlightCheckTable = async () => {
         arrival_time time not null,
         foreign key (email) references user(email) on delete cascade);`);
 };
+//hello
 const insertFlight = async (req, res) => {
   console.log(req.body);
   await FlightCheckTable();
@@ -162,84 +163,65 @@ const UpdateFlight = async (req, res) => {
 };
 const getFlights = async (req, res) => {
   console.log(req.body);
-  await FlightCheckTable();
-  pool.query(
-    `select * from flight where departure_date = ? and departure_country=? and departure_city=?
-    and arrival_country=? and arrival_city=? and seats_available>?;`,
-    [
-      req.body.date,
-      req.body.departure_country,
-      req.body.departure_city,
-      req.body.arrival_country,
-      req.body.arrival_city,
-      req.body.quantity,
-    ],
-    (err, results) => {
-      if (results) {
-        console.log(results);
-        const flights = results;
 
-        const parsedFlights = flights.map((flight) => {
-          const departureTime = flight.departure_time;
+  try {
+    await FlightCheckTable();
 
-          let formattedDepartureTime = null;
+    pool.query(
+      `select * from flight where departure_date = ? and departure_country=? and departure_city=? and arrival_country=? and arrival_city=? and seats_available>?;`,
+      [
+        req.body.date,
+        req.body.departure_country,
+        req.body.departure_city,
+        req.body.arrival_country,
+        req.body.arrival_city,
+        req.body.quantity,
+      ],
+      (err, results) => {
+        if (err) {
+          console.error("Database query error:", err);
+          return res.status(500).json({ code: 500, message: "Database error" });
+        }
 
-          if (departureTime) {
-            //Check if it is not null or undefined
-            if (typeof departureTime === "string") {
-              //Check if it is a string
-              formattedDepartureTime = new Date(
-                `1970-01-01T${departureTime}`
+        const parsedFlights = results.map((flight) => ({
+          ...flight,
+
+          // No need to format departure_date or arrival_date
+          departure_date: flight.departure_date, // Directly use the string value
+          departure_time: flight.departure_time
+            ? new Date(
+                `1970-01-01T${flight.departure_time}`
               ).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit",
                 hour12: false,
-              });
-            } else if (departureTime instanceof Date) {
-              //Check if it is a Date object
-              formattedDepartureTime = departureTime.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              });
-            } else {
-              console.error(
-                "Unexpected departure time type:",
-                typeof departureTime,
-                departureTime
-              );
-            }
-          }
-          return {
-            ...flight,
-            departure_date: flight.departure_date
-              ? flight.departure_date.toISOString().split("T")[0]
-              : null,
-            departure_time: formattedDepartureTime, // Use the formatted time
-            arrival_date: flight.arrival_date
-              ? flight.arrival_date.toISOString().split("T")[0]
-              : null,
-            arrival_time: flight.arrival_time
-              ? new Date(
-                  `1970-01-01T${flight.arrival_time}`
-                ).toLocaleTimeString([], {
+              })
+            : null,
+          arrival_date: flight.arrival_date, // Directly use the string value
+          arrival_time: flight.arrival_time
+            ? new Date(`1970-01-01T${flight.arrival_time}`).toLocaleTimeString(
+                [],
+                {
                   hour: "2-digit",
                   minute: "2-digit",
                   second: "2-digit",
                   hour12: false,
-                })
-              : null,
-          };
-        });
+                }
+              )
+            : null,
+        }));
+
         console.log(parsedFlights);
         return res.json({ code: 200, data: parsedFlights });
-      } else {
-        res.json({ code: 500, data: err });
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.error("Error in getFlights:", error);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error" });
+  }
 };
 module.exports = {
   insertFlight,
