@@ -456,6 +456,8 @@ function TouristDashboard() {
       return diffInDays;
     }
     const [flightReturnDate, setFlightReturnDate] = useState(null);
+    const [daysStay, setDaysStay] = useState({});
+    const [error3, setError3] = useState("");
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -1076,6 +1078,7 @@ function TouristDashboard() {
                               <summary
                                 className="feedback-summary2-TD"
                                 // onClick={() => getHotels(city)}
+                                onClick={() => setError3("")}
                               >
                                 {hotel.first_name} {hotel.last_name}
                                 <p className="summary-rating-TD">
@@ -1092,10 +1095,44 @@ function TouristDashboard() {
                                     </p>
                                     <p> Phone:{hotel.phone}</p>
                                     <p>Address:{hotel.address}</p>
+                                    <p className="error-message-TD">{error3}</p>
                                   </div>
                                   <button className="edit-button-TD">
                                     Select
                                   </button>
+                                  <input
+                                    type="number"
+                                    key={hotel.city}
+                                    value={daysStay[hotel.city]?.days || 1}
+                                    onChange={(e) => {
+                                      const startDate = new Date(flightDate);
+                                      const endDate = new Date(
+                                        flightReturnDate
+                                      );
+                                      const timeDifference =
+                                        endDate.getTime() - startDate.getTime();
+                                      const days = Math.round(
+                                        timeDifference / (1000 * 60 * 60 * 24)
+                                      );
+                                      //change this if condition to add days already selected in citites before
+                                      if (
+                                        e.target.value < 1 &&
+                                        days - e.target.value >=
+                                          selectedPackageCity.length
+                                      ) {
+                                        setError3("invalid number of days");
+                                        return;
+                                      }
+                                      setError3("");
+                                      setDaysStay((prevState) => ({
+                                        ...prevState,
+                                        [hotel.city]: {
+                                          email: hotel.email,
+                                          days: e.target.value,
+                                        },
+                                      }));
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </details>

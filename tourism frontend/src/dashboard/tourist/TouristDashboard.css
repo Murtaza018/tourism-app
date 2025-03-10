@@ -963,3 +963,8 @@ details[open] .feedback-content2-TD {
 .hotel-details-TD button {
   align-self: flex-start; /* Align button to the top */
 }
+
+.error-message-TD {
+  color: red;
+  font-size: 14px;
+}
