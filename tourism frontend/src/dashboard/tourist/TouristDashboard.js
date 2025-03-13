@@ -244,7 +244,7 @@ function TouristDashboard() {
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     // const [flightDate, setFlightDate] = useState(null);
-    const [flightDate, setFlightDate] = useState("2025-03-07");
+    const [flightDate, setFlightDate] = useState("2025-07-07");
     // const [touristQuantity, setTouristQuantity] = useState(null);
     const [touristQuantity, setTouristQuantity] = useState(4);
     // const [selectedFlightID, setSelectedFlightID] = useState(null);
@@ -455,9 +455,49 @@ function TouristDashboard() {
 
       return diffInDays;
     }
-    const [flightReturnDate, setFlightReturnDate] = useState(null);
+    // const [flightReturnDate, setFlightReturnDate] = useState(null);
+    const [flightReturnDate, setFlightReturnDate] = useState("2025-07-10");
     const [daysStay, setDaysStay] = useState({});
     const [error3, setError3] = useState("");
+    const addStayDays = (e, hotel) => {
+      const startDate = new Date(flightDate);
+      const endDate = new Date(flightReturnDate);
+
+      const timeDifference = endDate.getTime() - startDate.getTime();
+      const days = Math.round(timeDifference / (1000 * 60 * 60 * 24));
+
+      let daysDone = 0;
+      let citiesDone = 1;
+      for (const city in daysStay) {
+        if (daysStay.hasOwnProperty(city)) {
+          // Ensure we're only processing the object's own properties
+          const days = daysStay[city].days;
+
+          // Check if days is a valid number before adding it
+          if (!isNaN(Number(days)) && city !== hotel.city) {
+            daysDone += Number(days);
+            citiesDone += 1;
+          }
+        }
+      }
+      if (
+        e.target.value < 1 ||
+        days - e.target.value - daysDone <
+          selectedPackageCity.length - citiesDone
+      ) {
+        setError3("invalid number of days");
+        return;
+      }
+      setError3("");
+      setDaysStay((prevState) => ({
+        ...prevState,
+        [hotel.city]: {
+          // email: hotel.email,
+          days: e.target.value,
+        },
+      }));
+      console.log("stay days:", daysStay);
+    };
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -504,6 +544,8 @@ function TouristDashboard() {
                 //   }
                 // }
                 // if (step === 4) {
+                //   setDaysStay({});
+
                 //   if (touristQuantity <= 0) {
                 //     return "Quantity can not be less than 0";
                 //   }
@@ -1097,41 +1139,35 @@ function TouristDashboard() {
                                     <p>Address:{hotel.address}</p>
                                     <p className="error-message-TD">{error3}</p>
                                   </div>
-                                  <button className="edit-button-TD">
+                                  <button
+                                    className="edit-button-TD"
+                                    onClick={(e, hotel) => {
+                                      setDaysStay((prevState) => ({
+                                        ...prevState,
+                                        [hotel.city]: {
+                                          email: hotel.email,
+                                          days: 0,
+                                        },
+                                      }));
+                                    }}
+                                  >
                                     Select
                                   </button>
                                   <input
                                     type="number"
                                     key={hotel.city}
-                                    value={daysStay[hotel.city]?.days || 1}
-                                    onChange={(e) => {
-                                      const startDate = new Date(flightDate);
-                                      const endDate = new Date(
-                                        flightReturnDate
-                                      );
-                                      const timeDifference =
-                                        endDate.getTime() - startDate.getTime();
-                                      const days = Math.round(
-                                        timeDifference / (1000 * 60 * 60 * 24)
-                                      );
-                                      //change this if condition to add days already selected in citites before
-                                      if (
-                                        e.target.value < 1 &&
-                                        days - e.target.value >=
-                                          selectedPackageCity.length
-                                      ) {
-                                        setError3("invalid number of days");
-                                        return;
-                                      }
-                                      setError3("");
-                                      setDaysStay((prevState) => ({
-                                        ...prevState,
-                                        [hotel.city]: {
-                                          email: hotel.email,
-                                          days: e.target.value,
-                                        },
-                                      }));
-                                    }}
+                                    disabled={
+                                      daysStay[hotel.city] &&
+                                      daysStay[hotel.city].email &&
+                                      daysStay[hotel.city].email !== hotel.email
+                                    }
+                                    value={
+                                      daysStay[hotel.city] &&
+                                      daysStay[hotel.city].email === hotel.email
+                                        ? daysStay[hotel.city]?.days || 0
+                                        : 0
+                                    }
+                                    onChange={(e) => addStayDays(e, hotel)}
                                   />
                                 </div>
                               </div>
