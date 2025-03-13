@@ -113,9 +113,7 @@ const DeleteUser = async (req, res) => {
     }
   );
 };
-//hello
 
-//hello
 const getHotels = async (req, res) => {
   await UserCheckTable();
   console.log("Hello ", req.body);
