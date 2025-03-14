@@ -1141,7 +1141,7 @@ function TouristDashboard() {
                                   </div>
                                   <button
                                     className="edit-button-TD"
-                                    onClick={(e, hotel) => {
+                                    onClick={(hotel) => {
                                       setDaysStay((prevState) => ({
                                         ...prevState,
                                         [hotel.city]: {
