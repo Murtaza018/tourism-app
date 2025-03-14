@@ -50,4 +50,4 @@ const insertPrice = async (req, res) => {
     }
   );
 };
-module.exports = { getPrice, updatePrice, insertPrice };
+module.exports = { getPrice, updatePrice, insertPrice, PriceCheckTable };

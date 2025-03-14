@@ -156,4 +156,5 @@ module.exports = {
   updateUser,
   UserDataRetreival,
   DeleteUser,
+  UserCheckTable,
 };

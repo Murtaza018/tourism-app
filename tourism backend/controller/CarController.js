@@ -54,4 +54,4 @@ const updateCar = async (req, res) => {
   );
 };
 
-module.exports = { insertCar, updateCar, getCar };
+module.exports = { insertCar, updateCar, getCar, CarCheckTable };

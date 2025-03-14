@@ -40,4 +40,5 @@ module.exports = {
   AccountStatusCheckTable,
   AccountStatusRetreival,
   UpdateAccountStatus,
+  AccountStatusCheckTable,
 };

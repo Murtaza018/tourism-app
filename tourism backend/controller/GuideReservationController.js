@@ -93,4 +93,5 @@ module.exports = {
   updateGuideReservationData,
   deleteGuideReservationData,
   CheckGuideReservationCount,
+  guideReservationCheckTable,
 };

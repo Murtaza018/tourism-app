@@ -42,4 +42,4 @@ const insertFeedback = async (req, res) => {
   );
 };
 
-module.exports = { getFeedbackData, insertFeedback };
+module.exports = { getFeedbackData, insertFeedback, FeedbackCheckTable };

@@ -81,4 +81,10 @@ const UpdateRoom = async (req, res) => {
   );
 };
 
-module.exports = { insertRoom, getRoomData, DeleteRoom, UpdateRoom };
+module.exports = {
+  insertRoom,
+  getRoomData,
+  DeleteRoom,
+  UpdateRoom,
+  RoomCheckTable,
+};

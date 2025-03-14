@@ -231,4 +231,5 @@ module.exports = {
   UpdateFlight,
   DeleteFlight,
   getFlights,
+  FlightCheckTable,
 };
