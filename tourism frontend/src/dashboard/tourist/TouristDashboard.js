@@ -461,32 +461,34 @@ function TouristDashboard() {
     const [daysStay, setDaysStay] = useState({});
     const [error3, setError3] = useState("");
     const addStayDays = (e, hotel) => {
-      const startDate = new Date(flightDate);
-      const endDate = new Date(flightReturnDate);
+      if (flightReturnDate && selectedReturnFlightID) {
+        const startDate = new Date(flightDate);
+        const endDate = new Date(flightReturnDate);
 
-      const timeDifference = endDate.getTime() - startDate.getTime();
-      const days = Math.round(timeDifference / (1000 * 60 * 60 * 24));
+        const timeDifference = endDate.getTime() - startDate.getTime();
+        const days = Math.round(timeDifference / (1000 * 60 * 60 * 24));
 
-      let daysDone = 0;
-      let citiesDone = 1;
-      for (const city in daysStay) {
-        // Ensure we're only processing the object's own properties
-        const days = daysStay[city].days;
+        let daysDone = 0;
+        let citiesDone = 1;
+        for (const city in daysStay) {
+          // Ensure we're only processing the object's own properties
+          const days = daysStay[city].days;
 
-        // Check if days is a valid number before adding it
-        if (!isNaN(Number(days)) && city !== hotel.city && days !== 0) {
-          daysDone += Number(days);
-          citiesDone += 1;
+          // Check if days is a valid number before adding it
+          if (!isNaN(Number(days)) && city !== hotel.city && days !== 0) {
+            daysDone += Number(days);
+            citiesDone += 1;
+          }
         }
-      }
 
-      if (
-        e.target.value < 1 ||
-        days - e.target.value - daysDone <
-          selectedPackageCity.length - citiesDone
-      ) {
-        setError3("invalid number of days");
-        return;
+        if (
+          e.target.value < 1 ||
+          days - e.target.value - daysDone <
+            selectedPackageCity.length - citiesDone
+        ) {
+          setError3("invalid number of days");
+          return;
+        }
       }
       setError3("");
       setDaysStay((prevState) => ({
@@ -509,6 +511,24 @@ function TouristDashboard() {
       const start_date = date2.format("YYYY-MM-DD");
 
       intervalDays += Number(e.target.value);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
+
+      getRoomData(daysStay[hotel.city].email, start_date, end_date);
+    };
+    const RoomDataAPICall = (hotel) => {
+      let intervalDays = 0;
+      for (const city in daysStay) {
+        if (city === hotel.city) {
+          break;
+        }
+        intervalDays += daysStay[city].days;
+      }
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
+
+      intervalDays += Number(daysStay[hotel.city].days);
       const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
       const end_date = date3.format("YYYY-MM-DD");
 
@@ -539,6 +559,35 @@ function TouristDashboard() {
         .catch((err) => {
           console.log(err);
         });
+    };
+    const handleAddRoomPackage = (room_id, city) => {
+      setDaysStay((prevState) => {
+        const cityData = prevState[city];
+        if (!cityData) return prevState; // Handle case where cityData is undefined
+
+        const roomIds = cityData.room_id || []; // Ensure roomIds is an array
+
+        if (roomIds.includes(room_id)) {
+          // Remove room_id
+          const newRoomIds = roomIds.filter((id) => id !== room_id);
+          return {
+            ...prevState,
+            [city]: {
+              ...cityData,
+              room_id: newRoomIds,
+            },
+          };
+        } else {
+          // Add room_id
+          return {
+            ...prevState,
+            [city]: {
+              ...cityData,
+              room_id: [...roomIds, room_id],
+            },
+          };
+        }
+      });
     };
     return (
       <div>
@@ -577,11 +626,7 @@ function TouristDashboard() {
                 //     return "Select a Date!";
                 //   }
                 //   if (!selectedFlightID) {
-                //     if (
-                //       window.confirm("You have not selected a flight,continue?")
-                //     ) {
-                //       return true;
-                //     }
+                //
                 //     return "Select a flight!";
                 //   }
                 // }
@@ -596,8 +641,6 @@ function TouristDashboard() {
                     };
                   });
                   setDaysStay(initialDaysStay);
-
-                  console.log("shjhjd", daysStay);
                 }
                 //   if (touristQuantity <= 0) {
                 //     return "Quantity can not be less than 0";
@@ -1175,7 +1218,13 @@ function TouristDashboard() {
                                 // onClick={() => getHotels(city)}
                                 onClick={() => {
                                   setError3("");
-                                  setRoomData(null);
+                                  if (
+                                    daysStay[hotel.city].email === hotel.email
+                                  ) {
+                                    RoomDataAPICall(hotel);
+                                  } else {
+                                    setRoomData(null);
+                                  }
                                 }}
                               >
                                 {hotel.first_name} {hotel.last_name}
@@ -1296,7 +1345,29 @@ function TouristDashboard() {
                                                 {room.price}
                                               </td>
 
-                                              <td className="table-cell-TD table-cell3-TD"></td>
+                                              <td className="table-cell-TD table-cell3-TD">
+                                                <button
+                                                  className="edit-button-TD"
+                                                  onClick={() =>
+                                                    handleAddRoomPackage(
+                                                      room.room_id,
+                                                      hotel.city
+                                                    )
+                                                  }
+                                                >
+                                                  {daysStay[hotel.city]
+                                                    .room_id &&
+                                                  daysStay[
+                                                    hotel.city
+                                                  ].room_id.includes(
+                                                    room.room_id
+                                                  ) ? (
+                                                    <>Selected</>
+                                                  ) : (
+                                                    <>Select</>
+                                                  )}
+                                                </button>
+                                              </td>
                                             </tr>
                                           ))}
                                         </tbody>
