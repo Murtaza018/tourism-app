@@ -22,6 +22,7 @@ router.post("/insertRoom", roomController.insertRoom);
 router.post("/getRoomData", roomController.getRoomData);
 router.post("/DeleteRoom", roomController.DeleteRoom);
 router.post("/updateRoom", roomController.UpdateRoom);
+router.post("/getPackageRoomData", roomController.getPackageRoomData);
 
 router.post("/getReservationData", reservationController.getReservationData);
 router.post(

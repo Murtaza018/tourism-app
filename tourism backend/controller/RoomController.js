@@ -80,11 +80,34 @@ const UpdateRoom = async (req, res) => {
     }
   );
 };
-
+const getPackageRoomData = async (req, res) => {
+  console.log("req.body;", req.body);
+  await RoomCheckTable();
+  pool.query(
+    `SELECT *
+FROM room
+WHERE email = ?
+  AND room_id NOT IN (
+    SELECT room_id
+    FROM reservation
+    WHERE start_date < ?
+      AND end_date > ?
+  );`,
+    [req.body.email, req.body.end_date, req.body.start_date],
+    (err, results) => {
+      if (results) {
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 module.exports = {
   insertRoom,
   getRoomData,
   DeleteRoom,
   UpdateRoom,
   RoomCheckTable,
+  getPackageRoomData,
 };

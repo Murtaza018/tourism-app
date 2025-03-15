@@ -284,6 +284,9 @@ body.menu-open-TD {
 .table-cell2-TD {
   color: cyan;
 }
+.table-cell3-TD {
+  color: rgb(0, 9, 50);
+}
 .table-header-TD {
   font-weight: bold;
 }
@@ -292,6 +295,11 @@ body.menu-open-TD {
   text-align: center;
   margin: 10px 0;
   color: cyan;
+}
+.no-data-message2-TD {
+  text-align: center;
+  margin: 10px 0;
+  color: rgb(0, 9, 50);
 }
 
 .delete-selected-TD {

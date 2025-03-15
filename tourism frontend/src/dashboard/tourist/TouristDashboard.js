@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
+import moment from "moment";
 
 function TouristDashboard() {
   const navigate = useNavigate();
@@ -493,6 +494,7 @@ function TouristDashboard() {
         [hotel.city]: {
           email: hotel.email,
           days: e.target.value,
+          room_id: null,
         },
       }));
       let intervalDays = 0;
@@ -502,32 +504,15 @@ function TouristDashboard() {
         }
         intervalDays += daysStay[city].days;
       }
-      console.log("interval:", intervalDays);
-      console.log("flight Date:", flightDate);
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
 
-      // Parse the date as UTC
-      const date2 = new Date(
-        Date.UTC(
-          parseInt(flightDate.substring(0, 4)), // Year
-          parseInt(flightDate.substring(5, 7)) - 1, // Month (0-indexed)
-          parseInt(flightDate.substring(8, 10)) // Day
-        )
-      );
+      intervalDays += Number(e.target.value);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
 
-      console.log("date 2:", date2);
-      date2.setUTCDate(date2.getUTCDate() + intervalDays); // Use UTC methods
-      console.log("date    2:", date2);
-      const start_date = date2.toISOString().split("T")[0];
-      console.log("start date:", start_date);
-
-      // const date3 = new Date(flightDate);
-      // date3.setDate(
-      //   date2.getDate() + (intervalDays + daysStay[hotel.city].days)
-      // );
-      // const end_date = date3.toISOString().split("T")[0];
-      // console.log("end date:", end_date);
-
-      // getRoomData(daysStay[hotel.city].email/*,start_date,end_date*/);
+      getRoomData(daysStay[hotel.city].email, start_date, end_date);
     };
     const [roomData, setRoomData] = useState(null);
     const getRoomData = (email, start_date, end_date) => {
@@ -604,7 +589,11 @@ function TouristDashboard() {
                   const initialDaysStay = {};
 
                   selectedPackageCity.forEach((city) => {
-                    initialDaysStay[city] = { days: 0, email: "" };
+                    initialDaysStay[city] = {
+                      days: 0,
+                      email: "",
+                      room_id: null,
+                    };
                   });
                   setDaysStay(initialDaysStay);
 
@@ -1207,9 +1196,13 @@ function TouristDashboard() {
                                       Rating: ({hotel.rating.toFixed(2)}
                                       <StarIcon />)
                                     </p>
-                                    <p>Phone:{hotel.phone}</p>
-                                    <p>Address:{hotel.address}</p>
-                                    <p>Email:{hotel.email}</p>
+                                    <p className="summary-rating2-TD">
+                                      Phone:{hotel.phone}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Address:{hotel.address}
+                                    </p>
+
                                     <p className="error-message-TD">{error3}</p>
                                   </div>
                                   <div className="hotel-details-right-div-TD">
@@ -1225,14 +1218,17 @@ function TouristDashboard() {
                                             [hotel.city]: {
                                               email: "",
                                               days: 0,
+                                              room_id: null,
                                             },
                                           }));
+                                          setRoomData(null);
                                         } else {
                                           setDaysStay((prevState) => ({
                                             ...prevState,
                                             [hotel.city]: {
                                               email: hotel.email,
                                               days: 0,
+                                              room_id: null,
                                             },
                                           }));
                                         }
@@ -1270,151 +1266,53 @@ function TouristDashboard() {
                                         <thead className="table-head2-TD">
                                           <tr>
                                             <th className="table-header-TD">
-                                              Flight Name
+                                              Room Type
                                             </th>
                                             <th className="table-header-TD">
-                                              Departure
+                                              Person Quantity
                                             </th>
                                             <th className="table-header-TD">
-                                              Departure Time
+                                              Price per Night($)
                                             </th>
-                                            <th className="table-header-TD">
-                                              Arrival
-                                            </th>
-                                            <th className="table-header-TD">
-                                              Arrival Time
-                                            </th>
-                                            <th className="table-header-TD">
-                                              Available Seats
-                                            </th>
-                                            <th className="table-header-TD">
-                                              Seat Type
-                                            </th>
-                                            <th className="table-header-TD">
-                                              Price($)
-                                            </th>
-                                            <th className="table-header-TD">
-                                              Airline Rating
-                                            </th>
-
                                             <th className="table-header-TD">
                                               Booking
                                             </th>
                                           </tr>
                                         </thead>
                                         <tbody className="table-body-TD">
-                                          {returnFlightData.map((flight) => {
-                                            const localDepartureDateTime =
-                                              DateTime.fromISO(
-                                                flight.departure_date +
-                                                  "T" +
-                                                  flight.departure_time,
-                                                { zone: "UTC" }
-                                              ).setZone(userTimeZone);
+                                          {roomData.map((room) => (
+                                            <tr
+                                              key={room.room_id}
+                                              className="table-row-TD"
+                                            >
+                                              <td className="table-cell-TD table-cell3-TD">
+                                                {room.type}
+                                              </td>
+                                              <td className="table-cell-TD table-cell3-TD">
+                                                {room.quantity}
+                                              </td>
 
-                                            // Format date/time for display
-                                            const formattedDepartureDateTime =
-                                              localDepartureDateTime.toLocaleString(
-                                                DateTime.DATETIME_MED
-                                              );
-                                            const localArrivalDateTime =
-                                              DateTime.fromISO(
-                                                flight.arrival_date +
-                                                  "T" +
-                                                  flight.arrival_time,
-                                                { zone: "UTC" }
-                                              ).setZone(userTimeZone);
+                                              <td className="table-cell-TD table-cell3-TD">
+                                                {room.price}
+                                              </td>
 
-                                            // Format date/time for display
-                                            const formattedArrivalDateTime =
-                                              localArrivalDateTime.toLocaleString(
-                                                DateTime.DATETIME_MED
-                                              );
-                                            return (
-                                              <tr
-                                                key={flight.flight_id}
-                                                className="table-row-TD"
-                                              >
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.flight_name}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.departure_city},
-                                                  {flight.departure_country}
-                                                </td>
-
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {formattedDepartureDateTime}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.arrival_city},
-                                                  {flight.arrival_country}
-                                                </td>
-
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {formattedArrivalDateTime}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.seats_available}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.seat_type}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.price}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {flight.rating.toFixed(2)}
-                                                </td>
-                                                <td className="table-cell-TD table-cell2-TD">
-                                                  {returnFlightSelected ? (
-                                                    <>
-                                                      {selectedReturnFlightID ===
-                                                      flight.flight_id ? (
-                                                        <>
-                                                          <button
-                                                            className="edit-button-TD"
-                                                            onClick={() => {
-                                                              setSelectedReturnFlightID(
-                                                                null
-                                                              );
-                                                              setReturnFlightSelected(
-                                                                false
-                                                              );
-                                                            }}
-                                                          >
-                                                            Selected
-                                                          </button>
-                                                        </>
-                                                      ) : (
-                                                        <></>
-                                                      )}
-                                                    </>
-                                                  ) : (
-                                                    <button
-                                                      className="edit-button-TD"
-                                                      onClick={() => {
-                                                        setSelectedReturnFlightID(
-                                                          flight.flight_id
-                                                        );
-                                                        setReturnFlightSelected(
-                                                          true
-                                                        );
-                                                      }}
-                                                    >
-                                                      Select
-                                                    </button>
-                                                  )}
-                                                </td>
-                                              </tr>
-                                            );
-                                          })}
+                                              <td className="table-cell-TD table-cell3-TD"></td>
+                                            </tr>
+                                          ))}
                                         </tbody>
                                       </table>
                                     </div>
                                   ) : (
-                                    <p className="no-data-message-TD">
-                                      No Flights available.
+                                    <p className="no-data-message2-TD">
+                                      {daysStay[hotel.city].email ===
+                                      hotel.email ? (
+                                        <>
+                                          No Rooms Available(Increase/Decrease
+                                          number of days)
+                                        </>
+                                      ) : (
+                                        <>Select Hotel to display Rooms</>
+                                      )}
                                     </p>
                                   )}
                                 </div>
