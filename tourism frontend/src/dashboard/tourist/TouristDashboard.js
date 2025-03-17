@@ -657,6 +657,40 @@ function TouristDashboard() {
                 //     return "Select a flight!";
                 //   }
                 // }
+                if (step === 5) {
+                  if (flightReturnDate && selectedReturnFlightID) {
+                    const startDate = new Date(flightDate);
+                    const endDate = new Date(flightReturnDate);
+
+                    const timeDifference =
+                      endDate.getTime() - startDate.getTime();
+                    const days = Math.round(
+                      timeDifference / (1000 * 60 * 60 * 24)
+                    );
+
+                    let intervalDays = 0;
+                    for (const city in daysStay) {
+                      intervalDays += parseInt(daysStay[city].days, 10);
+                    }
+
+                    intervalDays = parseInt(intervalDays, 10);
+                    console.log("days:", days);
+                    console.log("interval days:", intervalDays);
+                    if (days !== intervalDays) {
+                      return "Invalid! Total Package Days do not match with total days selected at hotels";
+                    }
+                  }
+                  for (const city in daysStay) {
+                    if (daysStay[city].email === "") {
+                      return `Hotel not selected in city: ${city}`;
+                    }
+                  }
+                  for (const city in daysStay) {
+                    if (daysStay[city].days === 0) {
+                      return `Inavlid days(0) in city: ${city}`;
+                    }
+                  }
+                }
 
                 return true;
               }}
