@@ -32,7 +32,7 @@ import {
   Plane,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import { StarOutline, WindowSharp } from "@mui/icons-material";
+import { StarOutline } from "@mui/icons-material";
 import moment from "moment";
 
 function TouristDashboard() {
@@ -223,7 +223,6 @@ function TouristDashboard() {
   };
 
   const PackageStepper = ({ open, onClose }) => {
-    const [name, setName] = useState("");
     const [selectedPackageCity, setSelectedPackageCity] = useState([
       "Karachi",
       "Quetta",
@@ -356,6 +355,18 @@ function TouristDashboard() {
       rating: "",
       address: "",
       city: "",
+    });
+    const [rentalData, setRentalData] = useState({
+      first_name: "",
+      last_name: "",
+      phone: "",
+      email: "",
+      rating: "",
+      address: "",
+      city: "",
+      capacity: "",
+      description: "",
+      plate: "",
     });
 
     const getHotels = (city_param) => {
@@ -588,6 +599,49 @@ function TouristDashboard() {
           console.log(err);
         });
     };
+    const getRentalData = (city, start_date, end_date) => {
+      fetch("http://localhost:8008/Tourism/getRentals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          city: city,
+          start_date: start_date,
+          end_date: end_date,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setRentalData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const RentalDataAPICall = (param_city) => {
+      let intervalDays = 0;
+      for (const city in daysStay) {
+        if (city === param_city) {
+          break;
+        }
+        intervalDays += daysStay[city].days;
+      }
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
+
+      intervalDays += Number(daysStay[param_city].days);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
+
+      getRentalData(param_city, start_date, end_date);
+    };
     const getRoomData = (email, start_date, end_date) => {
       fetch("http://localhost:8008/Tourism/getPackageRoomData", {
         method: "POST",
@@ -763,15 +817,55 @@ function TouristDashboard() {
                 //   }
                 // }
                 if (step === 6) {
-                  let no_guide_cities = [];
+                  setDaysStay((prevData) => {
+                    const newData = {}; // Create a new object
+
+                    for (const city in prevData) {
+                      newData[city] = {
+                        ...prevData[city], // Copy existing city data
+                        rental_email: "", // Add guide_id to each city
+                      };
+                    }
+
+                    return newData;
+                  });
+                }
+                //   let no_guide_cities = [];
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].guide_email === "") {
+                //       no_guide_cities.push(city);
+                //     }
+                //   }
+                //   if (
+                //     !window.confirm(
+                //       `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                //     )
+                //   ) {
+                //     return "";
+                //   }
+                // }let no_guide_cities = [];
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].guide_email === "") {
+                //       no_guide_cities.push(city);
+                //     }
+                //   }
+                //   if (
+                //     !window.confirm(
+                //       `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                //     )
+                //   ) {
+                //     return "";
+                //   }
+                if (step === 7) {
+                  let no_rental_cities = [];
                   for (const city in daysStay) {
-                    if (daysStay[city].guide_email === "") {
-                      no_guide_cities.push(city);
+                    if (daysStay[city].rental_email === "") {
+                      no_rental_cities.push(city);
                     }
                   }
                   if (
                     !window.confirm(
-                      `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                      `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
                     )
                   ) {
                     return "";
@@ -1304,7 +1398,6 @@ function TouristDashboard() {
                   )}
                 </div>
               </Step>
-
               <Step>
                 <h2 className="step-heading-TD">
                   Select Hotel in {selectedPackageCountryName}
@@ -1622,13 +1715,138 @@ function TouristDashboard() {
                 )}
               </Step>
               <Step>
+                <h2 className="step-heading-TD">
+                  Select Car Rental in {selectedPackageCountryName}
+                </h2>
+                {selectedPackageCity && selectedPackageCity.length > 0 ? (
+                  selectedPackageCity.map((city) => (
+                    <details
+                      className="feedback-details2-TD"
+                      key={city}
+                      open={openSummary === city}
+                    >
+                      <summary
+                        className="feedback-summary2-TD"
+                        onClick={() => {
+                          RentalDataAPICall(city);
+                          setOpenSummary(city);
+                        }}
+                      >
+                        {city}
+                      </summary>
+                      <div className="feedback-content2-TD">
+                        {rentalData && rentalData.length > 0 ? (
+                          rentalData.map((rental) => (
+                            <details
+                              className="feedback-details2-TD"
+                              key={rental.email}
+                            >
+                              <summary className="feedback-summary2-TD">
+                                {rental.first_name} {rental.last_name}
+                                <p className="summary-rating-TD">
+                                  ({rental.rating.toFixed(2)}
+                                  <StarIcon />)
+                                </p>
+                                {daysStay[rental.city].rental_email ===
+                                rental.email ? (
+                                  <>(Selected)</>
+                                ) : (
+                                  <></>
+                                )}
+                              </summary>
+                              <div className="feedback-content2-TD">
+                                <div className="hotel-details-TD">
+                                  <div className="details2-TD">
+                                    <div
+                                      className="heading-TD"
+                                      style={{
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      <strong>Driver Information</strong>
+                                    </div>
+                                    <p className="summary-rating2-TD">
+                                      Rating: ({rental.rating.toFixed(2)}
+                                      <StarIcon />)
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Phone:{rental.phone}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Address:{rental.address}
+                                    </p>
+                                    <div
+                                      className="heading-TD"
+                                      style={{
+                                        textAlign: "left",
+                                        marginTop: "30px",
+                                      }}
+                                    >
+                                      <strong>Car Information</strong>
+                                    </div>
+                                    <p className="summary-rating2-TD">
+                                      Seat Capacity:{rental.capacity}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Description:{rental.description}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Plate:{rental.plate}
+                                    </p>
+                                  </div>
+                                  <div className="hotel-details-right-div-TD">
+                                    <button
+                                      className="hotel-details-right-div-button-TD"
+                                      onClick={() => {
+                                        if (
+                                          daysStay[rental.city].rental_email ===
+                                          rental.email
+                                        ) {
+                                          setDaysStay((prevState) => ({
+                                            ...prevState,
+                                            [rental.city]: {
+                                              ...prevState[rental.city],
+                                              rental_email: "",
+                                            },
+                                          }));
+                                        } else {
+                                          setDaysStay((prevState) => ({
+                                            ...prevState,
+                                            [rental.city]: {
+                                              ...prevState[rental.city],
+                                              rental_email: rental.email,
+                                            },
+                                          }));
+                                        }
+                                      }}
+                                    >
+                                      {daysStay[rental.city].rental_email ===
+                                      rental.email ? (
+                                        <>Selected</>
+                                      ) : (
+                                        <>Select</>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </details>
+                          ))
+                        ) : (
+                          <p>No Car Rentals Available in this city.</p>
+                        )}
+                      </div>
+                    </details>
+                  ))
+                ) : (
+                  <p>No cities selected.</p>
+                )}
+              </Step>
+              <Step>
                 <h2>Final Step 4</h2>
                 <p>You made it!</p>
               </Step>
-              <Step>
-                <h2>Final Step 5 {name}</h2>
-                <p>You made it!</p>
-              </Step>
+              <Step></Step>
               <Step>
                 <h2>Final Step</h2>
                 <p>You made it!</p>

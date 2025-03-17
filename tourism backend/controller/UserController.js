@@ -184,6 +184,40 @@ u.city = ?
     }
   );
 };
+const getRentals = async (req, res) => {
+  console.log("req.body;", req.body);
+  await guideReservationCheckTable();
+  pool.query(
+    `SELECT u.first_name,u.last_name,u.phone,u.email,u.address,u.city,COALESCE(AVG(f.rating), 0) AS rating,c.capacity,c.description,c.plate
+FROM user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email 
+JOIN
+    car c on u.email=c.email   
+WHERE 
+u.role_ID = (SELECT role_ID FROM role WHERE name = 'Car Rental')
+
+    AND a.status = 1 AND
+u.city = ?
+  AND u.email NOT IN (
+    SELECT guide_email
+    FROM guide_reservation
+    WHERE start_date < ?
+      AND end_date > ?
+  ) 
+      GROUP BY u.email;`,
+    [req.body.city, req.body.end_date, req.body.start_date],
+    (err, results) => {
+      if (results) {
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
 module.exports = {
   getHotels,
   insertUser,
@@ -193,4 +227,5 @@ module.exports = {
   DeleteUser,
   UserCheckTable,
   getGuides,
+  getRentals,
 };
