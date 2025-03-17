@@ -32,7 +32,7 @@ import {
   Plane,
 } from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import { StarOutline } from "@mui/icons-material";
+import { StarOutline, WindowSharp } from "@mui/icons-material";
 import moment from "moment";
 
 function TouristDashboard() {
@@ -348,6 +348,16 @@ function TouristDashboard() {
       address: "",
       city: "",
     });
+    const [guideData, setGuideData] = useState({
+      first_name: "",
+      last_name: "",
+      phone: "",
+      email: "",
+      rating: "",
+      address: "",
+      city: "",
+    });
+
     const getHotels = (city_param) => {
       fetch("http://localhost:8008/Tourism/getHotels", {
         method: "POST",
@@ -534,7 +544,50 @@ function TouristDashboard() {
 
       getRoomData(daysStay[hotel.city].email, start_date, end_date);
     };
+    const GuideDataAPICall = (param_city) => {
+      let intervalDays = 0;
+      for (const city in daysStay) {
+        if (city === param_city) {
+          break;
+        }
+        intervalDays += daysStay[city].days;
+      }
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
+
+      intervalDays += Number(daysStay[param_city].days);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
+
+      getGuideData(param_city, start_date, end_date);
+    };
     const [roomData, setRoomData] = useState(null);
+    const getGuideData = (city, start_date, end_date) => {
+      fetch("http://localhost:8008/Tourism/getGuides", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          city: city,
+          start_date: start_date,
+          end_date: end_date,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setGuideData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     const getRoomData = (email, start_date, end_date) => {
       fetch("http://localhost:8008/Tourism/getPackageRoomData", {
         method: "POST",
@@ -658,40 +711,72 @@ function TouristDashboard() {
                 //   }
                 // }
                 if (step === 5) {
-                  if (flightReturnDate && selectedReturnFlightID) {
-                    const startDate = new Date(flightDate);
-                    const endDate = new Date(flightReturnDate);
+                  setDaysStay((prevData) => {
+                    const newData = {}; // Create a new object
 
-                    const timeDifference =
-                      endDate.getTime() - startDate.getTime();
-                    const days = Math.round(
-                      timeDifference / (1000 * 60 * 60 * 24)
-                    );
-
-                    let intervalDays = 0;
-                    for (const city in daysStay) {
-                      intervalDays += parseInt(daysStay[city].days, 10);
+                    for (const city in prevData) {
+                      newData[city] = {
+                        ...prevData[city], // Copy existing city data
+                        guide_email: "", // Add guide_id to each city
+                      };
                     }
 
-                    intervalDays = parseInt(intervalDays, 10);
-                    console.log("days:", days);
-                    console.log("interval days:", intervalDays);
-                    if (days !== intervalDays) {
-                      return "Invalid! Total Package Days do not match with total days selected at hotels";
+                    return newData;
+                  });
+                }
+                //   if (flightReturnDate && selectedReturnFlightID) {
+                //     const startDate = new Date(flightDate);
+                //     const endDate = new Date(flightReturnDate);
+
+                //     const timeDifference =
+                //       endDate.getTime() - startDate.getTime();
+                //     const days = Math.round(
+                //       timeDifference / (1000 * 60 * 60 * 24)
+                //     );
+
+                //     let intervalDays = 0;
+                //     for (const city in daysStay) {
+                //       intervalDays += parseInt(daysStay[city].days, 10);
+                //     }
+
+                //     intervalDays = parseInt(intervalDays, 10);
+                //     console.log("days:", days);
+                //     console.log("interval days:", intervalDays);
+                //     if (days !== intervalDays) {
+                //       return "Invalid! Total Package Days do not match with total days selected at hotels";
+                //     }
+                //   }
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].email === "") {
+                //       return `Hotel not selected in city: ${city}`;
+                //     }
+                //   }
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].days === 0) {
+                //       return `Inavlid days(0) in city: ${city}`;
+                //     }
+                //   }
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].room_id) {
+                //       return `No Rooms selected in city: ${city}`;
+                //     }
+                //   }
+                // }
+                if (step === 6) {
+                  let no_guide_cities = [];
+                  for (const city in daysStay) {
+                    if (daysStay[city].guide_email === "") {
+                      no_guide_cities.push(city);
                     }
                   }
-                  for (const city in daysStay) {
-                    if (daysStay[city].email === "") {
-                      return `Hotel not selected in city: ${city}`;
-                    }
-                  }
-                  for (const city in daysStay) {
-                    if (daysStay[city].days === 0) {
-                      return `Inavlid days(0) in city: ${city}`;
-                    }
+                  if (
+                    !window.confirm(
+                      `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                    )
+                  ) {
+                    return "";
                   }
                 }
-
                 return true;
               }}
             >
@@ -1435,14 +1520,106 @@ function TouristDashboard() {
                 )}
               </Step>
               <Step>
-                <h2>How about an input?</h2>
-                <input
-                  value={name}
-                  id="name-input"
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name?"
-                  required
-                />
+                <h2 className="step-heading-TD">
+                  Select Tour Guide in {selectedPackageCountryName}
+                </h2>
+                {selectedPackageCity && selectedPackageCity.length > 0 ? (
+                  selectedPackageCity.map((city) => (
+                    <details
+                      className="feedback-details2-TD"
+                      key={city}
+                      open={openSummary === city}
+                    >
+                      <summary
+                        className="feedback-summary2-TD"
+                        onClick={() => {
+                          GuideDataAPICall(city);
+                          setOpenSummary(city);
+                        }}
+                      >
+                        {city}
+                      </summary>
+                      <div className="feedback-content2-TD">
+                        {guideData && guideData.length > 0 ? (
+                          guideData.map((guide) => (
+                            <details
+                              className="feedback-details2-TD"
+                              key={guide.email}
+                            >
+                              <summary className="feedback-summary2-TD">
+                                {guide.first_name} {guide.last_name}
+                                <p className="summary-rating-TD">
+                                  ({guide.rating.toFixed(2)}
+                                  <StarIcon />)
+                                </p>
+                                {daysStay[guide.city].guide_email ===
+                                guide.email ? (
+                                  <>(Selected)</>
+                                ) : (
+                                  <></>
+                                )}
+                              </summary>
+                              <div className="feedback-content2-TD">
+                                <div className="hotel-details-TD">
+                                  <div className="details2-TD">
+                                    <p className="summary-rating2-TD">
+                                      Rating: ({guide.rating.toFixed(2)}
+                                      <StarIcon />)
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Phone:{guide.phone}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Address:{guide.address}
+                                    </p>
+                                  </div>
+                                  <div className="hotel-details-right-div-TD">
+                                    <button
+                                      className="hotel-details-right-div-button-TD"
+                                      onClick={() => {
+                                        if (
+                                          daysStay[guide.city].guide_email ===
+                                          guide.email
+                                        ) {
+                                          setDaysStay((prevState) => ({
+                                            ...prevState,
+                                            [guide.city]: {
+                                              ...prevState[guide.city],
+                                              guide_email: "",
+                                            },
+                                          }));
+                                        } else {
+                                          setDaysStay((prevState) => ({
+                                            ...prevState,
+                                            [guide.city]: {
+                                              ...prevState[guide.city],
+                                              guide_email: guide.email,
+                                            },
+                                          }));
+                                        }
+                                      }}
+                                    >
+                                      {daysStay[guide.city].guide_email ===
+                                      guide.email ? (
+                                        <>Selected</>
+                                      ) : (
+                                        <>Select</>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </details>
+                          ))
+                        ) : (
+                          <p>No Tour Guides Available in this city.</p>
+                        )}
+                      </div>
+                    </details>
+                  ))
+                ) : (
+                  <p>No cities selected.</p>
+                )}
               </Step>
               <Step>
                 <h2>Final Step 4</h2>
