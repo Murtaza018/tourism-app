@@ -258,6 +258,8 @@ function TouristDashboard() {
     const [flightData, setFlightData] = useState({});
     const [returnFlightData, setReturnFlightData] = useState({});
     const [openSummary, setOpenSummary] = useState();
+    const [openSummary2, setOpenSummary2] = useState();
+    const [openSummary3, setOpenSummary3] = useState();
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const handleCountryChange = (event) => {
       event.preventDefault();
@@ -355,6 +357,7 @@ function TouristDashboard() {
       rating: "",
       address: "",
       city: "",
+      price: "",
     });
     const [rentalData, setRentalData] = useState({
       first_name: "",
@@ -367,6 +370,7 @@ function TouristDashboard() {
       capacity: "",
       description: "",
       plate: "",
+      price: "",
     });
 
     const getHotels = (city_param) => {
@@ -517,7 +521,7 @@ function TouristDashboard() {
         [hotel.city]: {
           email: hotel.email,
           days: e.target.value,
-          room_id: null,
+          room_packages: null,
         },
       }));
       let intervalDays = 0;
@@ -667,30 +671,31 @@ function TouristDashboard() {
           console.log(err);
         });
     };
-    const handleAddRoomPackage = (room_id, city) => {
+    const handleAddRoomPackage = (room_id, price, city) => {
       setDaysStay((prevState) => {
         const cityData = prevState[city];
-        if (!cityData) return prevState; // Handle case where cityData is undefined
+        if (!cityData) return prevState;
 
-        const roomIds = cityData.room_id || []; // Ensure roomIds is an array
+        const roomPrices = cityData.room_packages || {}; // Use room_prices
 
-        if (roomIds.includes(room_id)) {
+        if (roomPrices[room_id]) {
           // Remove room_id
-          const newRoomIds = roomIds.filter((id) => id !== room_id);
+          const newRoomPrices = { ...roomPrices };
+          delete newRoomPrices[room_id];
           return {
             ...prevState,
             [city]: {
               ...cityData,
-              room_id: newRoomIds,
+              room_packages: newRoomPrices,
             },
           };
         } else {
-          // Add room_id
+          // Add room_id and price
           return {
             ...prevState,
             [city]: {
               ...cityData,
-              room_id: [...roomIds, room_id],
+              room_packages: { ...roomPrices, [room_id]: price },
             },
           };
         }
@@ -744,7 +749,7 @@ function TouristDashboard() {
                     initialDaysStay[city] = {
                       days: 0,
                       email: "",
-                      room_id: null,
+                      room_packages: null,
                     };
                   });
                   setDaysStay(initialDaysStay);
@@ -772,6 +777,7 @@ function TouristDashboard() {
                       newData[city] = {
                         ...prevData[city], // Copy existing city data
                         guide_email: "", // Add guide_id to each city
+                        guide_price: 0,
                       };
                     }
 
@@ -824,6 +830,7 @@ function TouristDashboard() {
                       newData[city] = {
                         ...prevData[city], // Copy existing city data
                         rental_email: "", // Add guide_id to each city
+                        rental_price: 0,
                       };
                     }
 
@@ -1479,7 +1486,7 @@ function TouristDashboard() {
                                             [hotel.city]: {
                                               email: "",
                                               days: 0,
-                                              room_id: null,
+                                              room_packages: null,
                                             },
                                           }));
                                           setRoomData(null);
@@ -1489,7 +1496,7 @@ function TouristDashboard() {
                                             [hotel.city]: {
                                               email: hotel.email,
                                               days: 0,
-                                              room_id: null,
+                                              room_packages: null,
                                             },
                                           }));
                                         }
@@ -1560,20 +1567,24 @@ function TouristDashboard() {
                                               <td className="table-cell-TD table-cell3-TD">
                                                 <button
                                                   className="edit-button-TD"
-                                                  onClick={() =>
+                                                  onClick={() => {
                                                     handleAddRoomPackage(
                                                       room.room_id,
+                                                      room.price,
                                                       hotel.city
-                                                    )
-                                                  }
+                                                    );
+                                                    console.log(
+                                                      "days stay:",
+                                                      daysStay
+                                                    );
+                                                  }}
                                                 >
                                                   {daysStay[hotel.city]
-                                                    .room_id &&
-                                                  daysStay[
-                                                    hotel.city
-                                                  ].room_id.includes(
+                                                    ?.room_packages &&
+                                                  daysStay[hotel.city]
+                                                    ?.room_packages[
                                                     room.room_id
-                                                  ) ? (
+                                                  ] ? ( // Compare room.room_id with targetRoomId
                                                     <>Selected</>
                                                   ) : (
                                                     <>Select</>
@@ -1621,13 +1632,13 @@ function TouristDashboard() {
                     <details
                       className="feedback-details2-TD"
                       key={city}
-                      open={openSummary === city}
+                      open={openSummary2 === city}
                     >
                       <summary
                         className="feedback-summary2-TD"
                         onClick={() => {
                           GuideDataAPICall(city);
-                          setOpenSummary(city);
+                          setOpenSummary2(city);
                         }}
                       >
                         {city}
@@ -1723,13 +1734,13 @@ function TouristDashboard() {
                     <details
                       className="feedback-details2-TD"
                       key={city}
-                      open={openSummary === city}
+                      open={openSummary3 === city}
                     >
                       <summary
                         className="feedback-summary2-TD"
                         onClick={() => {
                           RentalDataAPICall(city);
-                          setOpenSummary(city);
+                          setOpenSummary3(city);
                         }}
                       >
                         {city}

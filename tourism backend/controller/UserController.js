@@ -131,10 +131,10 @@ const getHotels = async (req, res) => {
     COALESCE(AVG(f.rating), 0) AS rating 
 FROM 
     user u
-LEFT JOIN 
+JOIN 
     feedback f ON u.email = f.receiver_email 
-LEFT JOIN
-    accountStatus a ON u.email = a.email     
+JOIN
+    accountStatus a ON u.email = a.email        
 WHERE 
     u.role_ID = (SELECT role_ID FROM role WHERE name = 'Hotel Management')
     AND u.country = ?  
@@ -156,12 +156,14 @@ const getGuides = async (req, res) => {
   console.log("req.body;", req.body);
   await guideReservationCheckTable();
   pool.query(
-    `SELECT u.first_name,u.last_name,u.phone,u.email,u.address,u.city,COALESCE(AVG(f.rating), 0) AS rating 
+    `SELECT u.first_name,u.last_name,u.phone,u.email,u.address,u.city,COALESCE(AVG(f.rating), 0) AS rating,p.price_per_day
 FROM user u
 JOIN 
     feedback f ON u.email = f.receiver_email 
 JOIN
-    accountStatus a ON u.email = a.email 
+    accountStatus a ON u.email = a.email
+JOIN
+    price p ON u.email=p.email     
 WHERE 
 u.role_ID = (SELECT role_ID FROM role WHERE name = 'Tour Guide')
 
