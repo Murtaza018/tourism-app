@@ -1674,7 +1674,7 @@ function TouristDashboard() {
                                       Phone:{guide.phone}
                                     </p>
                                     <p className="summary-rating2-TD">
-                                      Address:{guide.address}
+                                      Price Per Day($):{guide.price_per_day}
                                     </p>
                                   </div>
                                   <div className="hotel-details-right-div-TD">
@@ -1785,6 +1785,9 @@ function TouristDashboard() {
                                     </p>
                                     <p className="summary-rating2-TD">
                                       Address:{rental.address}
+                                    </p>
+                                    <p className="summary-rating2-TD">
+                                      Price Per Day($):{rental.price_per_day}
                                     </p>
                                     <div
                                       className="heading-TD"
