@@ -357,7 +357,7 @@ function TouristDashboard() {
       rating: "",
       address: "",
       city: "",
-      price: "",
+      price_per_day: "",
     });
     const [rentalData, setRentalData] = useState({
       first_name: "",
@@ -370,7 +370,7 @@ function TouristDashboard() {
       capacity: "",
       description: "",
       plate: "",
-      price: "",
+      price_per_day: "",
     });
 
     const getHotels = (city_param) => {
@@ -519,6 +519,7 @@ function TouristDashboard() {
       setDaysStay((prevState) => ({
         ...prevState,
         [hotel.city]: {
+          ...prevState[hotel.city],
           email: hotel.email,
           days: e.target.value,
           room_packages: null,
@@ -672,6 +673,7 @@ function TouristDashboard() {
         });
     };
     const handleAddRoomPackage = (room_id, price, city) => {
+      
       setDaysStay((prevState) => {
         const cityData = prevState[city];
         if (!cityData) return prevState;
@@ -701,6 +703,42 @@ function TouristDashboard() {
         }
       });
     };
+    const [hotelPrice,setHotelPrice]=useState(0);
+    const [guidePrice,setGuidePrice]=useState(0);
+    const [rentalPrice,setRentalPrice]=useState(0);
+    const totalHotelPrice = Object.values(daysStay).reduce((totalSum, cityData) => {
+      if (cityData.room_packages && cityData.days) {
+        const cityTotal = Object.values(cityData.room_packages).reduce(
+          (roomSum, price) => roomSum + price,
+          0
+        );
+        return totalSum + cityTotal * cityData.days;
+      }
+      return totalSum;
+    }, 0);
+    useEffect(() => {
+      setHotelPrice(totalHotelPrice);
+    }, [totalHotelPrice]);
+    const totalGuidePrice = Object.values(daysStay).reduce((totalSum, cityData) => {
+      if (cityData.guide_price && cityData.days) {
+        return totalSum + cityData.guide_price * cityData.days;
+      }
+      
+      return totalSum;
+    }, 0);
+    useEffect(() => {
+      setGuidePrice(totalGuidePrice);
+    }, [totalGuidePrice]);
+    const totalRentalPrice = Object.values(daysStay).reduce((totalSum, cityData) => {
+      if (cityData.rental_price && cityData.days) {
+        return totalSum + cityData.rental_price * cityData.days;
+      }
+      
+      return totalSum;
+    }, 0);
+    useEffect(() => {
+      setRentalPrice(totalRentalPrice);
+    }, [totalRentalPrice]);
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -749,6 +787,8 @@ function TouristDashboard() {
                     initialDaysStay[city] = {
                       days: 0,
                       email: "",
+                      first_name: "",
+                      last_name: "",
                       room_packages: null,
                     };
                   });
@@ -777,6 +817,8 @@ function TouristDashboard() {
                       newData[city] = {
                         ...prevData[city], // Copy existing city data
                         guide_email: "", // Add guide_id to each city
+                        guide_first_name: "",
+                        guide_last_name: "",
                         guide_price: 0,
                       };
                     }
@@ -830,6 +872,8 @@ function TouristDashboard() {
                       newData[city] = {
                         ...prevData[city], // Copy existing city data
                         rental_email: "", // Add guide_id to each city
+                        rental_first_name: "", // Add guide_id to each city
+                        rental_last_name: "", // Add guide_id to each city
                         rental_price: 0,
                       };
                     }
@@ -863,20 +907,21 @@ function TouristDashboard() {
                 //   ) {
                 //     return "";
                 //   }
-                // if (step === 7) {
-                //   let no_rental_cities = [];
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].rental_email === "") {
-                //       no_rental_cities.push(city);
-                //     }
-                //   }
-                //   if (
-                //     !window.confirm(
-                //       `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
-                //     )
-                //   ) {
-                //     return "";
-                //   }
+                if (step === 7) {
+                  console.log("days Stay:", daysStay);
+                  //   let no_rental_cities = [];
+                  //   for (const city in daysStay) {
+                  //     if (daysStay[city].rental_email === "") {
+                  //       no_rental_cities.push(city);
+                  //     }
+                  //   }
+                  //   if (
+                  //     !window.confirm(
+                  //       `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
+                  //     )
+                  //   ) {
+                  //     return "";
+                }
                 // }
                 return true;
               }}
@@ -1484,7 +1529,10 @@ function TouristDashboard() {
                                           setDaysStay((prevState) => ({
                                             ...prevState,
                                             [hotel.city]: {
+                                              ...prevState[hotel.city],
                                               email: "",
+                                              first_name: "",
+                                              last_name: "",
                                               days: 0,
                                               room_packages: null,
                                             },
@@ -1494,7 +1542,10 @@ function TouristDashboard() {
                                           setDaysStay((prevState) => ({
                                             ...prevState,
                                             [hotel.city]: {
+                                              ...prevState[hotel.city],
                                               email: hotel.email,
+                                              first_name: hotel.first_name,
+                                              last_name: hotel.last_name,
                                               days: 0,
                                               room_packages: null,
                                             },
@@ -1568,15 +1619,13 @@ function TouristDashboard() {
                                                 <button
                                                   className="edit-button-TD"
                                                   onClick={() => {
+                                                    console.log("12,33",daysStay);
                                                     handleAddRoomPackage(
                                                       room.room_id,
                                                       room.price,
                                                       hotel.city
                                                     );
-                                                    console.log(
-                                                      "days stay:",
-                                                      daysStay
-                                                    );
+                                                    
                                                   }}
                                                 >
                                                   {daysStay[hotel.city]
@@ -1690,6 +1739,9 @@ function TouristDashboard() {
                                             [guide.city]: {
                                               ...prevState[guide.city],
                                               guide_email: "",
+                                              guide_first_name: "",
+                                              guide_last_name: "",
+                                              guide_price: 0,
                                             },
                                           }));
                                         } else {
@@ -1698,6 +1750,10 @@ function TouristDashboard() {
                                             [guide.city]: {
                                               ...prevState[guide.city],
                                               guide_email: guide.email,
+                                              guide_first_name:
+                                                guide.first_name,
+                                              guide_last_name: guide.last_name,
+                                              guide_price: guide.price_per_day,
                                             },
                                           }));
                                         }
@@ -1821,6 +1877,9 @@ function TouristDashboard() {
                                             [rental.city]: {
                                               ...prevState[rental.city],
                                               rental_email: "",
+                                              rental_first_name: "",
+                                              rental_last_name: "",
+                                              rental_price: 0,
                                             },
                                           }));
                                         } else {
@@ -1829,6 +1888,12 @@ function TouristDashboard() {
                                             [rental.city]: {
                                               ...prevState[rental.city],
                                               rental_email: rental.email,
+                                              rental_first_name:
+                                                rental.first_name,
+                                              rental_last_name:
+                                                rental.last_name,
+                                              rental_price:
+                                                rental.price_per_day,
                                             },
                                           }));
                                         }
@@ -1858,124 +1923,215 @@ function TouristDashboard() {
               </Step>
               <Step>
                 <h2 className="step-heading-TD">Billing Details</h2>
-                <div className="table-container-TD">
-                  {flightData && flightData.length > 0 ? (
-                    <div>
-                      <table className="Tourist-table-TD">
-                        <thead className="table-head2-TD">
-                          <tr>
-                            <th className="table-header-TD">Flight Name</th>
-                            <th className="table-header-TD">Departure</th>
-                            <th className="table-header-TD">Departure Time</th>
-                            <th className="table-header-TD">Arrival</th>
-                            <th className="table-header-TD">Arrival Time</th>
-                            <th className="table-header-TD">Available Seats</th>
-                            <th className="table-header-TD">Seat Type</th>
-                            <th className="table-header-TD">Price($)</th>
-                            <th className="table-header-TD">Airline Rating</th>
-                            <th className="table-header-TD">Booking</th>
-                          </tr>
-                        </thead>
-                        <tbody className="table-body-TD">
-                          {flightData.map((flight) => {
-                            const localDepartureDateTime = DateTime.fromISO(
-                              flight.departure_date +
-                                "T" +
-                                flight.departure_time,
-                              { zone: "UTC" }
-                            ).setZone(userTimeZone);
-
-                            // Format date/time for display
-                            const formattedDepartureDateTime =
-                              localDepartureDateTime.toLocaleString(
-                                DateTime.DATETIME_MED
-                              );
-                            const localArrivalDateTime = DateTime.fromISO(
-                              flight.arrival_date + "T" + flight.arrival_time,
-                              { zone: "UTC" }
-                            ).setZone(userTimeZone);
-
-                            // Format date/time for display
-                            const formattedArrivalDateTime =
-                              localArrivalDateTime.toLocaleString(
-                                DateTime.DATETIME_MED
-                              );
-                            return (
-                              <tr
-                                key={flight.flight_id}
-                                className="table-row-TD"
-                              >
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.flight_name}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.departure_city},
-                                  {flight.departure_country}
-                                </td>
-
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {formattedDepartureDateTime}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.arrival_city},{flight.arrival_country}
-                                </td>
-
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {formattedArrivalDateTime}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.seats_available}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.seat_type}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.price}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flight.rating.toFixed(2)}
-                                </td>
-                                <td className="table-cell-TD table-cell2-TD">
-                                  {flightSelected ? (
-                                    <>
-                                      {selectedFlightID === flight.flight_id ? (
-                                        <>
-                                          <button
-                                            className="edit-button-TD"
-                                            onClick={() => {
-                                              setSelectedFlightID(null);
-                                              setFlightSelected(false);
-                                            }}
-                                          >
-                                            Selected
-                                          </button>
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <button
-                                      className="edit-button-TD"
-                                      onClick={() => {
-                                        setSelectedFlightID(flight.flight_id);
-                                        setFlightSelected(true);
-                                      }}
-                                    >
-                                      Select
-                                    </button>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="no-data-message-TD">No Flights available.</p>
-                  )}
+                <h2 className="step-heading-TD">
+                  Current Country:{selectedCurrentCity},
+                  {selectedCurrentCountryName}
+                </h2>
+                <h2 className="step-heading-TD">
+                  Destination Country:{selectedPackageCountryName}
+                </h2>
+                <div
+                  className="heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Hotel Information</strong>
                 </div>
+
+                <div className="table-container-TD">
+  {daysStay && Object.keys(daysStay).length > 0 ? (
+    <div>
+      <table className="Tourist-table-TD">
+        <thead className="table-head2-TD">
+          <tr>
+            <th className="table-header-TD">City</th>
+            <th className="table-header-TD">Days Stay</th>
+            <th className="table-header-TD">Hotel</th>
+            <th className="table-header-TD">Rooms Booked</th>
+            <th className="table-header-TD">Total Price Per Day</th>
+            <th className="table-header-TD">Total Stay Price</th>
+          </tr>
+        </thead>
+        <tbody className="table-body-TD">
+          {Object.entries(daysStay).map(([city, cityData]) => (
+            <tr className="table-row-TD" key={city}>
+              <td className="table-cell-TD table-cell2-TD">{city}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.first_name} {cityData.last_name}</td>
+              <td className="table-cell-TD table-cell2-TD">
+                {cityData.room_packages && Object.keys(cityData.room_packages).length > 0 ? (
+                  Object.keys(cityData.room_packages).map((roomId) => (
+                    <div key={roomId}>Room {roomId}: ${cityData.room_packages[roomId]}</div>
+                  ))
+                ) : (
+                  <div>No rooms booked</div>
+                )}
+              </td>
+              <td className="table-cell-TD table-cell2-TD">
+             
+                {cityData.room_packages && Object.values(cityData.room_packages).reduce((sum, price) => sum + price, 0)}
+              </td>
+              <td className="table-cell-TD table-cell2-TD">
+                
+                {cityData.room_packages && cityData.days && Object.values(cityData.room_packages).reduce((sum, price) => sum + price, 0) * cityData.days}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div
+                  className="step-heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Total Hotel Price: {totalHotelPrice ?? "No Data"} $</strong>
+                </div>
+    </div>
+  ) : (
+    <p className="no-data-message-TD">No Data available.</p>
+  )}
+</div>
+<div
+                  className="heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Tour Guide Information</strong>
+                </div>
+
+                <div className="table-container-TD">
+  {daysStay && Object.keys(daysStay).length > 0 ? (
+    <div>
+      <table className="Tourist-table-TD">
+        <thead className="table-head2-TD">
+          <tr>
+            <th className="table-header-TD">City</th>
+            <th className="table-header-TD">Days Stay</th>
+            <th className="table-header-TD">Tour Guide</th>
+            <th className="table-header-TD">Tour Guide Data</th>
+            <th className="table-header-TD">Price Per Day</th>
+            <th className="table-header-TD">Total Price</th>
+          </tr>
+        </thead>
+        <tbody className="table-body-TD">
+          {Object.entries(daysStay).map(([city, cityData]) => (
+            <tr className="table-row-TD" key={city}>
+              <td className="table-cell-TD table-cell2-TD">{city}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.guide_email?(<>Yes</>):(<>No</>)}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.guide_email?(<>{cityData.guide_first_name} {cityData.guide_last_name}</>):(<>N/A</>)}</td>
+              <td className="table-cell-TD table-cell2-TD">
+                {cityData.guide_price}
+              </td>
+              
+              <td className="table-cell-TD table-cell2-TD">
+  {
+    cityData.guide_price * cityData.days
+  }
+</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div
+                  className="step-heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Total Tour Guide Price: {totalGuidePrice ?? "No Data"} $</strong>
+                </div>
+    </div>
+  ) : (
+    <p className="no-data-message-TD">No Data available.</p>
+  )}
+</div>
+<div
+                  className="heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Car Rental Information</strong>
+                </div>
+
+                <div className="table-container-TD">
+  {daysStay && Object.keys(daysStay).length > 0 ? (
+    <div>
+      <table className="Tourist-table-TD">
+        <thead className="table-head2-TD">
+          <tr>
+            <th className="table-header-TD">City</th>
+            <th className="table-header-TD">Days Stay</th>
+            <th className="table-header-TD">Car Rental</th>
+            <th className="table-header-TD">Car Rental Data</th>
+            <th className="table-header-TD">Price Per Day</th>
+            <th className="table-header-TD">Total Price</th>
+          </tr>
+        </thead>
+        <tbody className="table-body-TD">
+          {Object.entries(daysStay).map(([city, cityData]) => (
+            <tr className="table-row-TD" key={city}>
+              <td className="table-cell-TD table-cell2-TD">{city}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.rental_email?(<>Yes</>):(<>No</>)}</td>
+              <td className="table-cell-TD table-cell2-TD">{cityData.rental_email?(<>{cityData.rental_first_name} {cityData.rental_last_name}</>):(<>N/A</>)}</td>
+              <td className="table-cell-TD table-cell2-TD">
+                {cityData.rental_price}
+              </td>
+              
+              <td className="table-cell-TD table-cell2-TD">
+  {
+    cityData.rental_price * cityData.days
+  }
+</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div
+                  className="step-heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Total Car Rental Price: {totalRentalPrice ?? "No Data"} $</strong>
+                </div>
+    </div>
+  ) : (
+    <p className="no-data-message-TD">No Data available.</p>
+  )}
+</div>
+<div
+                  className="step-heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width:"fit-content",
+                  }}
+                >
+                  <strong>Total Package Cost (10% Discount): {Math.floor((hotelPrice+guidePrice+rentalPrice)*0.9)} $</strong>
+                </div>
+   
+
               </Step>
               <Step></Step>
               <Step>

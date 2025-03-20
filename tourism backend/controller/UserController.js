@@ -190,14 +190,16 @@ const getRentals = async (req, res) => {
   console.log("req.body;", req.body);
   await guideReservationCheckTable();
   pool.query(
-    `SELECT u.first_name,u.last_name,u.phone,u.email,u.address,u.city,COALESCE(AVG(f.rating), 0) AS rating,c.capacity,c.description,c.plate
+    `SELECT u.first_name,u.last_name,u.phone,u.email,u.address,u.city,COALESCE(AVG(f.rating), 0) AS rating,c.capacity,c.description,c.plate,p.price_per_day
 FROM user u
 JOIN 
     feedback f ON u.email = f.receiver_email 
 JOIN
     accountStatus a ON u.email = a.email 
 JOIN
-    car c on u.email=c.email   
+    car c on u.email=c.email  
+JOIN
+    price p ON u.email=p.email       
 WHERE 
 u.role_ID = (SELECT role_ID FROM role WHERE name = 'Car Rental')
 
