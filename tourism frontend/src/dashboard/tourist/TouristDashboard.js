@@ -863,21 +863,21 @@ function TouristDashboard() {
                 //   ) {
                 //     return "";
                 //   }
-                if (step === 7) {
-                  let no_rental_cities = [];
-                  for (const city in daysStay) {
-                    if (daysStay[city].rental_email === "") {
-                      no_rental_cities.push(city);
-                    }
-                  }
-                  if (
-                    !window.confirm(
-                      `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
-                    )
-                  ) {
-                    return "";
-                  }
-                }
+                // if (step === 7) {
+                //   let no_rental_cities = [];
+                //   for (const city in daysStay) {
+                //     if (daysStay[city].rental_email === "") {
+                //       no_rental_cities.push(city);
+                //     }
+                //   }
+                //   if (
+                //     !window.confirm(
+                //       `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
+                //     )
+                //   ) {
+                //     return "";
+                //   }
+                // }
                 return true;
               }}
             >
@@ -1857,8 +1857,125 @@ function TouristDashboard() {
                 )}
               </Step>
               <Step>
-                <h2>Final Step 4</h2>
-                <p>You made it!</p>
+                <h2 className="step-heading-TD">Billing Details</h2>
+                <div className="table-container-TD">
+                  {flightData && flightData.length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">Flight Name</th>
+                            <th className="table-header-TD">Departure</th>
+                            <th className="table-header-TD">Departure Time</th>
+                            <th className="table-header-TD">Arrival</th>
+                            <th className="table-header-TD">Arrival Time</th>
+                            <th className="table-header-TD">Available Seats</th>
+                            <th className="table-header-TD">Seat Type</th>
+                            <th className="table-header-TD">Price($)</th>
+                            <th className="table-header-TD">Airline Rating</th>
+                            <th className="table-header-TD">Booking</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {flightData.map((flight) => {
+                            const localDepartureDateTime = DateTime.fromISO(
+                              flight.departure_date +
+                                "T" +
+                                flight.departure_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
+
+                            // Format date/time for display
+                            const formattedDepartureDateTime =
+                              localDepartureDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            const localArrivalDateTime = DateTime.fromISO(
+                              flight.arrival_date + "T" + flight.arrival_time,
+                              { zone: "UTC" }
+                            ).setZone(userTimeZone);
+
+                            // Format date/time for display
+                            const formattedArrivalDateTime =
+                              localArrivalDateTime.toLocaleString(
+                                DateTime.DATETIME_MED
+                              );
+                            return (
+                              <tr
+                                key={flight.flight_id}
+                                className="table-row-TD"
+                              >
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.flight_name}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.departure_city},
+                                  {flight.departure_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedDepartureDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.arrival_city},{flight.arrival_country}
+                                </td>
+
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {formattedArrivalDateTime}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seats_available}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.seat_type}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.price}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flight.rating.toFixed(2)}
+                                </td>
+                                <td className="table-cell-TD table-cell2-TD">
+                                  {flightSelected ? (
+                                    <>
+                                      {selectedFlightID === flight.flight_id ? (
+                                        <>
+                                          <button
+                                            className="edit-button-TD"
+                                            onClick={() => {
+                                              setSelectedFlightID(null);
+                                              setFlightSelected(false);
+                                            }}
+                                          >
+                                            Selected
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <button
+                                      className="edit-button-TD"
+                                      onClick={() => {
+                                        setSelectedFlightID(flight.flight_id);
+                                        setFlightSelected(true);
+                                      }}
+                                    >
+                                      Select
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Flights available.</p>
+                  )}
+                </div>
               </Step>
               <Step></Step>
               <Step>
