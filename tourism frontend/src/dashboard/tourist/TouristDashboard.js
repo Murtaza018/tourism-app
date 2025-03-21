@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./TouristDashboard.css";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -11,6 +11,7 @@ import { Country, City } from "country-state-city";
 import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import { DateTime } from "luxon";
+import PaymentIcon from "@mui/icons-material/Payment";
 import {
   Button,
   Dialog,
@@ -673,7 +674,6 @@ function TouristDashboard() {
         });
     };
     const handleAddRoomPackage = (room_id, price, city) => {
-      
       setDaysStay((prevState) => {
         const cityData = prevState[city];
         if (!cityData) return prevState;
@@ -703,42 +703,181 @@ function TouristDashboard() {
         }
       });
     };
-    const [hotelPrice,setHotelPrice]=useState(0);
-    const [guidePrice,setGuidePrice]=useState(0);
-    const [rentalPrice,setRentalPrice]=useState(0);
-    const totalHotelPrice = Object.values(daysStay).reduce((totalSum, cityData) => {
-      if (cityData.room_packages && cityData.days) {
-        const cityTotal = Object.values(cityData.room_packages).reduce(
-          (roomSum, price) => roomSum + price,
-          0
-        );
-        return totalSum + cityTotal * cityData.days;
-      }
-      return totalSum;
-    }, 0);
+    const [hotelPrice, setHotelPrice] = useState(0);
+    const [guidePrice, setGuidePrice] = useState(0);
+    const [rentalPrice, setRentalPrice] = useState(0);
+    const totalHotelPrice = Object.values(daysStay).reduce(
+      (totalSum, cityData) => {
+        if (cityData.room_packages && cityData.days) {
+          const cityTotal = Object.values(cityData.room_packages).reduce(
+            (roomSum, price) => roomSum + price,
+            0
+          );
+          return totalSum + cityTotal * cityData.days;
+        }
+        return totalSum;
+      },
+      0
+    );
     useEffect(() => {
       setHotelPrice(totalHotelPrice);
     }, [totalHotelPrice]);
-    const totalGuidePrice = Object.values(daysStay).reduce((totalSum, cityData) => {
-      if (cityData.guide_price && cityData.days) {
-        return totalSum + cityData.guide_price * cityData.days;
-      }
-      
-      return totalSum;
-    }, 0);
+    const totalGuidePrice = Object.values(daysStay).reduce(
+      (totalSum, cityData) => {
+        if (cityData.guide_price && cityData.days) {
+          return totalSum + cityData.guide_price * cityData.days;
+        }
+
+        return totalSum;
+      },
+      0
+    );
     useEffect(() => {
       setGuidePrice(totalGuidePrice);
     }, [totalGuidePrice]);
-    const totalRentalPrice = Object.values(daysStay).reduce((totalSum, cityData) => {
-      if (cityData.rental_price && cityData.days) {
-        return totalSum + cityData.rental_price * cityData.days;
-      }
-      
-      return totalSum;
-    }, 0);
+    const totalRentalPrice = Object.values(daysStay).reduce(
+      (totalSum, cityData) => {
+        if (cityData.rental_price && cityData.days) {
+          return totalSum + cityData.rental_price * cityData.days;
+        }
+
+        return totalSum;
+      },
+      0
+    );
     useEffect(() => {
       setRentalPrice(totalRentalPrice);
     }, [totalRentalPrice]);
+    useEffect(() => {
+      setFormData({
+        amount: Math.floor((hotelPrice + guidePrice + rentalPrice) * 0.9),
+      });
+    }, [guidePrice, hotelPrice, rentalPrice]);
+    const [formData, setFormData] = useState({
+      card: "",
+      expiry: "",
+      cvv: "",
+      amount: "",
+    });
+
+    // Error state
+    const [errors, setErrors] = useState({});
+
+    // Handle input changes
+    // Handle input changes
+    const handleChange = (e) => {
+      const { id, value } = e.target;
+
+      let formattedValue = value;
+
+      // Format card number with spaces every 4 digits
+      if (id === "card") {
+        // First, filter out non-numeric characters from the input
+        const numericValue = value.replace(/[^\d]/g, "");
+
+        // Then format with spaces every 4 digits
+        formattedValue = numericValue.replace(/(.{4})/g, "$1 ").trim();
+
+        // Limit to 19 characters (16 digits + 3 spaces)
+        formattedValue = formattedValue.substring(0, 19);
+      }
+
+      // Format expiry as MM/YY
+      if (id === "expiry") {
+        formattedValue = value.replace(/\D/g, "");
+        if (formattedValue.length > 2) {
+          formattedValue =
+            formattedValue.substring(0, 2) +
+            "/" +
+            formattedValue.substring(2, 4);
+        }
+        // Limit to 5 characters (MM/YY)
+        formattedValue = formattedValue.substring(0, 5);
+      }
+
+      // Format CVV as numbers only, max 3-4 digits
+      if (id === "cvv") {
+        formattedValue = value.replace(/\D/g, "").substring(0, 4);
+      }
+
+      // Format amount as currency
+      if (id === "amount") {
+        // Remove non-numeric characters except decimal point
+        formattedValue = value.replace(/[^\d.]/g, "");
+
+        // Ensure only one decimal point
+        const parts = formattedValue.split(".");
+        if (parts.length > 2) {
+          formattedValue = parts[0] + "." + parts.slice(1).join("");
+        }
+
+        // Limit to two decimal places
+        if (parts.length > 1) {
+          formattedValue = parts[0] + "." + parts[1].substring(0, 2);
+        }
+
+        // Add dollar sign if there's a value
+        if (formattedValue) {
+          formattedValue = "$" + formattedValue.replace(/^\$/, "");
+        }
+      }
+
+      setFormData({
+        ...formData,
+        [id]: formattedValue,
+      });
+    };
+    // Validate form
+    const validateForm = () => {
+      const newErrors = {};
+
+      // Validate card number (simple check for length)
+      if (formData.card.replace(/\s/g, "").length !== 16) {
+        newErrors.card = "Card number must be 16 digits";
+      }
+
+      // Validate expiry (check format and if not expired)
+      if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
+        newErrors.expiry = "Expiry must be in MM/YY format";
+      } else {
+        const [month, year] = formData.expiry.split("/");
+        const expiryDate = new Date(2000 + parseInt(year), parseInt(month) - 1);
+        if (expiryDate < new Date()) {
+          newErrors.expiry = "Card has expired";
+        }
+      }
+
+      // Validate CVV (3-4 digits)
+      if (!/^\d{3,4}$/.test(formData.cvv)) {
+        newErrors.cvv = "CVV must be 3-4 digits";
+      }
+
+      // Validate amount (must be a number greater than 0)
+
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+
+    const [formState, setFormState] = useState('visible');
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      
+      if (validateForm()) {
+        // Process payment here
+        console.log('Processing payment:', formData);
+        
+        // Start the shrinking animation
+        setFormState('shrinking');
+        
+        // After animation completes, fully hide the form
+        setTimeout(() => {
+          setFormState('hidden');
+          // Show success message
+          setShowSuccessMessage(true);
+        }, 600); // Slightly longer than the animation duration
+      }
+    };
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -747,6 +886,7 @@ function TouristDashboard() {
               initialStep={1}
               onStepChange={(step) => {
                 console.log(step);
+                
               }}
               onFinalStepCompleted={() => console.log("All steps completed!")}
               backButtonText={<ChevronLeft />}
@@ -1619,13 +1759,15 @@ function TouristDashboard() {
                                                 <button
                                                   className="edit-button-TD"
                                                   onClick={() => {
-                                                    console.log("12,33",daysStay);
+                                                    console.log(
+                                                      "12,33",
+                                                      daysStay
+                                                    );
                                                     handleAddRoomPackage(
                                                       room.room_id,
                                                       room.price,
                                                       hotel.city
                                                     );
-                                                    
                                                   }}
                                                 >
                                                   {daysStay[hotel.city]
@@ -1935,205 +2077,372 @@ function TouristDashboard() {
                   style={{
                     textAlign: "left",
                     marginTop: "5vh",
-                    width:"fit-content",
+                    width: "fit-content",
                   }}
                 >
                   <strong>Hotel Information</strong>
                 </div>
 
                 <div className="table-container-TD">
-  {daysStay && Object.keys(daysStay).length > 0 ? (
-    <div>
-      <table className="Tourist-table-TD">
-        <thead className="table-head2-TD">
-          <tr>
-            <th className="table-header-TD">City</th>
-            <th className="table-header-TD">Days Stay</th>
-            <th className="table-header-TD">Hotel</th>
-            <th className="table-header-TD">Rooms Booked</th>
-            <th className="table-header-TD">Total Price Per Day</th>
-            <th className="table-header-TD">Total Stay Price</th>
-          </tr>
-        </thead>
-        <tbody className="table-body-TD">
-          {Object.entries(daysStay).map(([city, cityData]) => (
-            <tr className="table-row-TD" key={city}>
-              <td className="table-cell-TD table-cell2-TD">{city}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.first_name} {cityData.last_name}</td>
-              <td className="table-cell-TD table-cell2-TD">
-                {cityData.room_packages && Object.keys(cityData.room_packages).length > 0 ? (
-                  Object.keys(cityData.room_packages).map((roomId) => (
-                    <div key={roomId}>Room {roomId}: ${cityData.room_packages[roomId]}</div>
-                  ))
-                ) : (
-                  <div>No rooms booked</div>
-                )}
-              </td>
-              <td className="table-cell-TD table-cell2-TD">
-             
-                {cityData.room_packages && Object.values(cityData.room_packages).reduce((sum, price) => sum + price, 0)}
-              </td>
-              <td className="table-cell-TD table-cell2-TD">
-                
-                {cityData.room_packages && cityData.days && Object.values(cityData.room_packages).reduce((sum, price) => sum + price, 0) * cityData.days}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      <div
-                  className="step-heading-TD"
-                  style={{
-                    textAlign: "left",
-                    marginTop: "5vh",
-                    width:"fit-content",
-                  }}
-                >
-                  <strong>Total Hotel Price: {totalHotelPrice ?? "No Data"} $</strong>
+                  {daysStay && Object.keys(daysStay).length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">City</th>
+                            <th className="table-header-TD">Days Stay</th>
+                            <th className="table-header-TD">Hotel</th>
+                            <th className="table-header-TD">Rooms Booked</th>
+                            <th className="table-header-TD">
+                              Total Price Per Day
+                            </th>
+                            <th className="table-header-TD">
+                              Total Stay Price
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {Object.entries(daysStay).map(([city, cityData]) => (
+                            <tr className="table-row-TD" key={city}>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {city}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.days}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.first_name} {cityData.last_name}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.room_packages &&
+                                Object.keys(cityData.room_packages).length >
+                                  0 ? (
+                                  Object.keys(cityData.room_packages).map(
+                                    (roomId) => (
+                                      <div key={roomId}>
+                                        Room {roomId}: $
+                                        {cityData.room_packages[roomId]}
+                                      </div>
+                                    )
+                                  )
+                                ) : (
+                                  <div>No rooms booked</div>
+                                )}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.room_packages &&
+                                  Object.values(cityData.room_packages).reduce(
+                                    (sum, price) => sum + price,
+                                    0
+                                  )}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.room_packages &&
+                                  cityData.days &&
+                                  Object.values(cityData.room_packages).reduce(
+                                    (sum, price) => sum + price,
+                                    0
+                                  ) * cityData.days}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div
+                        className="step-heading-TD"
+                        style={{
+                          textAlign: "left",
+                          marginTop: "5vh",
+                          width: "fit-content",
+                        }}
+                      >
+                        <strong>
+                          Total Hotel Price: {totalHotelPrice ?? "No Data"} $
+                        </strong>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Data available.</p>
+                  )}
                 </div>
-    </div>
-  ) : (
-    <p className="no-data-message-TD">No Data available.</p>
-  )}
-</div>
-<div
+                <div
                   className="heading-TD"
                   style={{
                     textAlign: "left",
                     marginTop: "5vh",
-                    width:"fit-content",
+                    width: "fit-content",
                   }}
                 >
                   <strong>Tour Guide Information</strong>
                 </div>
 
                 <div className="table-container-TD">
-  {daysStay && Object.keys(daysStay).length > 0 ? (
-    <div>
-      <table className="Tourist-table-TD">
-        <thead className="table-head2-TD">
-          <tr>
-            <th className="table-header-TD">City</th>
-            <th className="table-header-TD">Days Stay</th>
-            <th className="table-header-TD">Tour Guide</th>
-            <th className="table-header-TD">Tour Guide Data</th>
-            <th className="table-header-TD">Price Per Day</th>
-            <th className="table-header-TD">Total Price</th>
-          </tr>
-        </thead>
-        <tbody className="table-body-TD">
-          {Object.entries(daysStay).map(([city, cityData]) => (
-            <tr className="table-row-TD" key={city}>
-              <td className="table-cell-TD table-cell2-TD">{city}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.guide_email?(<>Yes</>):(<>No</>)}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.guide_email?(<>{cityData.guide_first_name} {cityData.guide_last_name}</>):(<>N/A</>)}</td>
-              <td className="table-cell-TD table-cell2-TD">
-                {cityData.guide_price}
-              </td>
-              
-              <td className="table-cell-TD table-cell2-TD">
-  {
-    cityData.guide_price * cityData.days
-  }
-</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      <div
-                  className="step-heading-TD"
-                  style={{
-                    textAlign: "left",
-                    marginTop: "5vh",
-                    width:"fit-content",
-                  }}
-                >
-                  <strong>Total Tour Guide Price: {totalGuidePrice ?? "No Data"} $</strong>
+                  {daysStay && Object.keys(daysStay).length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">City</th>
+                            <th className="table-header-TD">Days Stay</th>
+                            <th className="table-header-TD">Tour Guide</th>
+                            <th className="table-header-TD">Tour Guide Data</th>
+                            <th className="table-header-TD">Price Per Day</th>
+                            <th className="table-header-TD">Total Price</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {Object.entries(daysStay).map(([city, cityData]) => (
+                            <tr className="table-row-TD" key={city}>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {city}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.days}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.guide_email ? <>Yes</> : <>No</>}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.guide_email ? (
+                                  <>
+                                    {cityData.guide_first_name}{" "}
+                                    {cityData.guide_last_name}
+                                  </>
+                                ) : (
+                                  <>N/A</>
+                                )}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.guide_price}
+                              </td>
+
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.guide_price * cityData.days}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div
+                        className="step-heading-TD"
+                        style={{
+                          textAlign: "left",
+                          marginTop: "5vh",
+                          width: "fit-content",
+                        }}
+                      >
+                        <strong>
+                          Total Tour Guide Price: {totalGuidePrice ?? "No Data"}{" "}
+                          $
+                        </strong>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Data available.</p>
+                  )}
                 </div>
-    </div>
-  ) : (
-    <p className="no-data-message-TD">No Data available.</p>
-  )}
-</div>
-<div
+                <div
                   className="heading-TD"
                   style={{
                     textAlign: "left",
                     marginTop: "5vh",
-                    width:"fit-content",
+                    width: "fit-content",
                   }}
                 >
                   <strong>Car Rental Information</strong>
                 </div>
 
                 <div className="table-container-TD">
-  {daysStay && Object.keys(daysStay).length > 0 ? (
-    <div>
-      <table className="Tourist-table-TD">
-        <thead className="table-head2-TD">
-          <tr>
-            <th className="table-header-TD">City</th>
-            <th className="table-header-TD">Days Stay</th>
-            <th className="table-header-TD">Car Rental</th>
-            <th className="table-header-TD">Car Rental Data</th>
-            <th className="table-header-TD">Price Per Day</th>
-            <th className="table-header-TD">Total Price</th>
-          </tr>
-        </thead>
-        <tbody className="table-body-TD">
-          {Object.entries(daysStay).map(([city, cityData]) => (
-            <tr className="table-row-TD" key={city}>
-              <td className="table-cell-TD table-cell2-TD">{city}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.days}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.rental_email?(<>Yes</>):(<>No</>)}</td>
-              <td className="table-cell-TD table-cell2-TD">{cityData.rental_email?(<>{cityData.rental_first_name} {cityData.rental_last_name}</>):(<>N/A</>)}</td>
-              <td className="table-cell-TD table-cell2-TD">
-                {cityData.rental_price}
-              </td>
-              
-              <td className="table-cell-TD table-cell2-TD">
-  {
-    cityData.rental_price * cityData.days
-  }
-</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      <div
-                  className="step-heading-TD"
-                  style={{
-                    textAlign: "left",
-                    marginTop: "5vh",
-                    width:"fit-content",
-                  }}
-                >
-                  <strong>Total Car Rental Price: {totalRentalPrice ?? "No Data"} $</strong>
-                </div>
-    </div>
-  ) : (
-    <p className="no-data-message-TD">No Data available.</p>
-  )}
-</div>
-<div
-                  className="step-heading-TD"
-                  style={{
-                    textAlign: "left",
-                    marginTop: "5vh",
-                    width:"fit-content",
-                  }}
-                >
-                  <strong>Total Package Cost (10% Discount): {Math.floor((hotelPrice+guidePrice+rentalPrice)*0.9)} $</strong>
-                </div>
-   
+                  {daysStay && Object.keys(daysStay).length > 0 ? (
+                    <div>
+                      <table className="Tourist-table-TD">
+                        <thead className="table-head2-TD">
+                          <tr>
+                            <th className="table-header-TD">City</th>
+                            <th className="table-header-TD">Days Stay</th>
+                            <th className="table-header-TD">Car Rental</th>
+                            <th className="table-header-TD">Car Rental Data</th>
+                            <th className="table-header-TD">Price Per Day</th>
+                            <th className="table-header-TD">Total Price</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body-TD">
+                          {Object.entries(daysStay).map(([city, cityData]) => (
+                            <tr className="table-row-TD" key={city}>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {city}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.days}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.rental_email ? <>Yes</> : <>No</>}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.rental_email ? (
+                                  <>
+                                    {cityData.rental_first_name}{" "}
+                                    {cityData.rental_last_name}
+                                  </>
+                                ) : (
+                                  <>N/A</>
+                                )}
+                              </td>
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.rental_price}
+                              </td>
 
+                              <td className="table-cell-TD table-cell2-TD">
+                                {cityData.rental_price * cityData.days}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div
+                        className="step-heading-TD"
+                        style={{
+                          textAlign: "left",
+                          marginTop: "5vh",
+                          width: "fit-content",
+                        }}
+                      >
+                        <strong>
+                          Total Car Rental Price:{" "}
+                          {totalRentalPrice ?? "No Data"} $
+                        </strong>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="no-data-message-TD">No Data available.</p>
+                  )}
+                </div>
+                <div
+                  className="step-heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width: "fit-content",
+                  }}
+                >
+                  <strong>
+                    Total Package Cost (10% Discount):{formData.amount}$
+                  </strong>
+                </div>
               </Step>
-              <Step></Step>
+              <Step>
+              <div className={`payment-container-TD form-${formState}-TD`}>
+                  
+                  <form
+                    id="myForm"
+                    className="payment-form-TD"
+                    onSubmit={handleSubmit}
+                  ><h2 className="payment-header-TD">Payment Details</h2>
+                    <div className="form-group-TD card-number-TD">
+                      <label className="form-label-TD" htmlFor="card">
+                        Card Number
+                      </label>
+                      <input
+                        className={`form-input-TD ${
+                          errors.card ? "input-error-TD" : ""
+                        }`}
+                        type="text"
+                        id="card"
+                        placeholder="1234 5678 9012 3456"
+                        value={formData.card}
+                        onChange={handleChange}
+                      />
+                      {errors.card && (
+                        <div className="error-message-TD">{errors.card}</div>
+                      )}
+                    </div>
+
+                    <div className="card-info-TD">
+                      <div className="form-group-TD card-expiry-TD">
+                        <label className="form-label-TD" htmlFor="expiry">
+                          Expiry Date
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.expiry ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="expiry"
+                          placeholder="MM/YY"
+                          value={formData.expiry}
+                          onChange={handleChange}
+                        />
+                        {errors.expiry && (
+                          <div className="error-message-TD">
+                            {errors.expiry}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="form-group-TD card-cvv-TD">
+                        <label className="form-label-TD" htmlFor="cvv">
+                          CVV
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.cvv ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="cvv"
+                          placeholder="123"
+                          value={formData.cvv}
+                          onChange={handleChange}
+                        />
+                        {errors.cvv && (
+                          <div className="error-message-TD">{errors.cvv}</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="form-group-TD">
+                      <label className="form-label-TD" htmlFor="amount">
+                        Amount
+                      </label>
+                      <input
+                        className={`form-input-TD ${
+                          errors.amount ? "input-error-TD" : ""
+                        }`}
+                        type="text"
+                        id="amount"
+                        placeholder="$0.00"
+                        value={"$" + formData.amount}
+                        disabled
+                      />
+                      {errors.amount && (
+                        <div className="error-message-TD">{errors.amount}</div>
+                      )}
+                    </div>
+
+                    <button className="payment-button-TD" type="submit">
+                      Pay Now
+                    </button>
+
+                    <div className="secure-badge-TD">
+                      Secure payment processing
+                    </div>
+                  </form>
+                  {formState === 'shrinking' && (
+  <div className="payment-success-TD">
+    <div className="success-checkmark-TD">✓</div>
+  </div>
+)}
+                </div>
+                {showSuccessMessage && (
+  <div className="payment-complete-message-TD">
+    <div className="success-icon-TD">✓</div>
+    <h2 className="success-title-TD">Payment Completed</h2>
+    <p className="success-text-TD">Your transaction was successful!</p>
+  </div>
+)}
+              </Step>
               <Step>
                 <h2>Final Step</h2>
                 <p>You made it!</p>
