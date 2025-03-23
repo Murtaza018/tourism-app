@@ -7,6 +7,7 @@ const FlightReservationCheckTable = async () => {
         status varchar(10) not null,
         seats_booked int not null,
         flight_id int not null,
+        price float not null,
         foreign key (flight_id) references flight(flight_id),
         foreign key(tourist_email) references user(email),
         foreign key(airline_email) references user(email) on delete cascade);`);

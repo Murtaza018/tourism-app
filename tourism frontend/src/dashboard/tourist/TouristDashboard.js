@@ -863,8 +863,9 @@ function TouristDashboard() {
       e.preventDefault();
       
       if (validateForm()) {
+
         // Process payment here
-        console.log('Processing payment:', formData);
+        const confirmation=insertPackage();
         
         // Start the shrinking animation
         setFormState('shrinking');
@@ -878,6 +879,30 @@ function TouristDashboard() {
       }
     };
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const insertPackage=()=>{
+      fetch("http://localhost:8008/Tourism/insertPackage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+         dataObject:daysStay,quantity:touristQuantity,flightID:selectedFlightID,returnFlightID:selectedReturnFlightID,departureCountry:selectedCurrentCountryName,
+         departureCity:selectedCurrentCity,arrivalCountry:selectedPackageCountryName,arrivalCity:selectedPackageCity,
+         email: localStorage.getItem("email"),
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -2441,7 +2466,10 @@ function TouristDashboard() {
     <h2 className="success-title-TD">Payment Completed</h2>
     <p className="success-text-TD">Your transaction was successful!</p>
   </div>
-)}
+)}<button className="payment-button-TD" onClick={handleSubmit}>
+Call API
+</button>
+
               </Step>
               <Step>
                 <h2>Final Step</h2>

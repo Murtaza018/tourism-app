@@ -7,7 +7,8 @@ const ReservationCheckTable = async () => {
         room_id int not null,
         status varchar(10) not null,
         start_date date not null,
-        end_date date not null
+        end_date date not null,
+        price float not null,
         foreign key (room_id) references room(room_id),
         foreign key(tourist_email) references user(email),
         foreign key(hotel_email) references user(email));`);

@@ -7,6 +7,7 @@ const guideReservationCheckTable = async () => {
         start_date date not null,
         end_date date not null,
         status varchar(10) not null,
+        price float not null,
         foreign key(tourist_email) references user(email),
         foreign key(guide_email) references user(email) on delete cascade);`);
 };
