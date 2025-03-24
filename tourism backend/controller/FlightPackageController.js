@@ -86,6 +86,156 @@ const insertPackage = async (req, res) => {
         console.log("No last inserted ID found.");
       }
 
+      const temp_email = await new Promise((resolve, reject) => {
+        connection.query(
+          "SELECT email FROM flight WHERE flight_id = ?",
+          [req.body.flightID],
+          (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          }
+        );
+      });
+
+      if (temp_email.length > 0) {
+        const airline_email = temp_email[0].email;
+        console.log("airline email:", airline_email);
+      } else {
+        console.log("airline email not found.");
+      }
+      const temp_price = await new Promise((resolve, reject) => {
+        connection.query(
+          "SELECT price FROM flight WHERE flight_id = ?",
+          [req.body.flightID],
+          (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          }
+        );
+      });
+
+      if (temp_price.length > 0) {
+        const airline_price = temp_price[0].price;
+        console.log("airline price:", airline_price);
+      } else {
+        console.log("airline price not found.");
+      }
+      // await new Promise((resolve, reject) => {
+      //   connection.query(
+      //     `insert into flight_reservation(tourist_email,airline_email,status,seats_booked,flight_id,price) values(?,?,?,?,?,?)`,
+      //     [req.body.email,airline_email,"pending",req.body.quantity,req.body.flightID,airline_price],
+      //     (err, results) => {
+      //       if (err) {
+      //         reject(err);
+      //       } else {
+      //         resolve(results);
+      //       }
+      //     }
+      //   );
+      // });
+
+      //  await new Promise((resolve, reject) => {
+      //    connection.query(
+      //      `update flight set seats_available=seats_available-? where flight_id=?`,
+      //      [
+      //        req.body.quantity,
+      //        req.body.flightID,
+      //        ],
+      //      (err, results) => {
+      //        if (err) {
+      //          reject(err);
+      //        } else {
+      //          resolve(results);
+      //        }
+      //      }
+      //    );
+      //  });
+      if (req.body.returnFlightID) {
+        const temp_email = await new Promise((resolve, reject) => {
+          connection.query(
+            "SELECT email FROM flight WHERE flight_id = ?",
+            [req.body.returnFlightID],
+            (err, results) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            }
+          );
+        });
+
+        if (temp_email.length > 0) {
+          const return_airline_email = temp_email[0].email;
+          console.log("return airline email:", return_airline_email);
+        } else {
+          console.log("airline email not found.");
+        }
+        const temp_price = await new Promise((resolve, reject) => {
+          connection.query(
+            "SELECT price FROM flight WHERE flight_id = ?",
+            [req.body.returnFlightID],
+            (err, results) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            }
+          );
+        });
+
+        if (temp_price.length > 0) {
+          const return_airline_price = temp_price[0].price;
+          console.log("return airline price:", return_airline_price);
+        } else {
+          console.log("airline price not found.");
+        }
+
+        //  await new Promise((resolve, reject) => {
+        //    connection.query(
+        //      `insert into flight_reservation(tourist_email,airline_email,status,seats_booked,flight_id,price) values(?,?,?,?,?,?)`,
+        //      [
+        //        req.body.email,
+        //        return_airline_email,
+        //        "pending",
+        //        req.body.quantity,
+        //        req.body.returnFlightID,
+        //        return_airline_price,
+        //      ],
+        //      (err, results) => {
+        //        if (err) {
+        //          reject(err);
+        //        } else {
+        //          resolve(results);
+        //        }
+        //      }
+        //    );
+        //  });
+
+        // await new Promise((resolve, reject) => {
+        //    connection.query(
+        //      `update flight set seats_available=seats_available-? where flight_id=?`,
+        //      [
+        //        req.body.quantity,
+        //        req.body.flightID,
+        //        ],
+        //      (err, results) => {
+        //        if (err) {
+        //          reject(err);
+        //        } else {
+        //          resolve(results);
+        //        }
+        //      }
+        //    );
+        //  });
+      }
       const dates = await new Promise((resolve, reject) => {
         connection.query(
           "SELECT departure_date FROM flight WHERE flight_id = ?",
@@ -118,6 +268,8 @@ const insertPackage = async (req, res) => {
         );
         const end_date = temp_date.format("YYYY-MM-DD");
         console.log("end date:", end_date);
+
+        start_date = end_date;
       }
       await new Promise((resolve, reject) => {
         connection.commit((err) => {
