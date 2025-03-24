@@ -86,9 +86,9 @@ const insertPackage = async (req, res) => {
         console.log("No last inserted ID found.");
       }
 
-      const temp_email = await new Promise((resolve, reject) => {
+      const flightData = await new Promise((resolve, reject) => {
         connection.query(
-          "SELECT email FROM flight WHERE flight_id = ?",
+          "SELECT email, price FROM flight WHERE flight_id = ?",
           [req.body.flightID],
           (err, results) => {
             if (err) {
@@ -100,31 +100,13 @@ const insertPackage = async (req, res) => {
         );
       });
 
-      if (temp_email.length > 0) {
-        const airline_email = temp_email[0].email;
+      if (flightData.length > 0) {
+        const airline_email = flightData[0].email;
+        const airline_price = flightData[0].price;
         console.log("airline email:", airline_email);
-      } else {
-        console.log("airline email not found.");
-      }
-      const temp_price = await new Promise((resolve, reject) => {
-        connection.query(
-          "SELECT price FROM flight WHERE flight_id = ?",
-          [req.body.flightID],
-          (err, results) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(results);
-            }
-          }
-        );
-      });
-
-      if (temp_price.length > 0) {
-        const airline_price = temp_price[0].price;
         console.log("airline price:", airline_price);
       } else {
-        console.log("airline price not found.");
+        console.log("Airline email and price not found.");
       }
       // await new Promise((resolve, reject) => {
       //   connection.query(
@@ -157,9 +139,9 @@ const insertPackage = async (req, res) => {
       //    );
       //  });
       if (req.body.returnFlightID) {
-        const temp_email = await new Promise((resolve, reject) => {
+        const flightData = await new Promise((resolve, reject) => {
           connection.query(
-            "SELECT email FROM flight WHERE flight_id = ?",
+            "SELECT email, price FROM flight WHERE flight_id = ?",
             [req.body.returnFlightID],
             (err, results) => {
               if (err) {
@@ -171,31 +153,13 @@ const insertPackage = async (req, res) => {
           );
         });
 
-        if (temp_email.length > 0) {
-          const return_airline_email = temp_email[0].email;
+        if (flightData.length > 0) {
+          const return_airline_email = flightData[0].email;
+          const return_airline_price = flightData[0].price;
           console.log("return airline email:", return_airline_email);
-        } else {
-          console.log("airline email not found.");
-        }
-        const temp_price = await new Promise((resolve, reject) => {
-          connection.query(
-            "SELECT price FROM flight WHERE flight_id = ?",
-            [req.body.returnFlightID],
-            (err, results) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(results);
-              }
-            }
-          );
-        });
-
-        if (temp_price.length > 0) {
-          const return_airline_price = temp_price[0].price;
           console.log("return airline price:", return_airline_price);
         } else {
-          console.log("airline price not found.");
+          console.log("Airline email and price not found.");
         }
 
         //  await new Promise((resolve, reject) => {
@@ -261,13 +225,94 @@ const insertPackage = async (req, res) => {
       for (const city in dataObj) {
         const cityObj = dataObj[city];
         const daysStay = cityObj.days;
-
         const temp_date = moment(start_date, "YYYY-MM-DD").add(
           daysStay,
           "days"
         );
         const end_date = temp_date.format("YYYY-MM-DD");
         console.log("end date:", end_date);
+        // await new Promise((resolve, reject) => {
+        //   connection.query(
+        //     `insert into guide_reservation(tourist_email,guide_email,start_date,end_date,status,price)
+        //     values(?,?,?,?,"pending",?);`,
+        //     [req.body.email,cityObj.guide_email,start_date,end_date,cityObj.guide_price],
+        //     (err, results) => {
+        //       if (err) {
+        //         reject(err);
+        //       } else {
+        //         resolve(results);
+        //       }
+        //     }
+        //   );
+        // });
+        const rows2 = await new Promise((resolve, reject) => {
+          connection.query("SELECT LAST_INSERT_ID();", (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+
+        if (rows2.length > 0) {
+          const guide_res_id = rows2[0]["LAST_INSERT_ID()"];
+          console.log("guide_res_id:", guide_res_id);
+        } else {
+          console.log("No last inserted ID found.");
+        }
+        // await new Promise((resolve, reject) => {
+        //   connection.query(
+        //     `insert into guide_reservation(tourist_email,guide_email,start_date,end_date,status,price)
+        //     values(?,?,?,?,"pending",?);`,
+        //     [req.body.email,cityObj.rental_email,start_date,end_date,cityObj.rental_price],
+        //     (err, results) => {
+        //       if (err) {
+        //         reject(err);
+        //       } else {
+        //         resolve(results);
+        //       }
+        //     }
+        //   );
+        // });
+        const rows3 = await new Promise((resolve, reject) => {
+          connection.query("SELECT LAST_INSERT_ID();", (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+
+        if (rows3.length > 0) {
+          const rental_res_id = rows3[0]["LAST_INSERT_ID()"];
+          console.log("rental_res_id:", rental_res_id);
+        } else {
+          console.log("No last inserted ID found.");
+        }
+        // await new Promise((resolve, reject) => {
+        //   connection.query(
+        //     `insert into guide_rental_package(package_id,city,guide_email,guide_reservation_id,rental_email,rental_reservation_id,days_stay)
+        //     values(?,?,?,?,?,?,?);`,
+        //     [package_id,city,cityObj.guide_email,guide_res_id,cityObj.rental_email,rental_res_id,daysStay],
+        //     (err, results) => {
+        //       if (err) {
+        //         reject(err);
+        //       } else {
+        //         resolve(results);
+        //       }
+        //     }
+        //   );
+        // });
+
+        const temp_room_ids = Object.keys(cityObj.room_packages);
+        const room_ids = temp_room_ids.map((key) => parseInt(key, 10));
+        console.log(`room keys in ${city}:`, room_ids);
+
+        for (const i in room_ids) {
+          console.log("working on room ID:", room_ids[i]);
+        }
 
         start_date = end_date;
       }
