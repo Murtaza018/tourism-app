@@ -312,6 +312,68 @@ const insertPackage = async (req, res) => {
 
         for (const i in room_ids) {
           console.log("working on room ID:", room_ids[i]);
+          const room_price = cityObj.room_packages[room_ids[i].toString()];
+
+          console.log("room ID price:", room_price);
+          // await new Promise((resolve, reject) => {
+          //   connection.query(
+          //     `insert into reservation(tourist_email,hotel_email,room_id,status,start_date,end_date,price)
+          //     values(?,?,?,"pending",?,?,?);`,
+          //     [
+          //       req.body.email,
+          //       cityObj.email,
+          //       room_ids[i],
+          //       start_date,
+          //       end_date,
+          //       room_price,
+          //     ],
+          //     (err, results) => {
+          //       if (err) {
+          //         reject(err);
+          //       } else {
+          //         resolve(results);
+          //       }
+          //     }
+          //   );
+          // });
+
+          const rows4 = await new Promise((resolve, reject) => {
+            connection.query("SELECT LAST_INSERT_ID();", (err, results) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          });
+
+          if (rows4.length > 0) {
+            const hotel_res_id = rows4[0]["LAST_INSERT_ID()"];
+            console.log("hotel_res_id:", hotel_res_id);
+          } else {
+            console.log("No last inserted ID found.");
+          }
+          // await new Promise((resolve, reject) => {
+          //   connection.query(
+          //     `insert into hotel_package(package_id,city,hotel_email,room_id,reservation_id,days_stay)
+          //     values(?,?,?,?,?,?);`,
+          //     [
+          //       package_id,
+          //       city,
+          //       cityObj.email,
+          //       room_ids[i],
+          //       hotel_res_id,
+          //       daysStay,
+          //     ],
+          //     (err, results) => {
+          //       if (err) {
+          //         reject(err);
+          //       } else {
+          //         resolve(results);
+          //       }
+          //     }
+          //   );
+          // });
         }
 
         start_date = end_date;
