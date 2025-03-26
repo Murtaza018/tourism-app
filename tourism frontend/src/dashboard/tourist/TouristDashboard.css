@@ -1183,3 +1183,38 @@ details[open] .feedback-content2-TD {
   color: #00ffff;
   font-size: 16px;
 }
+
+
+.payment-failure-message-TD {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 30px;
+  border-radius: 8px;
+  background-color: transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.failure-icon-TD {
+  width: 80px;
+  height: 80px;
+  background-color: #ff3333; /* red */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 40px;
+  margin: 0 auto 20px;
+}
+
+.failure-title-TD {
+  color: #ff3333; /* red */
+  margin-bottom: 10px;
+}
+
+.failure-text-TD {
+  color: #ff3f3f;
+  font-size: 16px;
+}

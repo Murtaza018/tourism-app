@@ -5,7 +5,7 @@ const HotelPackageCheckTable = async () => {
         city varchar(30) not null,
         hotel_email varchar(30) not null,
         room_id int not null,
-        resevation_id int not null,
+        reservation_id int not null,
         days_stay int not null,
         foreign key (package_id) references flight_package(package_id));`);
 };

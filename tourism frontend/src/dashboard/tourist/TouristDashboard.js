@@ -863,23 +863,24 @@ function TouristDashboard() {
       e.preventDefault();
       
       if (validateForm()) {
-
         // Process payment here
-        const confirmation=insertPackage();
+         insertPackage();
         
         // Start the shrinking animation
         setFormState('shrinking');
         
         // After animation completes, fully hide the form
         setTimeout(() => {
+          // Hide the form
           setFormState('hidden');
-          // Show success message
-          setShowSuccessMessage(true);
+          
+          // Show appropriate success/failure message
+          
         }, 600); // Slightly longer than the animation duration
       }
     };
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-    const insertPackage=()=>{
+    const [showSuccessMessage, setShowSuccessMessage] = useState("undefined");
+    const insertPackage=async()=>{
       fetch("http://localhost:8008/Tourism/insertPackage", {
         method: "POST",
         headers: {
@@ -895,8 +896,10 @@ function TouristDashboard() {
         .then((data) => {
           if (data.code === 200) {
             console.log(data.data);
+            setShowSuccessMessage("success")
           } else {
-            console.log("Data not retreived!", data.data);
+            console.log("Package not inserted!", data.data);
+            setShowSuccessMessage("fail")
           }
         })
         .catch((err) => {
@@ -2460,13 +2463,21 @@ function TouristDashboard() {
   </div>
 )}
                 </div>
-                {showSuccessMessage && (
+                {showSuccessMessage && showSuccessMessage==="success" && (
   <div className="payment-complete-message-TD">
     <div className="success-icon-TD">✓</div>
-    <h2 className="success-title-TD">Payment Completed</h2>
+    <h2 className="success-title-TD">Package Completed</h2>
     <p className="success-text-TD">Your transaction was successful!</p>
   </div>
-)}<button className="payment-button-TD" onClick={handleSubmit}>
+)}
+{showSuccessMessage && showSuccessMessage==="fail" && (
+  <div className="payment-failure-message-TD">
+    <div className="failure-icon-TD">✗</div>
+    <h2 className="failure-title-TD">Package Failed</h2>
+    <p className="failure-text-TD">There was an issue processing your transaction.</p>
+  </div>
+)}
+<button className="payment-button-TD" onClick={handleSubmit}>
 Call API
 </button>
 

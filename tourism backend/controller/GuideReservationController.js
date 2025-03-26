@@ -3,7 +3,7 @@ const guideReservationCheckTable = async () => {
   await pool.query(`create table if not exists guide_reservation(
         reservation_id int auto_increment primary key,
         tourist_email varchar(30) not null,
-        guide_email varchar(30) not null,
+        guide_email varchar(30),
         start_date date not null,
         end_date date not null,
         status varchar(10) not null,
