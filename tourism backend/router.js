@@ -102,5 +102,6 @@ router.post("/getCar", carController.getCar);
 router.post("/updateCar", carController.updateCar);
 
 router.post("/insertPackage", flightPackageController.insertPackage);
+router.post("/getPackages", flightPackageController.getPackage);
 
 module.exports = router;

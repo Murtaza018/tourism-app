@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./TouristDashboard.css";
-import { useState, useEffect, Suspense, useRef } from "react";
+import { useState, useEffect, Suspense } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -11,7 +11,6 @@ import { Country, City } from "country-state-city";
 import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import { DateTime } from "luxon";
-import PaymentIcon from "@mui/icons-material/Payment";
 import {
   Button,
   Dialog,
@@ -64,6 +63,8 @@ function TouristDashboard() {
       getFeedbackData();
     } else if (activeCard === "SettingUpdates") {
       getAccountStatus();
+    } else if (activeCard === "Packages") {
+      getPackages();
     }
   }, [activeCard]);
   useEffect(() => {
@@ -156,65 +157,53 @@ function TouristDashboard() {
       </div>
     );
   };
+  const [packageData, setPackageData] = useState(null);
+  const getPackages = () => {
+    fetch("http://localhost:8008/Tourism/getPackages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.packages);
+          setPackageData(data.packages);
+        } else {
+          console.log("Package Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const Packages = () => {
     return (
       <div className="Tourist-content-TD">
         <h2 className="heading-TD">
           <strong>Your Packages</strong>
         </h2>
+        {packageData && packageData.length > 0 ? (
+          <>Package Data</>
+        ) : (
+          <>No Packages Found. Create a Package!</>
+        )}
+        <button
+          onClick={() => {
+            getPackages();
+          }}
+          className={"travel-btn travel-btn-animated"}
+        >
+          <span className="btn-content">Call API</span>
+        </button>
       </div>
     );
   };
 
   const [stepperDisplay, setStepperDisplay] = useState(false);
-  // const PackageStepper = () => {
-  //   const [name, setName] = useState("");
-  //   return (
-  //     <div className="stepper-div-TD">
-  //       <Stepper
-  //         sx={{ width: "100%" }}
-  //         initialStep={1}
-  //         onStepChange={(step) => {
-  //           console.log(step);
-  //         }}
-  //         onFinalStepCompleted={() => console.log("All steps completed!")}
-  //         backButtonText={<ChevronLeft />}
-  //         nextButtonText={<ChevronRight />}
-  //       >
-  //         <Step>
-  //           <h2>Welcome to the React Bits stepper!</h2>
-  //           <p>Check out the next step!</p>
-  //         </Step>
-  //         <Step>
-  //           <h2>Step 2</h2>
 
-  //           <p>Custom step content!</p>
-  //         </Step>
-  //         <Step>
-  //           <h2>How about an input?</h2>
-  //           <input
-  //             value={name}
-  //             onChange={(e) => setName(e.target.value)}
-  //             placeholder="Your name?"
-  //             required
-  //           />
-  //         </Step>
-  //         <Step>
-  //           <h2>Final Step 4</h2>
-  //           <p>You made it!</p>
-  //         </Step>
-  //         <Step>
-  //           <h2>Final Step 5 {name}</h2>
-  //           <p>You made it!</p>
-  //         </Step>
-  //         <Step>
-  //           <h2>Final Step</h2>
-  //           <p>You made it!</p>
-  //         </Step>
-  //       </Stepper>
-  //     </div>
-  //   );
-  // };
   const handleOpenPackageStepper = () => {
     setStepperDisplay(true);
   };
@@ -224,38 +213,23 @@ function TouristDashboard() {
   };
 
   const PackageStepper = ({ open, onClose }) => {
-    const [selectedPackageCity, setSelectedPackageCity] = useState([
-      "Karachi",
-      "Quetta",
-    ]);
-    // const [selectedPackageCity, setSelectedPackageCity] = useState([]);
+    const [selectedPackageCity, setSelectedPackageCity] = useState([]);
     const [selectedPackageCountry, setSelectedPackageCountry] = useState("");
-    // const [selectedPackageCountryName, setSelectedPackageCountryName] =
-    //   useState("");
     const [selectedPackageCountryName, setSelectedPackageCountryName] =
-      useState("Pakistan");
+      useState("");
     const [Packagecities, setPackageCities] = useState([]);
-    const [selectedCurrentCity, setSelectedCurrentCity] = useState("Lahore");
-    // const [selectedCurrentCity, setSelectedCurrentCity] = useState("");
-    const [selectedCurrentCountry, setSelectedCurrentCountry] =
-      useState("Pakistan");
-    // const [selectedCurrentCountry, setSelectedCurrentCountry] = useState("");
+    const [selectedCurrentCity, setSelectedCurrentCity] = useState("");
+    const [selectedCurrentCountry, setSelectedCurrentCountry] = useState("");
     const [selectedCurrentCountryName, setSelectedCurrentCountryName] =
-      useState("Pakistan");
+      useState("");
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
-    // const [flightDate, setFlightDate] = useState(null);
-    const [flightDate, setFlightDate] = useState("2025-07-07");
-    // const [touristQuantity, setTouristQuantity] = useState(null);
-    const [touristQuantity, setTouristQuantity] = useState(4);
-    // const [selectedFlightID, setSelectedFlightID] = useState(null);
-    const [selectedFlightID, setSelectedFlightID] = useState(1);
-    // const [flightSelected, setFlightSelected] = useState(false);
-    const [flightSelected, setFlightSelected] = useState(true);
-    // const [selectedReturnFlightID, setSelectedReturnFlightID] = useState(null);
-    // const [returnFlightSelected, setReturnFlightSelected] = useState(false);
-    const [selectedReturnFlightID, setSelectedReturnFlightID] = useState(4);
-    const [returnFlightSelected, setReturnFlightSelected] = useState(true);
+    const [flightDate, setFlightDate] = useState(null);
+    const [touristQuantity, setTouristQuantity] = useState(null);
+    const [selectedFlightID, setSelectedFlightID] = useState(null);
+    const [flightSelected, setFlightSelected] = useState(false);
+    const [selectedReturnFlightID, setSelectedReturnFlightID] = useState(null);
+    const [returnFlightSelected, setReturnFlightSelected] = useState(false);
     const [flightData, setFlightData] = useState({});
     const [returnFlightData, setReturnFlightData] = useState({});
     const [openSummary, setOpenSummary] = useState();
@@ -858,54 +832,63 @@ function TouristDashboard() {
       return Object.keys(newErrors).length === 0;
     };
 
-    const [formState, setFormState] = useState('visible');
+    const [formState, setFormState] = useState("visible");
     const handleSubmit = (e) => {
       e.preventDefault();
-      
+
       if (validateForm()) {
         // Process payment here
-         insertPackage();
-        
+        insertPackage();
+
         // Start the shrinking animation
-        setFormState('shrinking');
-        
+        setFormState("shrinking");
+
         // After animation completes, fully hide the form
         setTimeout(() => {
           // Hide the form
-          setFormState('hidden');
-          
+          setFormState("hidden");
+
           // Show appropriate success/failure message
-          
         }, 600); // Slightly longer than the animation duration
       }
     };
     const [showSuccessMessage, setShowSuccessMessage] = useState("undefined");
-    const insertPackage=async()=>{
+    const insertPackage = async () => {
       fetch("http://localhost:8008/Tourism/insertPackage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-         dataObject:daysStay,quantity:touristQuantity,flightID:selectedFlightID,returnFlightID:selectedReturnFlightID,departureCountry:selectedCurrentCountryName,
-         departureCity:selectedCurrentCity,arrivalCountry:selectedPackageCountryName,arrivalCity:selectedPackageCity,
-         email: localStorage.getItem("email"),
+          dataObject: daysStay,
+          quantity: touristQuantity,
+          flightID: selectedFlightID,
+          returnFlightID: selectedReturnFlightID,
+          departureCountry: selectedCurrentCountryName,
+          departureCity: selectedCurrentCity,
+          arrivalCountry: selectedPackageCountryName,
+          arrivalCity: selectedPackageCity,
+          email: localStorage.getItem("email"),
         }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.code === 200) {
             console.log(data.data);
-            setShowSuccessMessage("success")
+            setTimeout(() => {
+              setShowSuccessMessage("success");
+            }, 600);
           } else {
             console.log("Package not inserted!", data.data);
-            setShowSuccessMessage("fail")
+            setTimeout(() => {
+              setShowSuccessMessage("fail");
+            }, 600);
           }
         })
         .catch((err) => {
           console.log(err);
         });
-    }
+    };
     return (
       <div>
         <Dialog open={open} onClose={onClose} className="dialog-container-TD">
@@ -914,40 +897,38 @@ function TouristDashboard() {
               initialStep={1}
               onStepChange={(step) => {
                 console.log(step);
-                
               }}
               onFinalStepCompleted={() => console.log("All steps completed!")}
               backButtonText={<ChevronLeft />}
               nextButtonText={<ChevronRight />}
               validateStep={async (step) => {
-                // if (step === 1) {
-                //   if (selectedCurrentCountryName === "") {
-                //     return "Select Country!";
-                //   }
-                //   if (selectedCurrentCity.length <= 0 && !noCurrentCity) {
-                //     return "Select City!";
-                //   }
-                // }
-                // if (step === 2) {
-                //   if (selectedPackageCountryName === "") {
-                //     return "Enter Country!";
-                //   }
-                //   if (selectedPackageCity.length <= 0 && !noPackageCity) {
-                //     return "Select at least 1 City!";
-                //   }
-                // }
-                // if (step === 3) {
-                // if(touristQuantity<=0){
-                //   return "Quantity can not be less than 0";
-                // }
-                //   if (!flightDate) {
-                //     return "Select a Date!";
-                //   }
-                //   if (!selectedFlightID) {
-                //
-                //     return "Select a flight!";
-                //   }
-                // }
+                if (step === 1) {
+                  if (selectedCurrentCountryName === "") {
+                    return "Select Country!";
+                  }
+                  if (selectedCurrentCity.length <= 0 && !noCurrentCity) {
+                    return "Select City!";
+                  }
+                }
+                if (step === 2) {
+                  if (selectedPackageCountryName === "") {
+                    return "Enter Country!";
+                  }
+                  if (selectedPackageCity.length <= 0 && !noPackageCity) {
+                    return "Select at least 1 City!";
+                  }
+                }
+                if (step === 3) {
+                  if (touristQuantity <= 0) {
+                    return "Quantity can not be less than 0";
+                  }
+                  if (!flightDate) {
+                    return "Select a Date!";
+                  }
+                  if (!selectedFlightID) {
+                    return "Select a flight!";
+                  }
+                }
                 if (step === 4) {
                   const initialDaysStay = {};
 
@@ -961,22 +942,22 @@ function TouristDashboard() {
                     };
                   });
                   setDaysStay(initialDaysStay);
-                }
-                //   if (touristQuantity <= 0) {
-                //     return "Quantity can not be less than 0";
-                //   }
 
-                //   if (!selectedReturnFlightID) {
-                //     if (
-                //       window.confirm(
-                //         "You have not selected a return flight,continue?"
-                //       )
-                //     ) {
-                //       return true;
-                //     }
-                //     return "Select a flight!";
-                //   }
-                // }
+                  if (touristQuantity <= 0) {
+                    return "Quantity can not be less than 0";
+                  }
+
+                  if (!selectedReturnFlightID) {
+                    if (
+                      window.confirm(
+                        "You have not selected a return flight,continue?"
+                      )
+                    ) {
+                      return true;
+                    }
+                    return "Select a flight!";
+                  }
+                }
                 if (step === 5) {
                   setDaysStay((prevData) => {
                     const newData = {}; // Create a new object
@@ -993,45 +974,45 @@ function TouristDashboard() {
 
                     return newData;
                   });
+
+                  if (flightReturnDate && selectedReturnFlightID) {
+                    const startDate = new Date(flightDate);
+                    const endDate = new Date(flightReturnDate);
+
+                    const timeDifference =
+                      endDate.getTime() - startDate.getTime();
+                    const days = Math.round(
+                      timeDifference / (1000 * 60 * 60 * 24)
+                    );
+
+                    let intervalDays = 0;
+                    for (const city in daysStay) {
+                      intervalDays += parseInt(daysStay[city].days, 10);
+                    }
+
+                    intervalDays = parseInt(intervalDays, 10);
+                    console.log("days:", days);
+                    console.log("interval days:", intervalDays);
+                    if (days !== intervalDays) {
+                      return "Invalid! Total Package Days do not match with total days selected at hotels";
+                    }
+                  }
+                  for (const city in daysStay) {
+                    if (daysStay[city].email === "") {
+                      return `Hotel not selected in city: ${city}`;
+                    }
+                  }
+                  for (const city in daysStay) {
+                    if (daysStay[city].days === 0) {
+                      return `Inavlid days(0) in city: ${city}`;
+                    }
+                  }
+                  for (const city in daysStay) {
+                    if (daysStay[city].room_id) {
+                      return `No Rooms selected in city: ${city}`;
+                    }
+                  }
                 }
-                //   if (flightReturnDate && selectedReturnFlightID) {
-                //     const startDate = new Date(flightDate);
-                //     const endDate = new Date(flightReturnDate);
-
-                //     const timeDifference =
-                //       endDate.getTime() - startDate.getTime();
-                //     const days = Math.round(
-                //       timeDifference / (1000 * 60 * 60 * 24)
-                //     );
-
-                //     let intervalDays = 0;
-                //     for (const city in daysStay) {
-                //       intervalDays += parseInt(daysStay[city].days, 10);
-                //     }
-
-                //     intervalDays = parseInt(intervalDays, 10);
-                //     console.log("days:", days);
-                //     console.log("interval days:", intervalDays);
-                //     if (days !== intervalDays) {
-                //       return "Invalid! Total Package Days do not match with total days selected at hotels";
-                //     }
-                //   }
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].email === "") {
-                //       return `Hotel not selected in city: ${city}`;
-                //     }
-                //   }
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].days === 0) {
-                //       return `Inavlid days(0) in city: ${city}`;
-                //     }
-                //   }
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].room_id) {
-                //       return `No Rooms selected in city: ${city}`;
-                //     }
-                //   }
-                // }
                 if (step === 6) {
                   setDaysStay((prevData) => {
                     const newData = {}; // Create a new object
@@ -1048,49 +1029,58 @@ function TouristDashboard() {
 
                     return newData;
                   });
+
+                  let no_guide_cities = [];
+                  for (const city in daysStay) {
+                    if (daysStay[city].guide_email === "") {
+                      no_guide_cities.push(city);
+                    }
+                  }
+                  if (
+                    !window.confirm(
+                      `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                    )
+                  ) {
+                    return "";
+                  }
                 }
-                //   let no_guide_cities = [];
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].guide_email === "") {
-                //       no_guide_cities.push(city);
-                //     }
-                //   }
-                //   if (
-                //     !window.confirm(
-                //       `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
-                //     )
-                //   ) {
-                //     return "";
-                //   }
-                // }let no_guide_cities = [];
-                //   for (const city in daysStay) {
-                //     if (daysStay[city].guide_email === "") {
-                //       no_guide_cities.push(city);
-                //     }
-                //   }
-                //   if (
-                //     !window.confirm(
-                //       `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
-                //     )
-                //   ) {
-                //     return "";
-                //   }
+                let no_guide_cities = [];
+                for (const city in daysStay) {
+                  if (daysStay[city].guide_email === "") {
+                    no_guide_cities.push(city);
+                  }
+                }
+                if (
+                  !window.confirm(
+                    `You have not selected tour guides in these cities:(${no_guide_cities}) Continue(OK)?`
+                  )
+                ) {
+                  return "";
+                }
                 if (step === 7) {
                   console.log("days Stay:", daysStay);
-                  //   let no_rental_cities = [];
-                  //   for (const city in daysStay) {
-                  //     if (daysStay[city].rental_email === "") {
-                  //       no_rental_cities.push(city);
-                  //     }
-                  //   }
-                  //   if (
-                  //     !window.confirm(
-                  //       `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
-                  //     )
-                  //   ) {
-                  //     return "";
+                  let no_rental_cities = [];
+                  for (const city in daysStay) {
+                    if (daysStay[city].rental_email === "") {
+                      no_rental_cities.push(city);
+                    }
+                  }
+                  if (
+                    !window.confirm(
+                      `You have not selected car rentals in these cities:(${no_rental_cities}) Continue(OK)?`
+                    )
+                  ) {
+                    return "";
+                  }
                 }
-                // }
+                if (step === 9) {
+                  if (
+                    showSuccessMessage !== "fail" &&
+                    showSuccessMessage !== "success"
+                  ) {
+                    return "Complete Payment!";
+                  }
+                }
                 return true;
               }}
             >
@@ -2362,13 +2352,13 @@ function TouristDashboard() {
                 </div>
               </Step>
               <Step>
-              <div className={`payment-container-TD form-${formState}-TD`}>
-                  
+                <div className={`payment-container-TD form-${formState}-TD`}>
                   <form
                     id="myForm"
                     className="payment-form-TD"
                     onSubmit={handleSubmit}
-                  ><h2 className="payment-header-TD">Payment Details</h2>
+                  >
+                    <h2 className="payment-header-TD">Payment Details</h2>
                     <div className="form-group-TD card-number-TD">
                       <label className="form-label-TD" htmlFor="card">
                         Card Number
@@ -2457,34 +2447,48 @@ function TouristDashboard() {
                       Secure payment processing
                     </div>
                   </form>
-                  {formState === 'shrinking' && (
-  <div className="payment-success-TD">
-    <div className="success-checkmark-TD">✓</div>
-  </div>
-)}
+                  {formState === "shrinking" && (
+                    <div className="payment-success-TD">
+                      <div className="success-checkmark-TD">✓</div>
+                    </div>
+                  )}
                 </div>
-                {showSuccessMessage && showSuccessMessage==="success" && (
-  <div className="payment-complete-message-TD">
-    <div className="success-icon-TD">✓</div>
-    <h2 className="success-title-TD">Package Completed</h2>
-    <p className="success-text-TD">Your transaction was successful!</p>
-  </div>
-)}
-{showSuccessMessage && showSuccessMessage==="fail" && (
-  <div className="payment-failure-message-TD">
-    <div className="failure-icon-TD">✗</div>
-    <h2 className="failure-title-TD">Package Failed</h2>
-    <p className="failure-text-TD">There was an issue processing your transaction.</p>
-  </div>
-)}
-<button className="payment-button-TD" onClick={handleSubmit}>
+                {showSuccessMessage && showSuccessMessage === "success" && (
+                  <div className="payment-complete-message-TD">
+                    <div className="success-icon-TD">✓</div>
+                    <h2 className="success-title-TD">Package Completed</h2>
+                    <p className="success-text-TD">
+                      Your transaction was successful!
+                    </p>
+                  </div>
+                )}
+                {showSuccessMessage && showSuccessMessage === "fail" && (
+                  <div className="payment-failure-message-TD">
+                    <div className="failure-icon-TD">✗</div>
+                    <h2 className="failure-title-TD">Package Failed</h2>
+                    <p className="failure-text-TD">
+                      There was an issue processing your transaction.
+                    </p>
+                  </div>
+                )}
+                {/* <button className="payment-button-TD" onClick={handleSubmit}>
 Call API
-</button>
-
+</button> */}
               </Step>
               <Step>
-                <h2>Final Step</h2>
-                <p>You made it!</p>
+                {showSuccessMessage && (
+                  <div className="container-TD">
+                    {showSuccessMessage === "success" ? (
+                      <p className="success-message-TD success-positive-TD">
+                        Enjoy your vacations!
+                      </p>
+                    ) : (
+                      <p className="success-message-TD success-negative-TD">
+                        Create a Package to enjoy your vacations!
+                      </p>
+                    )}
+                  </div>
+                )}
               </Step>
             </Stepper>
           </DialogContent>
