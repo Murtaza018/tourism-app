@@ -14,6 +14,7 @@ const FlightPackageCheckTable = async () => {
         return_flight_id int,
         start_date date default null,
         end_date date default null,
+        quantity int not null,
         status varchar(20));`);
 };
 const insertPackage = async (req, res) => {
@@ -52,7 +53,7 @@ const insertPackage = async (req, res) => {
       await new Promise((resolve, reject) => {
         connection.query(
           `insert into flight_package(tourist_email,current_country,
-          current_city,package_country,flight_id,return_flight_id,status) values(?,?,?,?,?,?,?)`,
+          current_city,package_country,flight_id,return_flight_id,status,quantity) values(?,?,?,?,?,?,?,?)`,
           [
             req.body.email,
             req.body.departureCountry,
@@ -61,6 +62,7 @@ const insertPackage = async (req, res) => {
             req.body.flightID,
             req.body.returnFlightID,
             "pending",
+            req.body.quantity,
           ],
           (err, results) => {
             if (err) {
@@ -229,10 +231,7 @@ const insertPackage = async (req, res) => {
       await new Promise((resolve, reject) => {
         connection.query(
           `update flight_package set start_date=? where package_id=?`,
-          [
-            start_date,
-            package_id,
-          ],
+          [start_date, package_id],
           (err, results) => {
             if (err) {
               reject(err);
@@ -243,7 +242,7 @@ const insertPackage = async (req, res) => {
         );
       });
       const dataObj = req.body.dataObject;
-      let end_date=null;
+      let end_date = null;
       for (const city in dataObj) {
         const cityObj = dataObj[city];
         const daysStay = cityObj.days;
@@ -442,10 +441,7 @@ const insertPackage = async (req, res) => {
       await new Promise((resolve, reject) => {
         connection.query(
           `update flight_package set end_date=? where package_id=?`,
-          [
-            end_date,
-            package_id,
-          ],
+          [end_date, package_id],
           (err, results) => {
             if (err) {
               reject(err);
@@ -504,9 +500,8 @@ const getPackage = async (req, res) => {
     }
 
     try {
-      const email = req.body.email; // Get the tourist email from the request
+      const email = req.body.email;
 
-      // 1. Get flight package details
       const flightPackageQuery = `
         SELECT
           fp.*,
@@ -515,7 +510,10 @@ const getPackage = async (req, res) => {
           u1.first_name AS airline_first_name,
           u1.last_name AS airline_last_name,
           u2.first_name AS return_airline_first_name,
-          u2.last_name AS return_airline_last_name
+          u2.last_name AS return_airline_last_name,
+          fp.start_date,
+          fp.end_date,
+          fp.status
         FROM
           flight_package fp
         LEFT JOIN
@@ -542,8 +540,10 @@ const getPackage = async (req, res) => {
 
       if (flightPackageResults.length === 0) {
         connection.release();
-        console.log("no package found")
-        return res.status(404).json({ code: 404, message: "No packages found for this email" });
+        console.log("no package found");
+        return res
+          .status(404)
+          .json({ code: 404, message: "No packages found for this email" });
       }
 
       const packages = [];
@@ -551,7 +551,6 @@ const getPackage = async (req, res) => {
       for (const packageRow of flightPackageResults) {
         const package_id = packageRow.package_id;
 
-        // 2. Get guide and rental details for each city in the package
         const guideRentalQuery = `
           SELECT
             grp.*,
@@ -579,19 +578,22 @@ const getPackage = async (req, res) => {
           });
         });
 
-        // 3. Get hotel details and room packages for each city
         const hotelPackageQuery = `
           SELECT
             hp.*,
             r.price AS room_price,
             u.first_name,
-            u.last_name
+            u.last_name,
+            room.type AS room_type,
+            r.room_id AS room_id
           FROM
             hotel_package hp
           LEFT JOIN
             reservation r ON hp.reservation_id = r.reservation_id
           LEFT JOIN
             user u ON hp.hotel_email = u.email
+          LEFT JOIN
+            room ON r.room_id = room.room_id
           WHERE
             hp.package_id = ?;
         `;
@@ -606,8 +608,8 @@ const getPackage = async (req, res) => {
           });
         });
 
-        // 4. Structure the package object
         const packageObj = {
+          package_id: package_id,
           dataObject: {},
           quantity: packageRow.quantity,
           flightID: packageRow.flight_id,
@@ -621,17 +623,20 @@ const getPackage = async (req, res) => {
           airline_last_name: packageRow.airline_last_name,
           return_airline_first_name: packageRow.return_airline_first_name,
           return_airline_last_name: packageRow.return_airline_last_name,
+          start_date: packageRow.start_date,
+          end_date: packageRow.end_date,
+          status: packageRow.status,
         };
 
-        // Populate dataObject with city details
         for (const cityData of guideRentalResults) {
           const city = cityData.city;
           packageObj.dataObject[city] = {
             days: cityData.days_stay.toString(),
-            email: cityData.hotel_email, // hotel_email might be null
+            email: cityData.hotel_email,
             first_name: "",
             last_name: "",
             room_packages: {},
+            room_types: {},
             guide_email: cityData.guide_email,
             guide_first_name: cityData.guide_first_name,
             guide_last_name: cityData.guide_last_name,
@@ -643,14 +648,16 @@ const getPackage = async (req, res) => {
           };
         }
 
-        // Add hotel room packages
         for (const hotelData of hotelPackageResults) {
           const city = hotelData.city;
           if (packageObj.dataObject[city]) {
             packageObj.dataObject[city].email = hotelData.hotel_email;
             packageObj.dataObject[city].first_name = hotelData.first_name;
             packageObj.dataObject[city].last_name = hotelData.last_name;
-            packageObj.dataObject[city].room_packages[hotelData.room_id] = hotelData.room_price;
+            packageObj.dataObject[city].room_packages[hotelData.room_id] =
+              hotelData.room_price;
+            packageObj.dataObject[city].room_types[hotelData.room_id] =
+              hotelData.room_type;
           }
         }
 
@@ -658,15 +665,19 @@ const getPackage = async (req, res) => {
       }
 
       connection.release();
+      console.log("package data:", packages);
       res.json({ code: 200, packages: packages });
-
     } catch (error) {
       if (connection) {
         connection.release();
       }
       console.error("Error fetching packages:", error);
-      res.status(500).json({ code: 500, error: "Error fetching packages", details: error.message });
+      res.status(500).json({
+        code: 500,
+        error: "Error fetching packages",
+        details: error.message,
+      });
     }
   });
 };
-module.exports = { insertPackage,getPackage };
+module.exports = { insertPackage, getPackage };

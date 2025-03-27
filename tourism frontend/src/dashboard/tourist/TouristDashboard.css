@@ -1140,13 +1140,21 @@ details[open] .feedback-content2-TD {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0); }
-  to { transform: scale(1); }
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* Success message */
@@ -1184,7 +1192,6 @@ details[open] .feedback-content2-TD {
   font-size: 16px;
 }
 
-
 .payment-failure-message-TD {
   max-width: 500px;
   margin: 20px auto;
@@ -1220,38 +1227,111 @@ details[open] .feedback-content2-TD {
 }
 /* Vacation Message Styles */
 .container-TD {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: transparent; /* Light blue background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: transparent; /* Light blue background */
 }
 
 .success-message-TD {
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-family: 'Arial', sans-serif;
-    font-weight: 600;
-    text-align: center;
-    transition: all 0.3s ease;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-family: "Arial", sans-serif;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .success-positive-TD {
-    background-color: transparent; /* Soft light blue */
-    color: #0077be; /* Deep blue text */
-    border: 2px solid #87ceeb; /* Cyan border */
-    box-shadow: 0 4px 6px rgba(0, 119, 190, 0.1);
+  background-color: transparent; /* Soft light blue */
+  color: #0077be; /* Deep blue text */
+  border: 2px solid #87ceeb; /* Cyan border */
+  box-shadow: 0 4px 6px rgba(0, 119, 190, 0.1);
 }
 
 .success-negative-TD {
-    background-color: transparent; /* Very light blue */
-    color: #1e90ff; /* Dodger blue text */
-    border: 2px solid #00bfff; /* Deep sky blue border */
-    box-shadow: 0 4px 6px rgba(30, 144, 255, 0.1);
+  background-color: transparent; /* Very light blue */
+  color: #1e90ff; /* Dodger blue text */
+  border: 2px solid #00bfff; /* Deep sky blue border */
+  box-shadow: 0 4px 6px rgba(30, 144, 255, 0.1);
 }
 
-.success-positive-TD:hover, 
+.success-positive-TD:hover,
 .success-negative-TD:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 8px rgba(0, 119, 190, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 8px rgba(0, 119, 190, 0.2);
+}
+.feedback-summary3-TD {
+  padding: 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: rgb(40, 53, 147);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.feedback-summary3-TD::-webkit-details-marker {
+  display: none;
+}
+
+.feedback-summary3-TD::after {
+  content: "▼";
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: rgb(40, 53, 147);
+}
+
+details[open] .feedback-summary3-TD::after {
+  transform: rotate(180deg);
+}
+.departure-TD,
+.package-country-TD,
+.cities-selected-TD {
+  text-align: left;
+  color: rgb(40, 53, 147);
+  background-color: transparent;
+  padding-left: 2px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-bottom: 8px; /* Ensure equal spacing */
+}
+
+.return-flight-container-TD {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  padding-left: 2px;
+  border-radius: 5px;
+  margin-bottom: 8px; /* Ensure equal spacing */
+  margin-top: -8px; /* Ensure equal spacing */
+}
+
+.return-flight-TD {
+  color: rgb(40, 53, 147);
+  font-weight: bold;
+}
+
+.add-flight-btn-TD {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-flight-btn-TD:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.package-data-TD {
+  color: #0077be; /* Change this to any color you prefer */
+  font-weight: bold;
 }
