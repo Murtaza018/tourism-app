@@ -1367,7 +1367,7 @@ details[open] .feedback-summary3-TD::after {
   max-width: 70vw;
   width: 100%;
   max-height: 40vh;
-  height: 80%;
+  height: 70%;
   border: 2px solid #00bfff; /* Cyan border */
   animation: slideIn 0.4s ease-out;
 }
@@ -1410,4 +1410,108 @@ details[open] .feedback-summary3-TD::after {
   top: 8px;
   right: 8px;
   color: #000;
+}
+/*
+
+
+
+
+*/
+/* Container for the entire flight details section */
+.flight-details-container-TD {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background-color: white;
+}
+
+/* First div - Flight Name and Seat Type */
+.flight-name-section-TD {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f8ff; /* Light blue background */
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.flight-name-section-TD p {
+  color: #1e90ff; /* Dodger Blue */
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Second and Fourth div - Departure and Arrival Details */
+.flight-route-details-TD {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.departure-section-TD,
+.arrival-section-TD {
+  flex: 1;
+  background-color: #f0f8ff; /* Light blue background */
+  padding: 30px 25px; /* Increased padding */
+  border-radius: 12px;
+  font-size: 1.2em; /* Increased font size */
+}
+
+.departure-section-TD p,
+.arrival-section-TD p {
+  color: #000; /* Black text */
+  margin: 10px 0; /* Increased margin */
+}
+
+.departure-section-TD p:first-child,
+.arrival-section-TD p:first-child {
+  font-weight: 600;
+  color: #1e90ff; /* Dodger Blue for city/country */
+  font-size: 1.3em; /* Larger font for location */
+}
+
+/* Flight Icon Section */
+.flight-icon-section-TD {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(90deg); /* Rotate icon to point from departure to arrival */
+  color: #00bfff; /* Cyan color for icon */
+}
+
+.flight-icon-section-TD svg {
+  width: 80px; /* Increased icon size */
+  height: 80px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .flight-route-details-TD {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .flight-icon-section-TD {
+    transform: rotate(0deg);
+  }
+}
+
+/* Time styling */
+.departure-time-TD,
+.arrival-time-TD {
+  color: #1e90ff; /* Dodger Blue for times */
+  font-size: 1.1em; /* Increased font size */
+}
+.flight-details-heading-TD {
+  text-align: center;
+  color: #1e90ff; /* Dodger Blue */
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f8ff; /* Light blue background */
+  border-bottom: 2px solid #00bfff; /* Cyan border */
+  letter-spacing: 1px;
 }

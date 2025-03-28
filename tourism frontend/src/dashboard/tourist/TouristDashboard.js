@@ -9,12 +9,14 @@ import Aurora from "../../components/Aurora";
 import { Country, City } from "country-state-city";
 import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
-
+import { DateTime } from "luxon";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import FlightIcon from "@mui/icons-material/Flight";
 import {
   Button,
   Dialog,
   DialogContent,
+  FormControl,
   InputLabel,
   MenuItem,
   Select,
@@ -23,10 +25,16 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
-import { ChevronRight, LockIcon, LockOpenIcon } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  LockIcon,
+  LockOpenIcon,
+} from "lucide-react";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
 import PackageStepper from "./PackageStepper";
+import Stepper, { Step } from "../../components/Stepper";
 
 function TouristDashboard() {
   const navigate = useNavigate();
@@ -177,6 +185,7 @@ function TouristDashboard() {
     const [flightData, setFlightData] = useState(null);
     const [loadingState, setLoadingState] = useState(null);
     const [flightDetailsDisplay, setFlightDetailsDisplay] = useState(false);
+    const [addFlight, setAddFlight] = useState(false);
     const getFlightDetails = (flight_id) => {
       console.log("flight_id:", flight_id);
       fetch("http://localhost:8008/Tourism/getIndividualFlight", {
@@ -201,6 +210,7 @@ function TouristDashboard() {
           console.log(err);
         });
     };
+    const [singlePackageData, setSinglePackageData] = useState(null);
     const handleOpenFlightDetails = () => {
       setFlightDetailsDisplay(true);
     };
@@ -208,6 +218,16 @@ function TouristDashboard() {
     const handleCloseFlightDetails = () => {
       setFlightDetailsDisplay(false);
     };
+    const handleOpenAddFlight = (packageItem) => {
+      setAddFlight(true);
+      setSinglePackageData(packageItem);
+    };
+
+    const handleCloseAddFlight = () => {
+      setAddFlight(false);
+    };
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const FlightDetails = ({ open, onClose }) => {
       return (
         <div>
@@ -217,38 +237,664 @@ function TouristDashboard() {
             className="dialog-container2-TD"
           >
             <DialogContent className="dialog-content2-TD">
-              <p>Hello World</p>
+              <div className="flight-details-heading-TD">
+                <h2>Flight Details</h2>
+              </div>
               {loadingState && loadingState === "loading" ? (
                 <>Loading...</>
               ) : loadingState && loadingState === "complete" ? (
-                <>{
-                                          const localDepartureDateTime = DateTime.fromISO(
-                                            flight.departure_date + "T" + flight.departure_time,
-                                            { zone: "UTC" }
-                                          ).setZone(userTimeZone);
-                
-                                          // Format date/time for display
-                                          const formattedDepartureDateTime =
-                                            localDepartureDateTime.toLocaleString(
-                                              DateTime.DATETIME_MED
-                                            );
-                                          const localArrivalDateTime = DateTime.fromISO(
-                                            flight.arrival_date + "T" + flight.arrival_time,
-                                            { zone: "UTC" }
-                                          ).setZone(userTimeZone);
-                
-                                          // Format date/time for display
-                                          const formattedArrivalDateTime =
-                                            localArrivalDateTime.toLocaleString(
-                                              DateTime.DATETIME_MED
-                                            );
-                                          return (<></>)}</>
+                <>
+                  {(() => {
+                    const localDepartureDateTime = DateTime.fromISO(
+                      flightData.departure_date +
+                        "T" +
+                        flightData.departure_time,
+                      { zone: "UTC" }
+                    ).setZone(userTimeZone);
+
+                    const formattedDepartureDateTime =
+                      localDepartureDateTime.toLocaleString(
+                        DateTime.DATETIME_MED
+                      );
+
+                    const localArrivalDateTime = DateTime.fromISO(
+                      flightData.arrival_date + "T" + flightData.arrival_time,
+                      { zone: "UTC" }
+                    ).setZone(userTimeZone);
+
+                    const formattedArrivalDateTime =
+                      localArrivalDateTime.toLocaleString(
+                        DateTime.DATETIME_MED
+                      );
+
+                    return (
+                      <>
+                        <div className="flight-details-container-TD">
+                          <div className="flight-name-section-TD">
+                            <p>Flight Name: {flightData.flight_name}</p>
+                            <p>Seat Type: {flightData.seat_type}</p>
+                          </div>
+                          <div className="flight-route-details-TD">
+                            <div className="departure-section-TD">
+                              <p>
+                                Departure: {flightData.departure_city},
+                                {flightData.departure_country}
+                              </p>
+                              <p className="departure-time-TD">
+                                Departure Time: {formattedDepartureDateTime}
+                              </p>
+                            </div>
+                            <div className="flight-icon-section-TD">
+                              <FlightIcon />
+                            </div>
+                            <div className="arrival-section-TD">
+                              <p>
+                                Arrival: {flightData.arrival_city},
+                                {flightData.arrival_country}
+                              </p>
+                              <p className="arrival-time-TD">
+                                Arrival Time: {formattedArrivalDateTime}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
               ) : (
                 <>error</>
               )}
             </DialogContent>
           </Dialog>
         </div>
+      );
+    };
+    const AddFlight = ({ open, onClose }) => {
+      function isDateBeforeOtherDate(date1, date2) {
+        // Create Date objects for the given dates
+        const givenDate1 = new Date(date1);
+        const givenDate2 = new Date(date2);
+
+        // Set the time components to 00:00:00 for accurate comparison
+        givenDate1.setHours(0, 0, 0, 0);
+        givenDate2.setHours(0, 0, 0, 0);
+
+        // Compare the dates
+        return givenDate1 < givenDate2;
+      }
+      const [flightReturnDate, setFlightReturnDate] = useState(null);
+      const [returnFlightData, setReturnFlightData] = useState(null);
+      const [returnFlightSelected, setReturnFlightSelected] = useState(false);
+      const [selectedReturnFlightID, setSelectedReturnFlightID] =
+        useState(null);
+      const getReturnFlights = (date, quantity) => {
+        console.log("date:", date);
+        fetch("http://localhost:8008/Tourism/getFlights", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            date: date,
+            departure_country: singlePackageData.arrivalCountry,
+            departure_city: Object.keys(singlePackageData.dataObject)[
+              Object.keys(singlePackageData.dataObject).length - 1
+            ],
+            arrival_country: singlePackageData.departureCountry,
+            arrival_city: singlePackageData.departureCity,
+            quantity: singlePackageData.quantity,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log(data.data);
+              setReturnFlightData(data.data);
+            } else {
+              console.log("Data not retreived!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [formData, setFormData] = useState({
+        card: "",
+        expiry: "",
+        cvv: "",
+        amount: "",
+      });
+
+      // Error state
+      const [errors, setErrors] = useState({});
+
+      // Handle input changes
+      // Handle input changes
+      const handleChange = (e) => {
+        const { id, value } = e.target;
+
+        let formattedValue = value;
+
+        // Format card number with spaces every 4 digits
+        if (id === "card") {
+          // First, filter out non-numeric characters from the input
+          const numericValue = value.replace(/[^\d]/g, "");
+
+          // Then format with spaces every 4 digits
+          formattedValue = numericValue.replace(/(.{4})/g, "$1 ").trim();
+
+          // Limit to 19 characters (16 digits + 3 spaces)
+          formattedValue = formattedValue.substring(0, 19);
+        }
+
+        // Format expiry as MM/YY
+        if (id === "expiry") {
+          formattedValue = value.replace(/\D/g, "");
+          if (formattedValue.length > 2) {
+            formattedValue =
+              formattedValue.substring(0, 2) +
+              "/" +
+              formattedValue.substring(2, 4);
+          }
+          // Limit to 5 characters (MM/YY)
+          formattedValue = formattedValue.substring(0, 5);
+        }
+
+        // Format CVV as numbers only, max 3-4 digits
+        if (id === "cvv") {
+          formattedValue = value.replace(/\D/g, "").substring(0, 4);
+        }
+
+        // Format amount as currency
+        if (id === "amount") {
+          // Remove non-numeric characters except decimal point
+          formattedValue = value.replace(/[^\d.]/g, "");
+
+          // Ensure only one decimal point
+          const parts = formattedValue.split(".");
+          if (parts.length > 2) {
+            formattedValue = parts[0] + "." + parts.slice(1).join("");
+          }
+
+          // Limit to two decimal places
+          if (parts.length > 1) {
+            formattedValue = parts[0] + "." + parts[1].substring(0, 2);
+          }
+
+          // Add dollar sign if there's a value
+          if (formattedValue) {
+            formattedValue = "$" + formattedValue.replace(/^\$/, "");
+          }
+        }
+
+        setFormData({
+          ...formData,
+          [id]: formattedValue,
+        });
+      };
+      // Validate form
+      const validateForm = () => {
+        const newErrors = {};
+
+        // Validate card number (simple check for length)
+        if (formData.card.replace(/\s/g, "").length !== 16) {
+          newErrors.card = "Card number must be 16 digits";
+        }
+
+        // Validate expiry (check format and if not expired)
+        if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
+          newErrors.expiry = "Expiry must be in MM/YY format";
+        } else {
+          const [month, year] = formData.expiry.split("/");
+          const expiryDate = new Date(
+            2000 + parseInt(year),
+            parseInt(month) - 1
+          );
+          if (expiryDate < new Date()) {
+            newErrors.expiry = "Card has expired";
+          }
+        }
+
+        // Validate CVV (3-4 digits)
+        if (!/^\d{3,4}$/.test(formData.cvv)) {
+          newErrors.cvv = "CVV must be 3-4 digits";
+        }
+
+        // Validate amount (must be a number greater than 0)
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const [formState, setFormState] = useState("visible");
+      const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (validateForm()) {
+          // Process payment here
+          insertFlight();
+
+          // Start the shrinking animation
+          setFormState("shrinking");
+
+          // After animation completes, fully hide the form
+          setTimeout(() => {
+            // Hide the form
+            setFormState("hidden");
+
+            // Show appropriate success/failure message
+          }, 600); // Slightly longer than the animation duration
+        }
+      };
+      const insertFlight = async () => {
+        fetch("http://localhost:8008/Tourism/insertPackageFlight", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            package_id: singlePackageData.package_id,
+            return_date: flightReturnDate,
+            flight_id: selectedReturnFlightID,
+            price: flightPrice,
+            flight_email: flightEmail,
+            quantity: singlePackageData.quantity,
+            email: localStorage.getItem("email"),
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log(data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("success");
+              }, 600);
+            } else {
+              console.log("Flight not inserted!", data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("fail");
+              }, 600);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [flightEmail, setFlightEmail] = useState(null);
+      const [showSuccessMessage, setShowSuccessMessage] = useState("undefined");
+      const [flightPrice, setFlightPrice] = useState(null);
+      return (
+        <Dialog open={open} onClose={onClose} className="dialog-container-TD">
+          <DialogContent className="dialog-content-TD">
+            {singlePackageData ? (
+              <Stepper
+                initialStep={1}
+                onStepChange={(step) => {
+                  console.log(step);
+                }}
+                onFinalStepCompleted={() => console.log("All steps completed!")}
+                backButtonText={<ChevronLeft />}
+                nextButtonText={<ChevronRight />}
+                validateStep={async (step) => {
+                  if (step === 1) {
+                    if (!selectedReturnFlightID) {
+                      return "Select a Flight!";
+                    }
+                  }
+                  return true;
+                }}
+              >
+                <Step>
+                  <h2 className="step-heading-TD">
+                    {
+                      Object.keys(singlePackageData.dataObject)[
+                        Object.keys(singlePackageData.dataObject).length - 1
+                      ]
+                    }
+                    ,{singlePackageData.arrivalCountry}
+                    <FlightTakeoffIcon />
+                    {singlePackageData.departureCity ? (
+                      <>{singlePackageData.departureCity},</>
+                    ) : (
+                      <>?</>
+                    )}
+                    {singlePackageData.departureCountry ? (
+                      <>{singlePackageData.departureCountry}</>
+                    ) : (
+                      <>?</>
+                    )}
+                  </h2>
+                  <div className="flight-data-stepper-input-div-TD">
+                    <TextField
+                      type="date"
+                      className="seats-input3-TD"
+                      value={flightReturnDate}
+                      onChange={(e) => {
+                        if (isDateBeforeOtherDate(e.target.value, new Date())) {
+                          window.alert("Date can not be in the past!");
+                          return;
+                        } else {
+                          setFlightReturnDate(e.target.value);
+                          getReturnFlights(
+                            e.target.value,
+                            singlePackageData.quantity
+                          );
+                        }
+                      }}
+                      sx={{
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                        "& .MuiInputBase-input": {
+                          backgroundColor: "transparent !important",
+                          color: "cyan !important",
+                        },
+                        "& .MuiInputBase-root": {
+                          backgroundColor: "transparent !important",
+                          color: "cyan !important",
+                        },
+                        '& input[type="date"]::-webkit-calendar-picker-indicator':
+                          {
+                            filter:
+                              "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                          },
+                      }}
+                    ></TextField>
+                    <TextField
+                      type="number"
+                      className="seats-input3-TD"
+                      value={singlePackageData.quantity}
+                      disabled
+                      placeholder="Number of persons"
+                      sx={{
+                        backgroundColor: "transparent !important",
+                        color: "cyan !important",
+                        "& .MuiInputBase-input": {
+                          backgroundColor: "transparent !important",
+                          color: "cyan !important",
+                        },
+                        "& .MuiInputBase-root": {
+                          backgroundColor: "transparent !important",
+                          color: "cyan !important",
+                        },
+                        '& input[type="date"]::-webkit-calendar-picker-indicator':
+                          {
+                            filter:
+                              "invert(50%) sepia(100%) saturate(500%) hue-rotate(170deg)", // Cyan color
+                          },
+                      }}
+                    ></TextField>
+                  </div>
+                  <div className="table-container-TD">
+                    {returnFlightData && returnFlightData.length > 0 ? (
+                      <div>
+                        <table className="Tourist-table-TD">
+                          <thead className="table-head2-TD">
+                            <tr>
+                              <th className="table-header-TD">Flight Name</th>
+                              <th className="table-header-TD">Departure</th>
+                              <th className="table-header-TD">
+                                Departure Time
+                              </th>
+                              <th className="table-header-TD">Arrival</th>
+                              <th className="table-header-TD">Arrival Time</th>
+                              <th className="table-header-TD">
+                                Available Seats
+                              </th>
+                              <th className="table-header-TD">Seat Type</th>
+                              <th className="table-header-TD">Price($)</th>
+                              <th className="table-header-TD">
+                                Airline Rating
+                              </th>
+
+                              <th className="table-header-TD">Booking</th>
+                            </tr>
+                          </thead>
+                          <tbody className="table-body-TD">
+                            {returnFlightData.map((flight) => {
+                              const localDepartureDateTime = DateTime.fromISO(
+                                flight.departure_date +
+                                  "T" +
+                                  flight.departure_time,
+                                { zone: "UTC" }
+                              ).setZone(userTimeZone);
+
+                              // Format date/time for display
+                              const formattedDepartureDateTime =
+                                localDepartureDateTime.toLocaleString(
+                                  DateTime.DATETIME_MED
+                                );
+                              const localArrivalDateTime = DateTime.fromISO(
+                                flight.arrival_date + "T" + flight.arrival_time,
+                                { zone: "UTC" }
+                              ).setZone(userTimeZone);
+
+                              // Format date/time for display
+                              const formattedArrivalDateTime =
+                                localArrivalDateTime.toLocaleString(
+                                  DateTime.DATETIME_MED
+                                );
+                              return (
+                                <tr
+                                  key={flight.flight_id}
+                                  className="table-row-TD"
+                                >
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.flight_name}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.departure_city},
+                                    {flight.departure_country}
+                                  </td>
+
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {formattedDepartureDateTime}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.arrival_city},
+                                    {flight.arrival_country}
+                                  </td>
+
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {formattedArrivalDateTime}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.seats_available}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.seat_type}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.price}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {flight.rating.toFixed(2)}
+                                  </td>
+                                  <td className="table-cell-TD table-cell2-TD">
+                                    {returnFlightSelected ? (
+                                      <>
+                                        {selectedReturnFlightID ===
+                                        flight.flight_id ? (
+                                          <>
+                                            <button
+                                              className="edit-button-TD"
+                                              onClick={() => {
+                                                setSelectedReturnFlightID(null);
+                                                setReturnFlightSelected(false);
+                                                setFlightPrice(null);
+                                                setFlightEmail(null);
+                                              }}
+                                            >
+                                              Selected
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <></>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <button
+                                        className="edit-button-TD"
+                                        onClick={() => {
+                                          setSelectedReturnFlightID(
+                                            flight.flight_id
+                                          );
+                                          setReturnFlightSelected(true);
+                                          setFlightPrice(flight.price);
+                                          setFlightEmail(flight.email);
+                                        }}
+                                      >
+                                        Select
+                                      </button>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="no-data-message-TD">
+                        No Flights available.
+                      </p>
+                    )}
+                  </div>
+                </Step>
+                <Step>
+                  <div className={`payment-container-TD form-${formState}-TD`}>
+                    <form
+                      id="myForm"
+                      className="payment-form-TD"
+                      onSubmit={handleSubmit}
+                    >
+                      <h2 className="payment-header-TD">Payment Details</h2>
+                      <div className="form-group-TD card-number-TD">
+                        <label className="form-label-TD" htmlFor="card">
+                          Card Number
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.card ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="card"
+                          placeholder="1234 5678 9012 3456"
+                          value={formData.card}
+                          onChange={handleChange}
+                        />
+                        {errors.card && (
+                          <div className="error-message-TD">{errors.card}</div>
+                        )}
+                      </div>
+
+                      <div className="card-info-TD">
+                        <div className="form-group-TD card-expiry-TD">
+                          <label className="form-label-TD" htmlFor="expiry">
+                            Expiry Date
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.expiry ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="expiry"
+                            placeholder="MM/YY"
+                            value={formData.expiry}
+                            onChange={handleChange}
+                          />
+                          {errors.expiry && (
+                            <div className="error-message-TD">
+                              {errors.expiry}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="form-group-TD card-cvv-TD">
+                          <label className="form-label-TD" htmlFor="cvv">
+                            CVV
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.cvv ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="cvv"
+                            placeholder="123"
+                            value={formData.cvv}
+                            onChange={handleChange}
+                          />
+                          {errors.cvv && (
+                            <div className="error-message-TD">{errors.cvv}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group-TD">
+                        <label className="form-label-TD" htmlFor="amount">
+                          Amount
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.amount ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="amount"
+                          placeholder="$0.00"
+                          value={
+                            "$" + flightPrice * singlePackageData.quantity * 0.9
+                          }
+                          disabled
+                        />
+                        {errors.amount && (
+                          <div className="error-message-TD">
+                            {errors.amount}
+                          </div>
+                        )}
+                      </div>
+
+                      <button className="payment-button-TD" type="submit">
+                        Pay Now
+                      </button>
+
+                      <div className="secure-badge-TD">
+                        Secure payment processing
+                      </div>
+                    </form>
+                    {formState === "shrinking" && (
+                      <div className="payment-success-TD">
+                        <div className="success-checkmark-TD">✓</div>
+                      </div>
+                    )}
+                  </div>
+                  {showSuccessMessage && showSuccessMessage === "success" && (
+                    <div className="payment-complete-message-TD">
+                      <div className="success-icon-TD">✓</div>
+                      <h2 className="success-title-TD">Package Completed</h2>
+                      <p className="success-text-TD">
+                        Your transaction was successful!
+                      </p>
+                    </div>
+                  )}
+                  {showSuccessMessage && showSuccessMessage === "fail" && (
+                    <div className="payment-failure-message-TD">
+                      <div className="failure-icon-TD">✗</div>
+                      <h2 className="failure-title-TD">Package Failed</h2>
+                      <p className="failure-text-TD">
+                        There was an issue processing your transaction.
+                      </p>
+                    </div>
+                  )}
+                  {/* <button className="payment-button-TD" onClick={handleSubmit}>
+                Call API
+                </button> */}
+                </Step>
+              </Stepper>
+            ) : (
+              <>Loading...</>
+            )}
+          </DialogContent>
+        </Dialog>
       );
     };
     const [openSummary, setOpenSummary] = useState(null);
@@ -388,11 +1034,14 @@ function TouristDashboard() {
                   </p>
                   <button
                     className="add-flight-btn-TD"
-                    disabled={
-                      packageItem.returnFlightID ||
-                      (!packageItem.returnFlightID &&
-                        packageItem.status.toLowerCase() === "completed")
-                    }
+                    // disabled={
+                    //   packageItem.returnFlightID ||
+                    //   (!packageItem.returnFlightID &&
+                    //     packageItem.status.toLowerCase() === "completed")
+                    // }
+                    onClick={() => {
+                      handleOpenAddFlight(packageItem);
+                    }}
                   >
                     Add Flight
                   </button>
@@ -649,6 +1298,7 @@ function TouristDashboard() {
             onClose={handleCloseFlightDetails}
           />
         }
+        {<AddFlight open={addFlight} onClose={handleCloseAddFlight} />}
       </div>
     );
   };
