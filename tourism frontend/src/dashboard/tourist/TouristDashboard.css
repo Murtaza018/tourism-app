@@ -287,6 +287,10 @@ body.menu-open-TD {
 .table-cell3-TD {
   color: rgb(0, 9, 50);
 }
+.table-cell4-TD {
+  color: #0077be;
+  font-weight: bold;
+}
 .table-header-TD {
   font-weight: bold;
 }
@@ -1288,17 +1292,6 @@ details[open] .feedback-content2-TD {
 details[open] .feedback-summary3-TD::after {
   transform: rotate(180deg);
 }
-.departure-TD,
-.package-country-TD,
-.cities-selected-TD {
-  text-align: left;
-  color: rgb(40, 53, 147);
-  background-color: transparent;
-  padding-left: 2px;
-  border-radius: 5px;
-  font-weight: bold;
-  margin-bottom: 8px; /* Ensure equal spacing */
-}
 
 .return-flight-container-TD {
   display: flex;
@@ -1307,8 +1300,8 @@ details[open] .feedback-summary3-TD::after {
   background-color: transparent;
   padding-left: 2px;
   border-radius: 5px;
-  margin-bottom: 8px; /* Ensure equal spacing */
-  margin-top: -8px; /* Ensure equal spacing */
+
+  margin-top: -15px; /* Ensure equal spacing */
 }
 
 .return-flight-TD {
@@ -1334,4 +1327,87 @@ details[open] .feedback-summary3-TD::after {
 .package-data-TD {
   color: #0077be; /* Change this to any color you prefer */
   font-weight: bold;
+}
+
+/* .dialog-container2-TD .MuiPaper-root {
+  box-shadow: 0 0 20px 0 rgba(0, 255, 255, 0.5);
+  background-color: transparent;
+  backdrop-filter: blur(100px);
+  filter: saturate(350%);
+  animation: pulse-TD 4s infinite ease-in-out;
+  border-radius: 1rem;
+  z-index: 20;
+  max-width: 90vw !important;
+  min-width: 90vw !important;
+  max-height: 85vh !important;
+  min-height: 85vh !important;
+  overflow: auto;
+}
+
+.dialog-content-TD {
+  color: rgb(0, 0, 0) !important;
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+} */
+
+/* MUI Dialog Overlay Styles */
+.dialog-container2-TD .MuiDialog-root .MuiDialog-container {
+  background-color: rgba(0, 0, 255, 0.2); /* Soft blue overlay */
+}
+
+/* MUI Dialog Paper Styles */
+.dialog-container2-TD .MuiDialog-paper {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 191, 255, 0.3); /* Cyan shadow */
+  max-width: 70vw;
+  width: 100%;
+  max-height: 40vh;
+  height: 80%;
+  border: 2px solid #00bfff; /* Cyan border */
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Dialog Content Styles */
+.dialog-content2-TD {
+  padding: 24px;
+}
+
+/* Content Paragraph Styles */
+.dialog-content2-TD p {
+  color: #1e90ff; /* Dodger Blue */
+  font-size: 18px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .dialog-content2-TD {
+    padding: 16px;
+  }
+}
+
+/* Optional: Close Button Styling if needed */
+.dialog-container2-TD .MuiDialogTitle-root .MuiButtonBase-root {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #000;
 }

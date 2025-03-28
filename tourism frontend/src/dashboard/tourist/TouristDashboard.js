@@ -13,6 +13,8 @@ import HistoryIcon from "@mui/icons-material/History";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import {
   Button,
+  Dialog,
+  DialogContent,
   InputLabel,
   MenuItem,
   Select,
@@ -170,7 +172,85 @@ function TouristDashboard() {
         console.log(err);
       });
   };
+
   const Packages = () => {
+    const [flightData, setFlightData] = useState(null);
+    const [loadingState, setLoadingState] = useState(null);
+    const [flightDetailsDisplay, setFlightDetailsDisplay] = useState(false);
+    const getFlightDetails = (flight_id) => {
+      console.log("flight_id:", flight_id);
+      fetch("http://localhost:8008/Tourism/getIndividualFlight", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ flight_id: flight_id }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setFlightData(data.data);
+            setLoadingState("complete");
+          } else {
+            console.log("Flight Data not retreived!", data.data);
+            setLoadingState("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const handleOpenFlightDetails = () => {
+      setFlightDetailsDisplay(true);
+    };
+
+    const handleCloseFlightDetails = () => {
+      setFlightDetailsDisplay(false);
+    };
+    const FlightDetails = ({ open, onClose }) => {
+      return (
+        <div>
+          <Dialog
+            open={open}
+            onClose={onClose}
+            className="dialog-container2-TD"
+          >
+            <DialogContent className="dialog-content2-TD">
+              <p>Hello World</p>
+              {loadingState && loadingState === "loading" ? (
+                <>Loading...</>
+              ) : loadingState && loadingState === "complete" ? (
+                <>{
+                                          const localDepartureDateTime = DateTime.fromISO(
+                                            flight.departure_date + "T" + flight.departure_time,
+                                            { zone: "UTC" }
+                                          ).setZone(userTimeZone);
+                
+                                          // Format date/time for display
+                                          const formattedDepartureDateTime =
+                                            localDepartureDateTime.toLocaleString(
+                                              DateTime.DATETIME_MED
+                                            );
+                                          const localArrivalDateTime = DateTime.fromISO(
+                                            flight.arrival_date + "T" + flight.arrival_time,
+                                            { zone: "UTC" }
+                                          ).setZone(userTimeZone);
+                
+                                          // Format date/time for display
+                                          const formattedArrivalDateTime =
+                                            localArrivalDateTime.toLocaleString(
+                                              DateTime.DATETIME_MED
+                                            );
+                                          return (<></>)}</>
+              ) : (
+                <>error</>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
+    };
     const [openSummary, setOpenSummary] = useState(null);
     const [openSummary2, setOpenSummary2] = useState(null);
     return (
@@ -206,36 +286,99 @@ function TouristDashboard() {
                 >
                   <strong>Package Information:</strong>
                 </div>
-                <p className="departure-TD">
-                  Departure Country:{" "}
-                  <span className="package-data-TD">
-                    {packageItem.departureCity}, {packageItem.departureCountry}
-                  </span>
-                </p>
-                <p className="package-country-TD">
-                  Package Country:{" "}
-                  <span className="package-data-TD">
-                    {packageItem.arrivalCountry}
-                  </span>
-                </p>
-                <p className="cities-selected-TD">
-                  Cities Selected:{" "}
-                  <span className="package-data-TD">
-                    {Object.keys(packageItem.dataObject).length}
-                  </span>
-                </p>
-                <p className="cities-selected-TD">
-                  Start Date:{" "}
-                  <span className="package-data-TD">
-                    {packageItem.start_date}
-                  </span>
-                </p>
-                <p className="cities-selected-TD">
-                  End date:{" "}
-                  <span className="package-data-TD">
-                    {packageItem.end_date}
-                  </span>
-                </p>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    {" "}
+                    Departure Country:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.departureCity},{" "}
+                      {packageItem.departureCountry}
+                    </span>
+                  </p>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    {" "}
+                    Package Country:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.arrivalCountry}
+                    </span>
+                  </p>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    {" "}
+                    Cities Selected:{" "}
+                    <span className="package-data-TD">
+                      {Object.keys(packageItem.dataObject).length}
+                    </span>
+                  </p>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    {" "}
+                    Start Date:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.start_date}
+                    </span>
+                  </p>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    {" "}
+                    End date:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.end_date}
+                    </span>
+                  </p>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    Tourist Quantity:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.quantity}
+                    </span>
+                  </p>
+                </div>
+
+                <div
+                  className="heading-TD"
+                  style={{
+                    textAlign: "left",
+                    marginTop: "5vh",
+                    width: "fit-content",
+                  }}
+                >
+                  <strong>Flight Information:</strong>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    Airline Name:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.airline_first_name}{" "}
+                      {packageItem.airline_last_name}
+                    </span>
+                  </p>
+                  <button
+                    className="add-flight-btn-TD"
+                    onClick={() => {
+                      handleOpenFlightDetails();
+                      setLoadingState("loading");
+                      getFlightDetails(packageItem.flightID);
+                    }}
+                  >
+                    Flight Details
+                  </button>
+                </div>
+
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    Price:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.flight_price}$
+                    </span>
+                  </p>
+                </div>
                 <div className="return-flight-container-TD">
                   <p className="return-flight-TD">
                     Return Flight Selected:{" "}
@@ -245,12 +388,49 @@ function TouristDashboard() {
                   </p>
                   <button
                     className="add-flight-btn-TD"
-                    disabled={packageItem.returnFlightID}
+                    disabled={
+                      packageItem.returnFlightID ||
+                      (!packageItem.returnFlightID &&
+                        packageItem.status.toLowerCase() === "completed")
+                    }
                   >
                     Add Flight
                   </button>
                 </div>
-
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    Return Airline Name:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.returnFlightID ? (
+                        <>
+                          {packageItem.return_airline_first_name}{" "}
+                          {packageItem.return_airline_last_name}
+                        </>
+                      ) : (
+                        <>N/A</>
+                      )}
+                    </span>
+                  </p>
+                  <button
+                    className="add-flight-btn-TD"
+                    onClick={() => {
+                      handleOpenFlightDetails();
+                      setLoadingState("loading");
+                      getFlightDetails(packageItem.returnFlightID);
+                    }}
+                  >
+                    Flight Details
+                  </button>
+                </div>
+                <div className="return-flight-container-TD">
+                  <p className="return-flight-TD">
+                    Price:{" "}
+                    <span className="package-data-TD">
+                      {packageItem.return_flight_price}$
+                    </span>
+                  </p>
+                </div>
+                <div style={{ marginTop: "5vh" }}></div>
                 {Object.keys(packageItem.dataObject).map((city) => (
                   <details
                     className="feedback-details2-TD"
@@ -266,10 +446,12 @@ function TouristDashboard() {
                       {city}
                     </summary>
                     <div className="feedback-content2-TD">
-                      <p className="departure-TD">
-                        City Name:{" "}
-                        <span className="package-data-TD">{city}</span>
-                      </p>
+                      <div className="return-flight-container-TD">
+                        <p className="return-flight-TD">
+                          City Name:{" "}
+                          <span className="package-data-TD">{city}</span>
+                        </p>
+                      </div>
 
                       <div className="return-flight-container-TD">
                         <p className="return-flight-TD">
@@ -278,7 +460,14 @@ function TouristDashboard() {
                             {packageItem.dataObject[city].days}
                           </span>
                         </p>
-                        <button className="add-flight-btn-TD">Feedback</button>
+                        <button
+                          className="add-flight-btn-TD"
+                          disabled={
+                            packageItem.status.toLowerCase() !== "completed"
+                          }
+                        >
+                          Feedback
+                        </button>
                       </div>
                       <div
                         className="heading-TD"
@@ -297,7 +486,7 @@ function TouristDashboard() {
                             <tr>
                               <th className="table-header-TD">Hotel</th>
                               <th className="table-header-TD">Room Type</th>
-                              <th className="table-header-TD">Room Price</th>
+                              <th className="table-header-TD">Room Price($)</th>
                             </tr>
                           </thead>
                           {Object.keys(
@@ -305,18 +494,18 @@ function TouristDashboard() {
                           ).map((room_id) => (
                             <tbody className="table-body-TD">
                               <tr className="table-row-TD" key={room_id}>
-                                <td className="table-cell-TD table-cell3-TD">
+                                <td className="table-cell-TD table-cell4-TD">
                                   {packageItem.dataObject[city].first_name}{" "}
                                   {packageItem.dataObject[city].last_name}
                                 </td>
-                                <td className="table-cell-TD table-cell3-TD">
+                                <td className="table-cell-TD table-cell4-TD">
                                   {
                                     packageItem.dataObject[city].room_types[
                                       room_id
                                     ]
                                   }
                                 </td>
-                                <td className="table-cell-TD table-cell3-TD">
+                                <td className="table-cell-TD table-cell4-TD">
                                   {
                                     packageItem.dataObject[city].room_packages[
                                       room_id
@@ -327,6 +516,115 @@ function TouristDashboard() {
                             </tbody>
                           ))}
                         </table>
+                      </div>
+                      <div
+                        className="heading-TD"
+                        style={{
+                          textAlign: "left",
+                          marginTop: "5vh",
+                          width: "fit-content",
+                        }}
+                      >
+                        <strong>Tour Guide Information:</strong>
+                      </div>
+
+                      <div className="return-flight-container-TD">
+                        <p className="return-flight-TD">
+                          Tour Guide Selected:{" "}
+                          <span className="package-data-TD">
+                            {packageItem.dataObject[city].guide_email
+                              ? "Yes"
+                              : "No"}
+                          </span>
+                        </p>
+                        <button
+                          className="add-flight-btn-TD"
+                          disabled={
+                            packageItem.dataObject[city].guide_email ||
+                            (!packageItem.dataObject[city].guide_email &&
+                              packageItem.status.toLowerCase() !== "pending")
+                          }
+                        >
+                          Add Tour Guide
+                        </button>
+                      </div>
+                      <div className="return-flight-container-TD">
+                        <p className="return-flight-TD">
+                          Name:{" "}
+                          <span className="package-data-TD">
+                            {packageItem.dataObject[city].guide_email ? (
+                              <>
+                                {packageItem.dataObject[city].guide_first_name}{" "}
+                                {packageItem.dataObject[city].guide_last_name}
+                              </>
+                            ) : (
+                              <>N/A</>
+                            )}
+                          </span>
+                        </p>
+                        <button
+                          className="add-flight-btn-TD"
+                          disabled={
+                            packageItem.status.toLowerCase() !== "completed"
+                          }
+                        >
+                          Feedback
+                        </button>
+                      </div>
+
+                      <div
+                        className="heading-TD"
+                        style={{
+                          textAlign: "left",
+                          marginTop: "5vh",
+                          width: "fit-content",
+                        }}
+                      >
+                        <strong>Car Rental Information:</strong>
+                      </div>
+
+                      <div className="return-flight-container-TD">
+                        <p className="return-flight-TD">
+                          Car Rental Selected:{" "}
+                          <span className="package-data-TD">
+                            {packageItem.dataObject[city].rental_email
+                              ? "Yes"
+                              : "No"}
+                          </span>
+                        </p>
+                        <button
+                          className="add-flight-btn-TD"
+                          disabled={
+                            packageItem.dataObject[city].rental_email ||
+                            (!packageItem.dataObject[city].rental_email &&
+                              packageItem.status.toLowerCase() !== "pending")
+                          }
+                        >
+                          Add Car Rental
+                        </button>
+                      </div>
+                      <div className="return-flight-container-TD">
+                        <p className="return-flight-TD">
+                          Name:{" "}
+                          <span className="package-data-TD">
+                            {packageItem.dataObject[city].rental_email ? (
+                              <>
+                                {packageItem.dataObject[city].rental_first_name}{" "}
+                                {packageItem.dataObject[city].rental_last_name}
+                              </>
+                            ) : (
+                              <>N/A</>
+                            )}
+                          </span>
+                        </p>
+                        <button
+                          className="add-flight-btn-TD"
+                          disabled={
+                            packageItem.status.toLowerCase() !== "completed"
+                          }
+                        >
+                          Feedback
+                        </button>
                       </div>
                     </div>
                   </details>
@@ -345,6 +643,12 @@ function TouristDashboard() {
         >
           <span className="btn-content">Call API</span>
         </button>
+        {
+          <FlightDetails
+            open={flightDetailsDisplay}
+            onClose={handleCloseFlightDetails}
+          />
+        }
       </div>
     );
   };

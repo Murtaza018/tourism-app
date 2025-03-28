@@ -225,6 +225,96 @@ const getFlights = async (req, res) => {
       .json({ code: 500, message: "Internal server error" });
   }
 };
+
+const getIndividualFlight = async (req, res) => {
+  console.log("hello flight:", req.body);
+  await FlightCheckTable();
+  pool.query(
+    `SELECT departure_date, departure_time, departure_country, departure_city, arrival_date, arrival_time, arrival_country, arrival_city, flight_name, seat_type FROM flight WHERE flight_id = ?;`,
+    [req.body.flight_id],
+    (err, results) => {
+      if (results && results.length > 0) {
+        const flight = results[0];
+
+        const formattedDepartureTime = flight.departure_time
+          ? (typeof flight.departure_time === "string"
+              ? new Date(`1970-01-01T${flight.departure_time}`)
+              : flight.departure_time
+            ).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            })
+          : null;
+
+        const formattedArrivalTime = flight.arrival_time
+          ? (typeof flight.arrival_time === "string"
+              ? new Date(`1970-01-01T${flight.arrival_time}`)
+              : flight.arrival_time
+            ).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            })
+          : null;
+
+        let departureDateISO = null;
+        if (flight.departure_date) {
+          if (typeof flight.departure_date === "string") {
+            // Attempt to parse the string into a Date object
+            const parsedDate = new Date(flight.departure_date);
+            if (!isNaN(parsedDate)) {
+              departureDateISO = parsedDate.toISOString().split("T")[0];
+            } else {
+              console.error("Invalid date string:", flight.departure_date);
+              departureDateISO = null; // or handle the error appropriately
+            }
+          } else if (flight.departure_date instanceof Date) {
+            // If it's already a Date object, use toISOString()
+            departureDateISO = flight.departure_date
+              .toISOString()
+              .split("T")[0];
+          }
+        }
+
+        let arrivalDateISO = null;
+        if (flight.arrival_date) {
+          if (typeof flight.arrival_date === "string") {
+            const parsedArrivalDate = new Date(flight.arrival_date);
+            if (!isNaN(parsedArrivalDate)) {
+              arrivalDateISO = parsedArrivalDate.toISOString().split("T")[0];
+            } else {
+              console.error("Invalid date string:", flight.arrival_date);
+              arrivalDateISO = null;
+            }
+          } else if (flight.arrival_date instanceof Date) {
+            arrivalDateISO = flight.arrival_date.toISOString().split("T")[0];
+          }
+        }
+
+        const parsedFlight = {
+          departure_date: departureDateISO,
+          departure_time: formattedDepartureTime,
+          departure_country: flight.departure_country,
+          departure_city: flight.departure_city,
+          arrival_date: arrivalDateISO,
+          arrival_time: formattedArrivalTime,
+          arrival_country: flight.arrival_country,
+          arrival_city: flight.arrival_city,
+          flight_name: flight.flight_name,
+          seat_type: flight.seat_type,
+        };
+
+        console.log("flight Data:", parsedFlight);
+        return res.json({ code: 200, data: parsedFlight });
+      } else {
+        res.json({ code: 500, data: err || "No flight found." });
+      }
+    }
+  );
+};
 module.exports = {
   insertFlight,
   getFlightData,
@@ -232,4 +322,5 @@ module.exports = {
   DeleteFlight,
   getFlights,
   FlightCheckTable,
+  getIndividualFlight,
 };

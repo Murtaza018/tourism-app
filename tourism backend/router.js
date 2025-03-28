@@ -55,6 +55,7 @@ router.post("/getFlightData", flightController.getFlightData);
 router.post("/updateFlight", flightController.UpdateFlight);
 router.post("/DeleteFlight", flightController.DeleteFlight);
 router.post("/getFlights", flightController.getFlights);
+router.post("/getIndividualFlight", flightController.getIndividualFlight);
 
 router.post(
   "/getFlightReservationData",
