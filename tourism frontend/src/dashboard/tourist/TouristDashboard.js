@@ -16,7 +16,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  FormControl,
   InputLabel,
   MenuItem,
   Select,
@@ -35,6 +34,7 @@ import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { StarOutline } from "@mui/icons-material";
 import PackageStepper from "./PackageStepper";
 import Stepper, { Step } from "../../components/Stepper";
+import moment from "moment";
 
 function TouristDashboard() {
   const navigate = useNavigate();
@@ -186,6 +186,8 @@ function TouristDashboard() {
     const [loadingState, setLoadingState] = useState(null);
     const [flightDetailsDisplay, setFlightDetailsDisplay] = useState(false);
     const [addFlight, setAddFlight] = useState(false);
+    const [addGuide, setAddGuide] = useState(false);
+    const [addRental, setAddRental] = useState(false);
     const getFlightDetails = (flight_id) => {
       console.log("flight_id:", flight_id);
       fetch("http://localhost:8008/Tourism/getIndividualFlight", {
@@ -211,6 +213,8 @@ function TouristDashboard() {
         });
     };
     const [singlePackageData, setSinglePackageData] = useState(null);
+    const [packageCity, setPackageCity] = useState(null);
+    const [days, setDays] = useState(null);
     const handleOpenFlightDetails = () => {
       setFlightDetailsDisplay(true);
     };
@@ -226,8 +230,121 @@ function TouristDashboard() {
     const handleCloseAddFlight = () => {
       setAddFlight(false);
     };
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const handleOpenAddGuide = (packageItem, city) => {
+      setAddGuide(true);
+      setSinglePackageData(packageItem);
+      setDays(packageItem.dataObject[city].days);
+      setPackageCity(city);
+      GuideDataAPICall(city, packageItem.dataObject, packageItem.start_date);
+    };
 
+    const handleCloseAddGuide = () => {
+      setAddGuide(false);
+    };
+    const handleOpenAddRental = (packageItem, city) => {
+      setAddRental(true);
+      setSinglePackageData(packageItem);
+      setDays(packageItem.dataObject[city].days);
+      setPackageCity(city);
+      RentalDataAPICall(city, packageItem.dataObject, packageItem.start_date);
+    };
+
+    const handleCloseAddRental = () => {
+      setAddRental(false);
+    };
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const GuideDataAPICall = (param_city, daysStay, flightDate) => {
+      let intervalDays = 0;
+      for (const city in daysStay) {
+        if (city === param_city) {
+          break;
+        }
+        intervalDays += daysStay[city].days;
+      }
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
+
+      intervalDays += Number(daysStay[param_city].days);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
+      setStartDate(start_date);
+      setEndDate(end_date);
+      getGuideData(param_city, start_date, end_date);
+    };
+    const [guideData, setGuideData] = useState(null);
+    const [rentalData, setRentalData] = useState(null);
+    const getGuideData = (city, start_date, end_date) => {
+      fetch("http://localhost:8008/Tourism/getGuides", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          city: city,
+          start_date: start_date,
+          end_date: end_date,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setGuideData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const getRentalData = (city, start_date, end_date) => {
+      fetch("http://localhost:8008/Tourism/getRentals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          city: city,
+          start_date: start_date,
+          end_date: end_date,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log(data.data);
+            setRentalData(data.data);
+          } else {
+            console.log("Data not retreived!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const RentalDataAPICall = (param_city, daysStay, flightDate) => {
+      let intervalDays = 0;
+      for (const city in daysStay) {
+        if (city === param_city) {
+          break;
+        }
+        intervalDays += daysStay[city].days;
+      }
+      intervalDays = parseInt(intervalDays, 10);
+      const date2 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const start_date = date2.format("YYYY-MM-DD");
+
+      intervalDays += Number(daysStay[param_city].days);
+      const date3 = moment(flightDate, "YYYY-MM-DD").add(intervalDays, "days");
+      const end_date = date3.format("YYYY-MM-DD");
+      setStartDate(start_date);
+      setEndDate(end_date);
+      getRentalData(param_city, start_date, end_date);
+    };
     const FlightDetails = ({ open, onClose }) => {
       return (
         <div>
@@ -310,6 +427,7 @@ function TouristDashboard() {
         </div>
       );
     };
+
     const AddFlight = ({ open, onClose }) => {
       function isDateBeforeOtherDate(date1, date2) {
         // Create Date objects for the given dates
@@ -897,6 +1015,933 @@ function TouristDashboard() {
         </Dialog>
       );
     };
+    const AddGuide = ({ open, onClose }) => {
+      const [formData, setFormData] = useState({
+        card: "",
+        expiry: "",
+        cvv: "",
+        amount: "",
+      });
+
+      // Error state
+      const [errors, setErrors] = useState({});
+
+      // Handle input changes
+      // Handle input changes
+      const handleChange = (e) => {
+        const { id, value } = e.target;
+
+        let formattedValue = value;
+
+        // Format card number with spaces every 4 digits
+        if (id === "card") {
+          // First, filter out non-numeric characters from the input
+          const numericValue = value.replace(/[^\d]/g, "");
+
+          // Then format with spaces every 4 digits
+          formattedValue = numericValue.replace(/(.{4})/g, "$1 ").trim();
+
+          // Limit to 19 characters (16 digits + 3 spaces)
+          formattedValue = formattedValue.substring(0, 19);
+        }
+
+        // Format expiry as MM/YY
+        if (id === "expiry") {
+          formattedValue = value.replace(/\D/g, "");
+          if (formattedValue.length > 2) {
+            formattedValue =
+              formattedValue.substring(0, 2) +
+              "/" +
+              formattedValue.substring(2, 4);
+          }
+          // Limit to 5 characters (MM/YY)
+          formattedValue = formattedValue.substring(0, 5);
+        }
+
+        // Format CVV as numbers only, max 3-4 digits
+        if (id === "cvv") {
+          formattedValue = value.replace(/\D/g, "").substring(0, 4);
+        }
+
+        // Format amount as currency
+        if (id === "amount") {
+          // Remove non-numeric characters except decimal point
+          formattedValue = value.replace(/[^\d.]/g, "");
+
+          // Ensure only one decimal point
+          const parts = formattedValue.split(".");
+          if (parts.length > 2) {
+            formattedValue = parts[0] + "." + parts.slice(1).join("");
+          }
+
+          // Limit to two decimal places
+          if (parts.length > 1) {
+            formattedValue = parts[0] + "." + parts[1].substring(0, 2);
+          }
+
+          // Add dollar sign if there's a value
+          if (formattedValue) {
+            formattedValue = "$" + formattedValue.replace(/^\$/, "");
+          }
+        }
+
+        setFormData({
+          ...formData,
+          [id]: formattedValue,
+        });
+      };
+      // Validate form
+      const validateForm = () => {
+        const newErrors = {};
+
+        // Validate card number (simple check for length)
+        if (formData.card.replace(/\s/g, "").length !== 16) {
+          newErrors.card = "Card number must be 16 digits";
+        }
+
+        // Validate expiry (check format and if not expired)
+        if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
+          newErrors.expiry = "Expiry must be in MM/YY format";
+        } else {
+          const [month, year] = formData.expiry.split("/");
+          const expiryDate = new Date(
+            2000 + parseInt(year),
+            parseInt(month) - 1
+          );
+          if (expiryDate < new Date()) {
+            newErrors.expiry = "Card has expired";
+          }
+        }
+
+        // Validate CVV (3-4 digits)
+        if (!/^\d{3,4}$/.test(formData.cvv)) {
+          newErrors.cvv = "CVV must be 3-4 digits";
+        }
+
+        // Validate amount (must be a number greater than 0)
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const [formState, setFormState] = useState("visible");
+      const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (validateForm()) {
+          // Process payment here
+          insertGuide();
+
+          // Start the shrinking animation
+          setFormState("shrinking");
+
+          // After animation completes, fully hide the form
+          setTimeout(() => {
+            // Hide the form
+            setFormState("hidden");
+
+            // Show appropriate success/failure message
+          }, 600); // Slightly longer than the animation duration
+        }
+      };
+      const insertGuide = async () => {
+        fetch("http://localhost:8008/Tourism/insertPackageGuide", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            package_id: singlePackageData.package_id,
+            start_date: startDate,
+            end_date: endDate,
+            price: guidePrice,
+            guide_email: guideEmail,
+            city: packageCity,
+            email: localStorage.getItem("email"),
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log(data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("success");
+              }, 600);
+            } else {
+              console.log("Flight not inserted!", data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("fail");
+              }, 600);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [guideEmail, setGuideEmail] = useState(null);
+      const [showSuccessMessage, setShowSuccessMessage] = useState("undefined");
+      const [guidePrice, setGuidePrice] = useState(null);
+      return (
+        <Dialog open={open} onClose={onClose} className="dialog-container-TD">
+          <DialogContent className="dialog-content-TD">
+            {singlePackageData ? (
+              <Stepper
+                initialStep={1}
+                onStepChange={(step) => {
+                  console.log(step);
+                }}
+                onFinalStepCompleted={() => console.log("All steps completed!")}
+                backButtonText={<ChevronLeft />}
+                nextButtonText={<ChevronRight />}
+                validateStep={async (step) => {
+                  if (step === 1) {
+                    if (!guideEmail) {
+                      return "Select a Guide!";
+                    }
+                  }
+                  return true;
+                }}
+              >
+                <Step>
+                  <h2 className="step-heading-TD">
+                    Select Tour Guide in {packageCity},
+                    {singlePackageData.arrivalCountry}
+                  </h2>
+                  <div className="feedback-content2-TD">
+                    {guideData && guideData.length > 0 ? (
+                      guideData.map((guide) => (
+                        <details
+                          className="feedback-details2-TD"
+                          key={guide.email}
+                        >
+                          <summary className="feedback-summary2-TD">
+                            {guide.first_name} {guide.last_name}
+                            <p className="summary-rating-TD">
+                              ({guide.rating.toFixed(2)}
+                              <StarIcon />)
+                            </p>
+                            {guideEmail === guide.email ? (
+                              <>(Selected)</>
+                            ) : (
+                              <></>
+                            )}
+                          </summary>
+                          <div className="feedback-content2-TD">
+                            <div className="hotel-details-TD">
+                              <div className="details2-TD">
+                                <p className="summary-rating2-TD">
+                                  Rating: ({guide.rating.toFixed(2)}
+                                  <StarIcon />)
+                                </p>
+                                <p className="summary-rating2-TD">
+                                  Phone:{guide.phone}
+                                </p>
+                                <p className="summary-rating2-TD">
+                                  Price Per Day($):{guide.price_per_day}
+                                </p>
+                              </div>
+                              <div className="hotel-details-right-div-TD">
+                                <button
+                                  className="hotel-details-right-div-button-TD"
+                                  onClick={() => {
+                                    if (guideEmail === guide.email) {
+                                      setGuideEmail(null);
+                                      setGuidePrice(null);
+                                    } else {
+                                      setGuideEmail(guide.email);
+                                      setGuidePrice(guide.price_per_day);
+                                      console.log(
+                                        "price:",
+                                        guide.price_per_day
+                                      );
+                                      console.log("days:", days);
+                                    }
+                                  }}
+                                >
+                                  {guideEmail === guide.email ? (
+                                    <>Selected</>
+                                  ) : (
+                                    <>Select</>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      ))
+                    ) : (
+                      <p>No Tour Guides Available in this city.</p>
+                    )}
+                  </div>
+                </Step>
+                <Step>
+                  <div className={`payment-container-TD form-${formState}-TD`}>
+                    <form
+                      id="myForm"
+                      className="payment-form-TD"
+                      onSubmit={handleSubmit}
+                    >
+                      <h2 className="payment-header-TD">Payment Details</h2>
+                      <div className="form-group-TD card-number-TD">
+                        <label className="form-label-TD" htmlFor="card">
+                          Card Number
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.card ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="card"
+                          placeholder="1234 5678 9012 3456"
+                          value={formData.card}
+                          onChange={handleChange}
+                        />
+                        {errors.card && (
+                          <div className="error-message-TD">{errors.card}</div>
+                        )}
+                      </div>
+
+                      <div className="card-info-TD">
+                        <div className="form-group-TD card-expiry-TD">
+                          <label className="form-label-TD" htmlFor="expiry">
+                            Expiry Date
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.expiry ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="expiry"
+                            placeholder="MM/YY"
+                            value={formData.expiry}
+                            onChange={handleChange}
+                          />
+                          {errors.expiry && (
+                            <div className="error-message-TD">
+                              {errors.expiry}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="form-group-TD card-cvv-TD">
+                          <label className="form-label-TD" htmlFor="cvv">
+                            CVV
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.cvv ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="cvv"
+                            placeholder="123"
+                            value={formData.cvv}
+                            onChange={handleChange}
+                          />
+                          {errors.cvv && (
+                            <div className="error-message-TD">{errors.cvv}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group-TD">
+                        <label className="form-label-TD" htmlFor="amount">
+                          Amount
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.amount ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="amount"
+                          placeholder="$0.00"
+                          value={"$" + guidePrice * days * 0.9}
+                          disabled
+                        />
+                        {errors.amount && (
+                          <div className="error-message-TD">
+                            {errors.amount}
+                          </div>
+                        )}
+                      </div>
+
+                      <button className="payment-button-TD" type="submit">
+                        Pay Now
+                      </button>
+
+                      <div className="secure-badge-TD">
+                        Secure payment processing
+                      </div>
+                    </form>
+                    {formState === "shrinking" && (
+                      <div className="payment-success-TD">
+                        <div className="success-checkmark-TD">✓</div>
+                      </div>
+                    )}
+                  </div>
+                  {showSuccessMessage && showSuccessMessage === "success" && (
+                    <div className="payment-complete-message-TD">
+                      <div className="success-icon-TD">✓</div>
+                      <h2 className="success-title-TD">Package Completed</h2>
+                      <p className="success-text-TD">
+                        Your transaction was successful!
+                      </p>
+                    </div>
+                  )}
+                  {showSuccessMessage && showSuccessMessage === "fail" && (
+                    <div className="payment-failure-message-TD">
+                      <div className="failure-icon-TD">✗</div>
+                      <h2 className="failure-title-TD">Package Failed</h2>
+                      <p className="failure-text-TD">
+                        There was an issue processing your transaction.
+                      </p>
+                    </div>
+                  )}
+                  {/* <button className="payment-button-TD" onClick={handleSubmit}>
+                Call API
+                </button> */}
+                </Step>
+              </Stepper>
+            ) : (
+              <>Loading...</>
+            )}
+          </DialogContent>
+        </Dialog>
+      );
+    };
+    const AddRental = ({ open, onClose }) => {
+      const [formData, setFormData] = useState({
+        card: "",
+        expiry: "",
+        cvv: "",
+        amount: "",
+      });
+
+      // Error state
+      const [errors, setErrors] = useState({});
+
+      // Handle input changes
+      // Handle input changes
+      const handleChange = (e) => {
+        const { id, value } = e.target;
+
+        let formattedValue = value;
+
+        // Format card number with spaces every 4 digits
+        if (id === "card") {
+          // First, filter out non-numeric characters from the input
+          const numericValue = value.replace(/[^\d]/g, "");
+
+          // Then format with spaces every 4 digits
+          formattedValue = numericValue.replace(/(.{4})/g, "$1 ").trim();
+
+          // Limit to 19 characters (16 digits + 3 spaces)
+          formattedValue = formattedValue.substring(0, 19);
+        }
+
+        // Format expiry as MM/YY
+        if (id === "expiry") {
+          formattedValue = value.replace(/\D/g, "");
+          if (formattedValue.length > 2) {
+            formattedValue =
+              formattedValue.substring(0, 2) +
+              "/" +
+              formattedValue.substring(2, 4);
+          }
+          // Limit to 5 characters (MM/YY)
+          formattedValue = formattedValue.substring(0, 5);
+        }
+
+        // Format CVV as numbers only, max 3-4 digits
+        if (id === "cvv") {
+          formattedValue = value.replace(/\D/g, "").substring(0, 4);
+        }
+
+        // Format amount as currency
+        if (id === "amount") {
+          // Remove non-numeric characters except decimal point
+          formattedValue = value.replace(/[^\d.]/g, "");
+
+          // Ensure only one decimal point
+          const parts = formattedValue.split(".");
+          if (parts.length > 2) {
+            formattedValue = parts[0] + "." + parts.slice(1).join("");
+          }
+
+          // Limit to two decimal places
+          if (parts.length > 1) {
+            formattedValue = parts[0] + "." + parts[1].substring(0, 2);
+          }
+
+          // Add dollar sign if there's a value
+          if (formattedValue) {
+            formattedValue = "$" + formattedValue.replace(/^\$/, "");
+          }
+        }
+
+        setFormData({
+          ...formData,
+          [id]: formattedValue,
+        });
+      };
+      // Validate form
+      const validateForm = () => {
+        const newErrors = {};
+
+        // Validate card number (simple check for length)
+        if (formData.card.replace(/\s/g, "").length !== 16) {
+          newErrors.card = "Card number must be 16 digits";
+        }
+
+        // Validate expiry (check format and if not expired)
+        if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
+          newErrors.expiry = "Expiry must be in MM/YY format";
+        } else {
+          const [month, year] = formData.expiry.split("/");
+          const expiryDate = new Date(
+            2000 + parseInt(year),
+            parseInt(month) - 1
+          );
+          if (expiryDate < new Date()) {
+            newErrors.expiry = "Card has expired";
+          }
+        }
+
+        // Validate CVV (3-4 digits)
+        if (!/^\d{3,4}$/.test(formData.cvv)) {
+          newErrors.cvv = "CVV must be 3-4 digits";
+        }
+
+        // Validate amount (must be a number greater than 0)
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const [formState, setFormState] = useState("visible");
+      const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (validateForm()) {
+          // Process payment here
+          insertRental();
+
+          // Start the shrinking animation
+          setFormState("shrinking");
+
+          // After animation completes, fully hide the form
+          setTimeout(() => {
+            // Hide the form
+            setFormState("hidden");
+
+            // Show appropriate success/failure message
+          }, 600); // Slightly longer than the animation duration
+        }
+      };
+      const insertRental = async () => {
+        fetch("http://localhost:8008/Tourism/insertPackageRental", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            package_id: singlePackageData.package_id,
+            start_date: startDate,
+            end_date: endDate,
+            price: rentalPrice,
+            rental_email: rentalEmail,
+            city: packageCity,
+            email: localStorage.getItem("email"),
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log(data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("success");
+              }, 600);
+            } else {
+              console.log("Flight not inserted!", data.data);
+              setTimeout(() => {
+                setShowSuccessMessage("fail");
+              }, 600);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [rentalEmail, setRentalEmail] = useState(null);
+      const [showSuccessMessage, setShowSuccessMessage] = useState("undefined");
+      const [rentalPrice, setRentalPrice] = useState(null);
+      return (
+        <Dialog open={open} onClose={onClose} className="dialog-container-TD">
+          <DialogContent className="dialog-content-TD">
+            {singlePackageData ? (
+              <Stepper
+                initialStep={1}
+                onStepChange={(step) => {
+                  console.log(step);
+                }}
+                onFinalStepCompleted={() => console.log("All steps completed!")}
+                backButtonText={<ChevronLeft />}
+                nextButtonText={<ChevronRight />}
+                validateStep={async (step) => {
+                  if (step === 1) {
+                    if (!rentalEmail) {
+                      return "Select a Car Rental!";
+                    }
+                  }
+                  return true;
+                }}
+              >
+                <Step>
+                  <h2 className="step-heading-TD">
+                    Select Car Rental in {packageCity},
+                    {singlePackageData.arrivalCountry}
+                  </h2>
+                  <div className="feedback-content2-TD">
+                    {rentalData && rentalData.length > 0 ? (
+                      rentalData.map((rental) => (
+                        <details
+                          className="feedback-details2-TD"
+                          key={rental.email}
+                        >
+                          <summary className="feedback-summary2-TD">
+                            {rental.first_name} {rental.last_name}
+                            <p className="summary-rating-TD">
+                              ({rental.rating.toFixed(2)}
+                              <StarIcon />)
+                            </p>
+                            {rentalEmail === rental.email ? (
+                              <>(Selected)</>
+                            ) : (
+                              <></>
+                            )}
+                          </summary>
+                          <div className="feedback-content2-TD">
+                            <div className="hotel-details-TD">
+                              <div className="details2-TD">
+                                <p className="summary-rating2-TD">
+                                  Rating: ({rental.rating.toFixed(2)}
+                                  <StarIcon />)
+                                </p>
+                                <p className="summary-rating2-TD">
+                                  Phone:{rental.phone}
+                                </p>
+                                <p className="summary-rating2-TD">
+                                  Price Per Day($):{rental.price_per_day}
+                                </p>
+                              </div>
+                              <div className="hotel-details-right-div-TD">
+                                <button
+                                  className="hotel-details-right-div-button-TD"
+                                  onClick={() => {
+                                    if (rentalEmail === rental.email) {
+                                      setRentalEmail(null);
+                                      setRentalPrice(null);
+                                    } else {
+                                      setRentalEmail(rental.email);
+                                      setRentalPrice(rental.price_per_day);
+                                      console.log(
+                                        "price:",
+                                        rental.price_per_day
+                                      );
+                                      console.log("days:", days);
+                                    }
+                                  }}
+                                >
+                                  {rentalEmail === rental.email ? (
+                                    <>Selected</>
+                                  ) : (
+                                    <>Select</>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      ))
+                    ) : (
+                      <p>No Car Rentals Available in this city.</p>
+                    )}
+                  </div>
+                </Step>
+                <Step>
+                  <div className={`payment-container-TD form-${formState}-TD`}>
+                    <form
+                      id="myForm"
+                      className="payment-form-TD"
+                      onSubmit={handleSubmit}
+                    >
+                      <h2 className="payment-header-TD">Payment Details</h2>
+                      <div className="form-group-TD card-number-TD">
+                        <label className="form-label-TD" htmlFor="card">
+                          Card Number
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.card ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="card"
+                          placeholder="1234 5678 9012 3456"
+                          value={formData.card}
+                          onChange={handleChange}
+                        />
+                        {errors.card && (
+                          <div className="error-message-TD">{errors.card}</div>
+                        )}
+                      </div>
+
+                      <div className="card-info-TD">
+                        <div className="form-group-TD card-expiry-TD">
+                          <label className="form-label-TD" htmlFor="expiry">
+                            Expiry Date
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.expiry ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="expiry"
+                            placeholder="MM/YY"
+                            value={formData.expiry}
+                            onChange={handleChange}
+                          />
+                          {errors.expiry && (
+                            <div className="error-message-TD">
+                              {errors.expiry}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="form-group-TD card-cvv-TD">
+                          <label className="form-label-TD" htmlFor="cvv">
+                            CVV
+                          </label>
+                          <input
+                            className={`form-input-TD ${
+                              errors.cvv ? "input-error-TD" : ""
+                            }`}
+                            type="text"
+                            id="cvv"
+                            placeholder="123"
+                            value={formData.cvv}
+                            onChange={handleChange}
+                          />
+                          {errors.cvv && (
+                            <div className="error-message-TD">{errors.cvv}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group-TD">
+                        <label className="form-label-TD" htmlFor="amount">
+                          Amount
+                        </label>
+                        <input
+                          className={`form-input-TD ${
+                            errors.amount ? "input-error-TD" : ""
+                          }`}
+                          type="text"
+                          id="amount"
+                          placeholder="$0.00"
+                          value={"$" + rentalPrice * days * 0.9}
+                          disabled
+                        />
+                        {errors.amount && (
+                          <div className="error-message-TD">
+                            {errors.amount}
+                          </div>
+                        )}
+                      </div>
+
+                      <button className="payment-button-TD" type="submit">
+                        Pay Now
+                      </button>
+
+                      <div className="secure-badge-TD">
+                        Secure payment processing
+                      </div>
+                    </form>
+                    {formState === "shrinking" && (
+                      <div className="payment-success-TD">
+                        <div className="success-checkmark-TD">✓</div>
+                      </div>
+                    )}
+                  </div>
+                  {showSuccessMessage && showSuccessMessage === "success" && (
+                    <div className="payment-complete-message-TD">
+                      <div className="success-icon-TD">✓</div>
+                      <h2 className="success-title-TD">Package Completed</h2>
+                      <p className="success-text-TD">
+                        Your transaction was successful!
+                      </p>
+                    </div>
+                  )}
+                  {showSuccessMessage && showSuccessMessage === "fail" && (
+                    <div className="payment-failure-message-TD">
+                      <div className="failure-icon-TD">✗</div>
+                      <h2 className="failure-title-TD">Package Failed</h2>
+                      <p className="failure-text-TD">
+                        There was an issue processing your transaction.
+                      </p>
+                    </div>
+                  )}
+                  {/* <button className="payment-button-TD" onClick={handleSubmit}>
+                Call API
+                </button> */}
+                </Step>
+              </Stepper>
+            ) : (
+              <>Loading...</>
+            )}
+          </DialogContent>
+        </Dialog>
+      );
+    };
+    const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
+    const [receiver, setReceiver] = useState({
+      first_name: "",
+      last_name: "",
+      email: "",
+    });
+    const handleClickOpenFeedbackCard = (firstName, lastName, email) => {
+      setReceiver({
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+      });
+      setOpenFeedbackCard(true);
+    };
+
+    const handleCloseFeedbackCard = () => {
+      setReceiver({
+        first_name: "",
+        last_name: "",
+        email: "",
+      });
+      setOpenFeedbackCard(false);
+    };
+    const FeedbackCard = ({ open, onClose }) => {
+      const SubmitFeedback = () => {
+        console.log("jhggjhgj");
+        fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+            t_email: receiver.email,
+            desc: feedbackDescription,
+            rate: rating,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              window.alert("Feedback Submitted!");
+              handleCloseFeedbackCard();
+            } else {
+              console.log("Feedback not Submitted!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [feedbackDescription, setFeedbackDescription] = useState("");
+      const [rating, setRating] = useState(0);
+
+      const handleStarClick = (value) => {
+        setRating(value);
+      };
+
+      const handleStarHover = (value) => {
+        highlightStars(value);
+      };
+
+      const handleStarMouseOut = () => {
+        highlightStars(rating);
+      };
+
+      const highlightStars = (value) => {
+        const stars = document.querySelectorAll(".star-RD");
+        stars.forEach((star) => {
+          const starValue = parseFloat(star.dataset.value);
+          if (starValue <= value) {
+            star.classList.add("selected");
+          } else {
+            star.classList.remove("selected");
+          }
+        });
+      };
+
+      const stars = [];
+      for (let i = 0; i <= 5; i += 0.5) {
+        stars.push(
+          <span
+            key={i}
+            className="star-RD"
+            data-value={i}
+            onClick={() => handleStarClick(i)}
+            onMouseOver={() => handleStarHover(i)}
+            onMouseOut={() => handleStarMouseOut()}
+          >
+            <StarIcon sx={{ fontSize: "2.2rem !important" }} />
+          </span>
+        );
+      }
+
+      return (
+        <Dialog open={open} onClose={onClose} className="feedback-dialog-RD">
+          <div className="dialog-content-RD">
+            <h1 className="heading-GD">
+              <strong>Feedback</strong>
+            </h1>
+            <div className="rating-RD">
+              <div className="star-container-RD">
+                {stars}
+                <p>Rating: {rating}</p>
+              </div>
+            </div>
+            <TextField
+              label="Receiver Name"
+              value={receiver.first_name + " " + receiver.last_name}
+              disabled
+              className="dialog-field-RD disabled-field-RD"
+            />
+
+            <TextField
+              label="Sender Email"
+              value={localStorage.getItem("email")}
+              disabled
+              className="dialog-field-RD disabled-field-RD"
+            />
+
+            <div className="feedback-input-container-RD">
+              <TextField
+                type="text"
+                label="Feedback Description"
+                inputProps={{ maxLength: 500, className: "expanding-input-RD" }}
+                multiline
+                required
+                maxRows={4}
+                onChange={(e) => setFeedbackDescription(e.target.value)}
+                className="dialog-field-RD feedback-input-RD"
+              />
+              <p className="char-count-RD">{feedbackDescription.length}/500</p>
+            </div>
+
+            <Button className="submit-button-RD" onClick={SubmitFeedback}>
+              Submit
+            </Button>
+          </div>
+        </Dialog>
+      );
+    };
     const [openSummary, setOpenSummary] = useState(null);
     const [openSummary2, setOpenSummary2] = useState(null);
     return (
@@ -1024,6 +2069,19 @@ function TouristDashboard() {
                       {packageItem.flight_price}$
                     </span>
                   </p>
+                  <button
+                    className="add-flight-btn-TD"
+                    // disabled={packageItem.status.toLowerCase() !== "completed"}
+                    onClick={() =>
+                      handleClickOpenFeedbackCard(
+                        packageItem.airline_first_name,
+                        packageItem.airline_last_name,
+                        packageItem.airline_email
+                      )
+                    }
+                  >
+                    Feedback
+                  </button>
                 </div>
                 <div className="return-flight-container-TD">
                   <p className="return-flight-TD">
@@ -1034,11 +2092,11 @@ function TouristDashboard() {
                   </p>
                   <button
                     className="add-flight-btn-TD"
-                    // disabled={
-                    //   packageItem.returnFlightID ||
-                    //   (!packageItem.returnFlightID &&
-                    //     packageItem.status.toLowerCase() === "completed")
-                    // }
+                    disabled={
+                      packageItem.returnFlightID ||
+                      (!packageItem.returnFlightID &&
+                        packageItem.status.toLowerCase() === "completed")
+                    }
                     onClick={() => {
                       handleOpenAddFlight(packageItem);
                     }}
@@ -1078,6 +2136,22 @@ function TouristDashboard() {
                       {packageItem.return_flight_price}$
                     </span>
                   </p>
+                  <button
+                    className="add-flight-btn-TD"
+                    // disabled={
+                    //   packageItem.returnFlightID === null ||
+                    //   packageItem.status.toLowerCase() !== "completed"
+                    // }
+                    onClick={() =>
+                      handleClickOpenFeedbackCard(
+                        packageItem.return_airline_first_name,
+                        packageItem.return_airline_last_name,
+                        packageItem.return_airline_email
+                      )
+                    }
+                  >
+                    Feedback
+                  </button>
                 </div>
                 <div style={{ marginTop: "5vh" }}></div>
                 {Object.keys(packageItem.dataObject).map((city) => (
@@ -1111,8 +2185,15 @@ function TouristDashboard() {
                         </p>
                         <button
                           className="add-flight-btn-TD"
-                          disabled={
-                            packageItem.status.toLowerCase() !== "completed"
+                          // disabled={
+                          //   packageItem.status.toLowerCase() !== "completed"
+                          // }
+                          onClick={() =>
+                            handleClickOpenFeedbackCard(
+                              packageItem.dataObject[city].first_name,
+                              packageItem.dataObject[city].last_name,
+                              packageItem.dataObject[city].email
+                            )
                           }
                         >
                           Feedback
@@ -1193,6 +2274,9 @@ function TouristDashboard() {
                             (!packageItem.dataObject[city].guide_email &&
                               packageItem.status.toLowerCase() !== "pending")
                           }
+                          onClick={() => {
+                            handleOpenAddGuide(packageItem, city);
+                          }}
                         >
                           Add Tour Guide
                         </button>
@@ -1213,8 +2297,16 @@ function TouristDashboard() {
                         </p>
                         <button
                           className="add-flight-btn-TD"
-                          disabled={
-                            packageItem.status.toLowerCase() !== "completed"
+                          // disabled={
+                          //   packageItem.dataObject[city].guide_email === null ||
+                          //   packageItem.status.toLowerCase() !== "completed"
+                          // }
+                          onClick={() =>
+                            handleClickOpenFeedbackCard(
+                              packageItem.dataObject[city].guide_first_name,
+                              packageItem.dataObject[city].guide_last_name,
+                              packageItem.dataObject[city].guide_email
+                            )
                           }
                         >
                           Feedback
@@ -1248,6 +2340,9 @@ function TouristDashboard() {
                             (!packageItem.dataObject[city].rental_email &&
                               packageItem.status.toLowerCase() !== "pending")
                           }
+                          onClick={() => {
+                            handleOpenAddRental(packageItem, city);
+                          }}
                         >
                           Add Car Rental
                         </button>
@@ -1268,8 +2363,17 @@ function TouristDashboard() {
                         </p>
                         <button
                           className="add-flight-btn-TD"
-                          disabled={
-                            packageItem.status.toLowerCase() !== "completed"
+                          // disabled={
+                          //   packageItem.dataObject[city].rental_email ===
+                          //     null ||
+                          //   packageItem.status.toLowerCase() !== "completed"
+                          // }
+                          onClick={() =>
+                            handleClickOpenFeedbackCard(
+                              packageItem.dataObject[city].rental_first_name,
+                              packageItem.dataObject[city].rental_last_name,
+                              packageItem.dataObject[city].rental_email
+                            )
                           }
                         >
                           Feedback
@@ -1284,14 +2388,7 @@ function TouristDashboard() {
         ) : (
           <>No Packages Found. Create a Package!</>
         )}
-        <button
-          onClick={() => {
-            getPackages();
-          }}
-          className={"travel-btn travel-btn-animated"}
-        >
-          <span className="btn-content">Call API</span>
-        </button>
+
         {
           <FlightDetails
             open={flightDetailsDisplay}
@@ -1299,6 +2396,12 @@ function TouristDashboard() {
           />
         }
         {<AddFlight open={addFlight} onClose={handleCloseAddFlight} />}
+        {<AddGuide open={addGuide} onClose={handleCloseAddGuide} />}
+        {<AddRental open={addRental} onClose={handleCloseAddRental} />}
+        <FeedbackCard
+          open={openFeedbackCard}
+          onClose={handleCloseFeedbackCard}
+        />
       </div>
     );
   };
@@ -1636,7 +2739,32 @@ function TouristDashboard() {
         "Delete Account(This action can NOT be reversed)? Select 'OK' to confirm"
       );
       if (confirmation) {
-        //check if there is an existing package going on
+        fetch("http://localhost:8008/Tourism/CheckPackageCount", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: localStorage.getItem("email") }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log("data:", data.data);
+              if (data.data[0].package_count > 0) {
+                window.alert(
+                  "Account cannot be deleted if an ongoing or pending package exists"
+                );
+              } else {
+                deleteAccountAPI();
+                setTimeout(logOut(), 3000);
+              }
+            } else {
+              console.log("API failed!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     };
 

@@ -9,6 +9,7 @@ const guideReservationController = require("./controller/GuideReservationControl
 const priceController = require("./controller/PriceController.js");
 const carController = require("./controller/CarController.js");
 const flightPackageController = require("./controller/FlightPackageController.js");
+const guideRentalPackageController = require("./controller/GuideRentalPackageController.js");
 const express = require("express");
 const router = express.Router();
 
@@ -107,6 +108,16 @@ router.post("/getPackages", flightPackageController.getPackage);
 router.post(
   "/insertPackageFlight",
   flightPackageController.insertPackageFlight
+);
+router.post("/CheckPackageCount", flightPackageController.CheckPackageCount);
+
+router.post(
+  "/insertPackageGuide",
+  guideRentalPackageController.insertPackageGuide
+);
+router.post(
+  "/insertPackageRental",
+  guideRentalPackageController.insertPackageRental
 );
 
 module.exports = router;

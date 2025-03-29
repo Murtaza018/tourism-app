@@ -5,9 +5,7 @@ const FeedbackCheckTable = async () => {
         sender_email varchar(30) not null,
         receiver_email varchar(30) not null,
         rating float not null,
-        description varchar(500) not null,
-        foreign key (receiver_email) references user(email),
-        foreign key (sender_email) references user(email));`);
+        description varchar(500) not null;`);
 };
 
 const getFeedbackData = async (req, res) => {
@@ -27,7 +25,7 @@ const getFeedbackData = async (req, res) => {
 };
 const insertFeedback = async (req, res) => {
   await FeedbackCheckTable();
-  console.log(req.body);
+  console.log("feedback:", req.body);
   pool.query(
     `insert into feedback(sender_email,receiver_email,rating,description) values(?,?,?,?);`,
     [req.body.email, req.body.t_email, req.body.rate, req.body.desc],
