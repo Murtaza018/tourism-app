@@ -7,7 +7,7 @@ const FeedbackCheckTable = async () => {
         rating float not null,
         description varchar(500) not null;`);
 };
-
+//hello
 const getFeedbackData = async (req, res) => {
   await FeedbackCheckTable();
   pool.query(
