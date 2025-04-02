@@ -1301,7 +1301,6 @@ function AdminDashboard() {
             </p>
           </div>
         )}
-        //hello world
         <div className="setting-container-DD">
           {editData && (
             <button className="save-button-DD" onClick={saveChanges}>
@@ -1381,7 +1380,7 @@ function AdminDashboard() {
     <div>
       <div className="background-DD">
         <Aurora
-          colorStops={["#FFB74D", "#E67E22", "#FFF5EE", "#FFB74D"]}
+          colorStops={["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]}
           speed={0.9}
         />
       </div>

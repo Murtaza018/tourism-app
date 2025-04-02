@@ -67,25 +67,15 @@
 
 .menu-DD ul {
   list-style: none;
-  padding: 50px 20px;
+  padding: 50px 18px;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .menu-DD li {
-  margin: 20px 0;
-}
-
-.button-DD {
-  text-decoration: none;
-  color: black;
-  font-size: 18px;
-  transition: color 0.3s ease, transform 0.3s ease;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  margin: 10px 0;
 }
 
 .button-DD:hover {
@@ -107,10 +97,17 @@ body.menu-open-DD {
   left: 0 !important;
   z-index: -1 !important;
 }
+.content-DD {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
 .menu-DD {
   width: 250px;
   height: 100%;
-  background-color: rgba(255, 183, 77, 0.5);
+  background-color: rgba(240, 248, 255, 0.7);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 20;
@@ -119,29 +116,45 @@ body.menu-open-DD {
   top: 0;
   left: 0;
 }
-.content-DD {
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  flex-grow: 1;
-  overflow-x: auto;
+
+.button-DD {
+  text-decoration: none;
+  color: #4169e1;
+  font-size: 18px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .details-DD {
-  background-color: rgba(255, 209, 177, 0.5);
-  border: 1px solid #ccebff;
+  background-color: rgba(248, 248, 255, 0.7);
+  border: 1px solid #b0e0e6;
   border-radius: 8px;
   padding: 50px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   overflow-x: auto;
   transition: box-shadow 1s ease;
+  backdrop-filter: blur(20px);
 }
 
 .details-DD .data-DD {
   margin-bottom: 10px;
   font-size: 16px;
-  color: #343a40;
+  color: #20639b;
   transition: transform 0.2s ease;
-  color: inherit !important;
+}
+
+.heading-DD {
+  color: #3d5a80;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #98c1d9;
 }
 
 .details-DD .data-DD strong {
@@ -171,14 +184,6 @@ body.menu-open-DD {
   flex-direction: column;
 }
 
-.heading-DD {
-  color: rgb(142, 70, 8);
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(220, 102, 0, 0.78);
-}
-
 .data-DD {
   display: flex;
   border-radius: 8px;
@@ -188,7 +193,7 @@ body.menu-open-DD {
   opacity: 0;
   justify-content: center;
   overflow: hidden;
-  background-image: linear-gradient(to right, #ffb74d, #e67e22, #fff5ee);
+  /* background-image: linear-gradient(to right, #ffb74d, #e67e22, #fff5ee); */
   padding: 10px 0px;
 }
 
