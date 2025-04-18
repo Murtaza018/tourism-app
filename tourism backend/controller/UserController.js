@@ -222,6 +222,33 @@ u.city = ?
     }
   );
 };
+const getAdminHotels = async (req, res) => {
+  await UserCheckTable();
+  pool.query(
+    `SELECT 
+    u.*, 
+    a.status,
+    COALESCE(AVG(f.rating), 0) AS rating 
+FROM 
+    user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email        
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Hotel Management')
+       
+GROUP BY 
+    u.email; `,
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: results });
+      }
+    }
+  );
+};
 module.exports = {
   getHotels,
   insertUser,
@@ -232,4 +259,5 @@ module.exports = {
   UserCheckTable,
   getGuides,
   getRentals,
+  getAdminHotels,
 };

@@ -172,8 +172,8 @@ body.menu-open-DD {
 }
 
 .details-DD:hover {
-  box-shadow: 0 0 20px 5px rgba(255, 164, 8, 0.7),
-    inset 0 0 20px 5px rgba(255, 164, 8, 0.7);
+  box-shadow: 0 0 20px 5px rgba(107, 236, 253, 0.7),
+    inset 0 0 20px 5px rgba(107, 236, 253, 0.7);
 }
 
 .details-container-DD {
@@ -193,7 +193,7 @@ body.menu-open-DD {
   opacity: 0;
   justify-content: center;
   overflow: hidden;
-  /* background-image: linear-gradient(to right, #ffb74d, #e67e22, #fff5ee); */
+  background-image: linear-gradient(to right, #ffffff, #90caf9, #2196f3);
   padding: 10px 0px;
 }
 
@@ -619,4 +619,110 @@ details[open] .feedback-summary-DD::after {
 }
 .seats-input2-DD .MuiOutlinedInput-root input {
   color: black !important;
+}
+
+.hotel-details-DD {
+  display: flex;
+  align-items: flex-start; /* Align to the top */
+  justify-content: space-between; /* Space between details and button */
+  gap: 16px; /* Add some space between details and button */
+  background: none; /* Remove background */
+  padding: 0; /* Remove padding */
+}
+
+.hotel-details-DD .details2-DD {
+  display: flex;
+  flex-direction: column; /* Stack details vertically */
+}
+
+.hotel-details-DD p {
+  margin: 0;
+}
+
+.hotel-details-DD .summary-rating2-DD {
+  display: inline-flex; /* Display rating and stars in the same line */
+  align-items: center; /* Vertically align items within the rating */
+}
+
+.hotel-details-DD .summary-rating2-DD .MuiSvgIcon-root {
+  color: yellow;
+  font-size: 1.2em;
+  margin-left: 4px;
+}
+
+.hotel-details-DD button {
+  align-self: flex-end; /* Align button to the top */
+}
+.feedback-summary2-DD {
+  padding: 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #4169e1;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.feedback-summary2-DD::-webkit-details-marker {
+  display: none;
+}
+
+.feedback-summary2-DD::after {
+  content: "▼";
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: #4169e1;
+}
+
+details[open] .feedback-summary2-DD::after {
+  transform: rotate(180deg);
+}
+.feedback-details2-DD {
+  transition: height 0.3s ease-out;
+}
+
+.feedback-details2-DD[open] {
+  height: auto;
+}
+
+.feedback-content2-DD {
+  padding: 1rem;
+}
+.feedback-details2-DD {
+  width: 100%;
+  overflow: visible;
+}
+.feedback-details2-DD {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  margin: 0.5rem 0;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feedback-details2-DD:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(22, 99, 194, 0.15);
+  transform: translateY(-2px);
+}
+
+.feedback-content2-DD {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}
+.summary-rating-DD {
+  color: yellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+.feedback-content2-DD {
+  padding: 1rem;
+}
+.feedback-content3-DD {
+  width: 100%;
 }
