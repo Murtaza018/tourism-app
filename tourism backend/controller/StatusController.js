@@ -24,7 +24,23 @@ const AccountStatusRetreival = async (req, res) => {
 const UpdateAccountStatus = async (req, res) => {
   await AccountStatusCheckTable();
   pool.query(
-    `update AccountStatus set status=not status where email = ?;`,
+    `update AccountStatus set status=1 - status where email = ?;`,
+    [req.body.email],
+    (err, results) => {
+      if (results) {
+        console.log("Hi", results);
+        return res.json({ code: 200, data: results });
+      } else {
+        res.json({ code: 500, data: err });
+      }
+    }
+  );
+};
+const AdminUpdateAccountStatus = async (req, res) => {
+  await AccountStatusCheckTable();
+  console.log("body:", req.body);
+  pool.query(
+    `update AccountStatus set status=3 - status where email = ?;`,
     [req.body.email],
     (err, results) => {
       if (results) {
@@ -40,5 +56,6 @@ module.exports = {
   AccountStatusCheckTable,
   AccountStatusRetreival,
   UpdateAccountStatus,
+  AdminUpdateAccountStatus,
   AccountStatusCheckTable,
 };

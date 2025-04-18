@@ -51,6 +51,10 @@ router.post(
   "/UpdateAccountStatus",
   accountStatusController.UpdateAccountStatus
 );
+router.post(
+  "/AdminUpdateAccountStatus",
+  accountStatusController.AdminUpdateAccountStatus
+);
 
 router.post("/InsertFlight", flightController.insertFlight);
 router.post("/getFlightData", flightController.getFlightData);

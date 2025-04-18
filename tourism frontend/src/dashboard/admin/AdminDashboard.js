@@ -20,6 +20,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { LockIcon, LockOpenIcon } from "lucide-react";
 import { PersonAddAlt1Outlined } from "@mui/icons-material";
+import toast, { Toaster } from "react-hot-toast";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -691,6 +692,25 @@ function AdminDashboard() {
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
+      fetch("http://localhost:8008/Tourism/AdminUpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Status Updated");
+          } else {
+            toast.error("Status not updated!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
     return (
       <div className="Admin-content-DD">
@@ -749,8 +769,9 @@ function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div className="button-div-DD">
                     <button
+                      className="edit-button2-DD"
                       disabled={hotel.status === 0}
                       onClick={() => {
                         lockAccount(hotel.email);
@@ -838,6 +859,9 @@ function AdminDashboard() {
           colorStops={["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]}
           speed={0.9}
         />
+      </div>
+      <div>
+        <Toaster />
       </div>
       <div className="main-container-DD">
         <div className="hamburger-menu-DD">
