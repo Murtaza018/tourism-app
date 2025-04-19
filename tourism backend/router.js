@@ -22,6 +22,10 @@ router.post("/getHotels", userController.getHotels);
 router.post("/getGuides", userController.getGuides);
 router.post("/getRentals", userController.getRentals);
 router.post("/getAdminHotels", userController.getAdminHotels);
+router.post("/getAdminAirlines", userController.getAdminAirlines);
+router.post("/getAdminGuides", userController.getAdminGuides);
+router.post("/getAdminRentals", userController.getAdminRentals);
+router.post("/getAdminTourists", userController.getAdminTourists);
 
 router.post("/insertRoom", roomController.insertRoom);
 router.post("/getRoomData", roomController.getRoomData);

@@ -249,6 +249,123 @@ GROUP BY
     }
   );
 };
+const getAdminAirlines = async (req, res) => {
+  await UserCheckTable();
+  pool.query(
+    `SELECT 
+    u.*, 
+    a.status,
+    COALESCE(AVG(f.rating), 0) AS rating 
+FROM 
+    user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email        
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Airline Company')
+       
+GROUP BY 
+    u.email; `,
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: results });
+      }
+    }
+  );
+};
+const getAdminGuides = async (req, res) => {
+  await UserCheckTable();
+  pool.query(
+    `SELECT 
+    u.*, 
+    a.status,
+    COALESCE(AVG(f.rating), 0) AS rating,
+    p.price_per_day AS price 
+FROM 
+    user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email
+JOIN
+    price p on u.email=p.email            
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Tour Guide')
+       
+GROUP BY 
+    u.email; `,
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: results });
+      }
+    }
+  );
+};
+const getAdminRentals = async (req, res) => {
+  await UserCheckTable();
+  pool.query(
+    `SELECT 
+    u.*, 
+    a.status,
+    COALESCE(AVG(f.rating), 0) AS rating,
+    p.price_per_day AS price,
+    c.capacity,c.description,c.plate
+FROM 
+    user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email   
+JOIN
+    price p on u.email=p.email            
+JOIN
+    car c on u.email=c.email            
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Car Rental')
+       
+GROUP BY 
+    u.email; `,
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: results });
+      }
+    }
+  );
+};
+const getAdminTourists = async (req, res) => {
+  await UserCheckTable();
+  pool.query(
+    `SELECT 
+    u.*, 
+    a.status,
+    COALESCE(AVG(f.rating), 0) AS rating 
+FROM 
+    user u
+JOIN 
+    feedback f ON u.email = f.receiver_email 
+JOIN
+    accountStatus a ON u.email = a.email        
+WHERE 
+    u.role_ID = (SELECT role_ID FROM role WHERE name = 'Tourist')
+       
+GROUP BY 
+    u.email; `,
+    (err, results) => {
+      if (err) {
+        res.json({ code: 500, data: err });
+      } else {
+        return res.json({ code: 200, data: results });
+      }
+    }
+  );
+};
 module.exports = {
   getHotels,
   insertUser,
@@ -260,4 +377,8 @@ module.exports = {
   getGuides,
   getRentals,
   getAdminHotels,
+  getAdminAirlines,
+  getAdminGuides,
+  getAdminRentals,
+  getAdminTourists,
 };

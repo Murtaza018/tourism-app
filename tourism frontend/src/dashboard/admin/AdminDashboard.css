@@ -749,3 +749,17 @@ details[open] .feedback-summary2-DD::after {
 .edit-button2-DD:hover {
   background-color: #0056b3;
 }
+
+.flight-details-heading-DD {
+  display: inline-block; /* Make the element only as wide as its content */
+  text-align: left;
+  color: #1e90ff; /* Dodger Blue */
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 10px 0; /* Remove horizontal padding */
+  background-color: transparent; /* Light blue background */
+  border-bottom: 2px solid #00bfff; /* Cyan border */
+  letter-spacing: 1px;
+  line-height: normal; /* Ensure text aligns with the bottom */
+}

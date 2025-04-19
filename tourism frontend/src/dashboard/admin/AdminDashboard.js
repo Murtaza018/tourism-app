@@ -741,6 +741,9 @@ function AdminDashboard() {
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
+                        <h2 className="flight-details-heading-DD">
+                          Personal Information:
+                        </h2>
                         <p className="summary-rating2-DD">
                           First Name: {hotel.first_name}
                         </p>
@@ -750,7 +753,9 @@ function AdminDashboard() {
                         <p className="summary-rating2-DD">
                           Email: {hotel.email}
                         </p>
-
+                        <p className="summary-rating2-DD">
+                          Password: {hotel.password}
+                        </p>
                         <p className="summary-rating2-DD">
                           Phone: {hotel.phone}
                         </p>
@@ -799,34 +804,602 @@ function AdminDashboard() {
     );
   };
   const AirlineContent = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [AirlineData, setAirlineData] = useState(null);
+    useEffect(() => {
+      const AirlineDataRetreival = async () => {
+        setIsLoading(true);
+        fetch("http://localhost:8008/Tourism/getAdminAirlines", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log("Airline Data", data.data);
+              setAirlineData(data.data);
+              setIsLoading(false);
+            } else {
+              console.log("Data not retreived!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      AirlineDataRetreival();
+    }, []);
+    const [openSummary, setOpenSummary] = useState(null);
+    const lockAccount = (email) => {
+      console.log("email:", email);
+      fetch("http://localhost:8008/Tourism/AdminUpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Status Updated");
+          } else {
+            toast.error("Status not updated!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Hello Airlines</h2>
+        <h2 className="heading-DD">Airlines</h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="feedback-content3-DD">
+            {AirlineData && AirlineData.length > 0 ? (
+              AirlineData.map((Airline) => (
+                <details
+                  className="feedback-details2-DD"
+                  key={Airline.email}
+                  open={openSummary === Airline.email}
+                >
+                  <summary
+                    className="feedback-summary2-DD"
+                    onClick={() => {
+                      setOpenSummary(Airline.email);
+                    }}
+                  >
+                    {Airline.first_name} {Airline.last_name}
+                    <p className="summary-rating-DD">
+                      ({Airline.rating.toFixed(2)}
+                      <StarIcon />)
+                    </p>
+                  </summary>
+                  <div className="feedback-content2-DD">
+                    <div className="hotel-details-DD">
+                      <div className="details2-DD">
+                        <h2 className="flight-details-heading-DD">
+                          Personal Information:
+                        </h2>
+                        <p className="summary-rating2-DD">
+                          First Name: {Airline.first_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Last Name: {Airline.last_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Email: {Airline.email}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Password: {Airline.password}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Phone: {Airline.phone}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          City: {Airline.city}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Country: {Airline.country}
+                        </p>
+
+                        <p className="summary-rating2-DD">
+                          Address: {Airline.address}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Rating: ({Airline.rating.toFixed(2)}
+                          <StarIcon />)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="button-div-DD">
+                    <button
+                      className="edit-button2-DD"
+                      disabled={Airline.status === 0}
+                      onClick={() => {
+                        lockAccount(Airline.email);
+                      }}
+                    >
+                      {Airline.status === 0 ? (
+                        <>Account Locked</>
+                      ) : Airline.status === 1 ? (
+                        <>Lock Account</>
+                      ) : Airline.status === 2 ? (
+                        <>Unlock Account</>
+                      ) : (
+                        <></>
+                      )}
+                    </button>
+                  </div>
+                </details>
+              ))
+            ) : (
+              <p>No Airlines Available.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
+
   const GuideContent = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [GuideData, setGuideData] = useState(null);
+    useEffect(() => {
+      const GuideDataRetreival = async () => {
+        setIsLoading(true);
+        fetch("http://localhost:8008/Tourism/getAdminGuides", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log("Guide Data", data.data);
+              setGuideData(data.data);
+              setIsLoading(false);
+            } else {
+              console.log("Data not retreived!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      GuideDataRetreival();
+    }, []);
+    const [openSummary, setOpenSummary] = useState(null);
+    const lockAccount = (email) => {
+      console.log("email:", email);
+      fetch("http://localhost:8008/Tourism/AdminUpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Status Updated");
+          } else {
+            toast.error("Status not updated!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Hello Tour Guides</h2>
+        <h2 className="heading-DD">Guides</h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="feedback-content3-DD">
+            {GuideData && GuideData.length > 0 ? (
+              GuideData.map((Guide) => (
+                <details
+                  className="feedback-details2-DD"
+                  key={Guide.email}
+                  open={openSummary === Guide.email}
+                >
+                  <summary
+                    className="feedback-summary2-DD"
+                    onClick={() => {
+                      setOpenSummary(Guide.email);
+                    }}
+                  >
+                    {Guide.first_name} {Guide.last_name}
+                    <p className="summary-rating-DD">
+                      ({Guide.rating.toFixed(2)}
+                      <StarIcon />)
+                    </p>
+                  </summary>
+                  <div className="feedback-content2-DD">
+                    <div className="hotel-details-DD">
+                      <div className="details2-DD">
+                        <h2 className="flight-details-heading-DD">
+                          Personal Information:
+                        </h2>
+                        <p className="summary-rating2-DD">
+                          First Name: {Guide.first_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Last Name: {Guide.last_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Email: {Guide.email}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Password: {Guide.password}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Phone: {Guide.phone}
+                        </p>
+                        <p className="summary-rating2-DD">City: {Guide.city}</p>
+                        <p className="summary-rating2-DD">
+                          Country: {Guide.country}
+                        </p>
+
+                        <p className="summary-rating2-DD">
+                          Address: {Guide.address}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Price Per Day($): {Guide.price}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Rating: ({Guide.rating.toFixed(2)}
+                          <StarIcon />)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="button-div-DD">
+                    <button
+                      className="edit-button2-DD"
+                      disabled={Guide.status === 0}
+                      onClick={() => {
+                        lockAccount(Guide.email);
+                      }}
+                    >
+                      {Guide.status === 0 ? (
+                        <>Account Locked</>
+                      ) : Guide.status === 1 ? (
+                        <>Lock Account</>
+                      ) : Guide.status === 2 ? (
+                        <>Unlock Account</>
+                      ) : (
+                        <></>
+                      )}
+                    </button>
+                  </div>
+                </details>
+              ))
+            ) : (
+              <p>No Guides Available.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
+
   const RentalContent = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [RentalData, setRentalData] = useState(null);
+    useEffect(() => {
+      const RentalDataRetreival = async () => {
+        setIsLoading(true);
+        fetch("http://localhost:8008/Tourism/getAdminRentals", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log("Rental Data", data.data);
+              setRentalData(data.data);
+              setIsLoading(false);
+            } else {
+              console.log("Data not retreived!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      RentalDataRetreival();
+    }, []);
+    const [openSummary, setOpenSummary] = useState(null);
+    const lockAccount = (email) => {
+      console.log("email:", email);
+      fetch("http://localhost:8008/Tourism/AdminUpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Status Updated");
+          } else {
+            toast.error("Status not updated!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Hello Car Rentals</h2>
+        <h2 className="heading-DD">Rentals</h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="feedback-content3-DD">
+            {RentalData && RentalData.length > 0 ? (
+              RentalData.map((Rental) => (
+                <details
+                  className="feedback-details2-DD"
+                  key={Rental.email}
+                  open={openSummary === Rental.email}
+                >
+                  <summary
+                    className="feedback-summary2-DD"
+                    onClick={() => {
+                      setOpenSummary(Rental.email);
+                    }}
+                  >
+                    {Rental.first_name} {Rental.last_name}
+                    <p className="summary-rating-DD">
+                      ({Rental.rating.toFixed(2)}
+                      <StarIcon />)
+                    </p>
+                  </summary>
+                  <div className="feedback-content2-DD">
+                    <div className="hotel-details-DD">
+                      <div className="details2-DD">
+                        <h2 className="flight-details-heading-DD">
+                          Personal Information:
+                        </h2>
+                        <p className="summary-rating2-DD">
+                          First Name: {Rental.first_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Last Name: {Rental.last_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Email: {Rental.email}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Password: {Rental.password}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Phone: {Rental.phone}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          City: {Rental.city}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Country: {Rental.country}
+                        </p>
+
+                        <p className="summary-rating2-DD">
+                          Address: {Rental.address}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Price Per Day($): {Rental.price}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Rating: ({Rental.rating.toFixed(2)}
+                          <StarIcon />)
+                        </p>
+                        <h2 className="flight-details-heading-DD">
+                          Car Information:
+                        </h2>
+                        <p className="summary-rating2-DD">
+                          Description: {Rental.description}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Capacity: {Rental.capacity}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Plate: {Rental.plate}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="button-div-DD">
+                    <button
+                      className="edit-button2-DD"
+                      disabled={Rental.status === 0}
+                      onClick={() => {
+                        lockAccount(Rental.email);
+                      }}
+                    >
+                      {Rental.status === 0 ? (
+                        <>Account Locked</>
+                      ) : Rental.status === 1 ? (
+                        <>Lock Account</>
+                      ) : Rental.status === 2 ? (
+                        <>Unlock Account</>
+                      ) : (
+                        <></>
+                      )}
+                    </button>
+                  </div>
+                </details>
+              ))
+            ) : (
+              <p>No Rentals Available.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
 
   const TouristContent = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [TouristData, setTouristData] = useState(null);
+    useEffect(() => {
+      const TouristDataRetreival = async () => {
+        setIsLoading(true);
+        fetch("http://localhost:8008/Tourism/getAdminTourists", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              console.log("Tourist Data", data.data);
+              setTouristData(data.data);
+              setIsLoading(false);
+            } else {
+              console.log("Data not retreived!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      TouristDataRetreival();
+    }, []);
+    const [openSummary, setOpenSummary] = useState(null);
+    const lockAccount = (email) => {
+      console.log("email:", email);
+      fetch("http://localhost:8008/Tourism/AdminUpdateAccountStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Status Updated");
+          } else {
+            toast.error("Status not updated!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Hello Tourists</h2>
+        <h2 className="heading-DD">Tourists</h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="feedback-content3-DD">
+            {TouristData && TouristData.length > 0 ? (
+              TouristData.map((Tourist) => (
+                <details
+                  className="feedback-details2-DD"
+                  key={Tourist.email}
+                  open={openSummary === Tourist.email}
+                >
+                  <summary
+                    className="feedback-summary2-DD"
+                    onClick={() => {
+                      setOpenSummary(Tourist.email);
+                    }}
+                  >
+                    {Tourist.first_name} {Tourist.last_name}
+                    <p className="summary-rating-DD">
+                      ({Tourist.rating.toFixed(2)}
+                      <StarIcon />)
+                    </p>
+                  </summary>
+                  <div className="feedback-content2-DD">
+                    <div className="hotel-details-DD">
+                      <div className="details2-DD">
+                        <h2 className="flight-details-heading-DD">
+                          Personal Information:
+                        </h2>
+                        <p className="summary-rating2-DD">
+                          First Name: {Tourist.first_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Last Name: {Tourist.last_name}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Email: {Tourist.email}
+                        </p>
+
+                        <p className="summary-rating2-DD">
+                          Password: {Tourist.password}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Phone: {Tourist.phone}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          City: {Tourist.city}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Country: {Tourist.country}
+                        </p>
+
+                        <p className="summary-rating2-DD">
+                          Address: {Tourist.address}
+                        </p>
+                        <p className="summary-rating2-DD">
+                          Rating: ({Tourist.rating.toFixed(2)}
+                          <StarIcon />)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="button-div-DD">
+                    <button
+                      className="edit-button2-DD"
+                      disabled={Tourist.status === 0}
+                      onClick={() => {
+                        lockAccount(Tourist.email);
+                      }}
+                    >
+                      {Tourist.status === 0 ? (
+                        <>Account Locked</>
+                      ) : Tourist.status === 1 ? (
+                        <>Lock Account</>
+                      ) : Tourist.status === 2 ? (
+                        <>Unlock Account</>
+                      ) : (
+                        <></>
+                      )}
+                    </button>
+                  </div>
+                </details>
+              ))
+            ) : (
+              <p>No Tourists Available.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
+
   const AdminSignUp = () => {
     return (
       <div className="Admin-content-DD">
