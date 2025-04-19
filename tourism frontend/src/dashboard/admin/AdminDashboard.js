@@ -18,7 +18,6 @@ import {
   TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { LockIcon, LockOpenIcon } from "lucide-react";
 import { PersonAddAlt1Outlined } from "@mui/icons-material";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -43,11 +42,7 @@ function AdminDashboard() {
     age: "",
     password: "",
   });
-  useEffect(() => {
-    if (activeCard === "SettingUpdates") {
-      getAccountStatus();
-    }
-  }, [activeCard]);
+
   useEffect(() => {
     const userDataRetreival = async () => {
       fetch("http://localhost:8008/Tourism/UserDataRetreival", {
@@ -169,33 +164,8 @@ function AdminDashboard() {
     },
   }));
 
-  const getAccountStatus = () => {
-    fetch("http://localhost:8008/Tourism/AccountStatusRetreival", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: localStorage.getItem("email") }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.code === 200) {
-          if (data.data[0].status === 0) {
-            setAccountStatus(false);
-          }
-        } else {
-          console.log("Status not retreived!", data.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const [accountStatus, setAccountStatus] = useState(true);
-
   const SettingContent = () => {
     const [error, setError] = useState("");
-    const [updatePrice, setUpdatePrice] = useState(null);
     const [updatedData, setUpdatedData] = useState({
       first_name: "",
       last_name: "",
@@ -253,10 +223,7 @@ function AdminDashboard() {
         setError("Enter a valid age!");
         return;
       }
-      if (updatePrice <= 0) {
-        setError("Enter a valid price!");
-        return;
-      }
+
       if (updatedData.phone === "") {
         setError("Enter a valid phone number!");
         return;
@@ -304,30 +271,6 @@ function AdminDashboard() {
       setEditData(!editData);
     };
 
-    const lockAccount = () => {
-      //lock Account
-      const confirmation = window.confirm("Select 'OK' to confirm");
-      if (confirmation) {
-        fetch("http://localhost:8008/Tourism/UpdateAccountStatus", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: localStorage.getItem("email") }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              setAccountStatus(!accountStatus);
-            } else {
-              console.log("Status not updated!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    };
     const [error2, setError2] = useState(null);
     const deleteAccountAPI = () => {
       fetch("http://localhost:8008/Tourism/DeleteUser", {
@@ -459,16 +402,7 @@ function AdminDashboard() {
             >
               Age
             </TextField>
-            <TextField
-              type="number"
-              className="seats-input2-DD"
-              label="Price Per Day($)"
-              value={updatePrice}
-              onChange={(e) => setUpdatePrice(e.target.value)}
-              required
-            >
-              Price Per Day($)
-            </TextField>
+
             <TextField
               type="tel"
               className="seats-input2-DD"
@@ -613,22 +547,6 @@ function AdminDashboard() {
         </div>
         <div className="setting-container-DD">
           <AdminButton
-            onClick={lockAccount}
-            sx={{
-              gap: "0.7vw",
-            }}
-          >
-            {accountStatus ? (
-              <>
-                <LockIcon /> Lock Account
-              </>
-            ) : (
-              <>
-                <LockOpenIcon /> Unlock Account
-              </>
-            )}
-          </AdminButton>
-          <AdminButton
             sx={{
               "&:hover": {
                 color: "red !important",
@@ -645,19 +563,6 @@ function AdminDashboard() {
         <div className="setting-container-DD">
           {error2 && <p className="error-message2-DD">{error2}</p>}
         </div>
-        {accountStatus ? (
-          <p className="locking-account-message-DD">
-            <LockIcon />
-            Locking Account will NOT show your Profile to the Tourists for
-            reservations
-          </p>
-        ) : (
-          <p className="locking-account-message-DD">
-            <LockOpenIcon />
-            Unlocking Account will show your Profile to the Tourists for
-            reservations
-          </p>
-        )}
       </div>
     );
   };
@@ -1401,9 +1306,284 @@ function AdminDashboard() {
   };
 
   const AdminSignUp = () => {
+    const [error, setError] = useState("");
+    const [formData, setFormData] = useState({
+      first_name: "",
+      last_name: "",
+      age: "",
+      phone: "",
+      email: "",
+      address: "",
+      password: "",
+      role_ID: 5,
+    });
+    const signUpAdmin = () => {
+      console.log("Hello", formData);
+      fetch("http://localhost:8008/Tourism/insertUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          country: selectedCountryName,
+          city: selectedCity,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            toast.success("Sign Up Complete!");
+          } else {
+            toast.error("Sign Up Failed!");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    const [cities, setCities] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [selectedCountryName, setSelectedCountryName] = useState("");
+
+    const signUp = (e) => {
+      e.preventDefault();
+
+      if (formData.first_name === "") {
+        setError("Enter a valid first name!");
+        return;
+      }
+      if (formData.last_name === "") {
+        setError("Enter a valid last name!");
+        return;
+      }
+      if (formData.age < 18 || formData.age > 150) {
+        setError("Enter a valid age!");
+        return;
+      }
+
+      if (formData.phone === "") {
+        setError("Enter a valid phone number!");
+        return;
+      }
+      if (formData.email === "") {
+        setError("Enter a valid Email!");
+        return;
+      }
+      if (selectedCountryName === "") {
+        setError("Select a valid country!");
+        return;
+      }
+      if (selectedCity === "") {
+        setError("Select a valid city!");
+        return;
+      }
+      if (formData.address === "") {
+        setError("Enter a valid address!");
+        return;
+      }
+      if (formData.password === "") {
+        setError("Enter a valid password!");
+        return;
+      }
+      if (formData.password !== confPassword) {
+        setError("Passwords do not match!");
+        return;
+      }
+
+      setError("");
+      console.log("Form-Data", formData);
+      signUpAdmin();
+    };
+    const [confPassword, setConfPassword] = useState("");
+    const handleCountryChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      const countryIsoCode = event.target.value;
+      setSelectedCountry(countryIsoCode);
+      setSelectedCountryName(Country.getCountryByCode(countryIsoCode).name);
+      setSelectedCity(""); // Reset city when the country changes
+
+      // Fetch cities for the selected country
+      if (countryIsoCode) {
+        const countryCities = City.getCitiesOfCountry(countryIsoCode);
+        setCities(countryCities);
+      } else {
+        setCities([]); // Reset cities if no country is selected
+      }
+    };
+    // Handle city selection
+    const handleCityChange = (event) => {
+      event.preventDefault();
+      if (event.target.value === "") {
+        return;
+      }
+      setSelectedCity(event.target.value);
+    };
+    const handleUpdatedDataInputChange = (event, field) => {
+      setFormData((prevData) => ({
+        ...prevData,
+        [field]: event.target.value,
+      }));
+    };
     return (
-      <div className="Admin-content-DD">
-        <h2 className="heading-DD">Admin Sign Up</h2>
+      <div>
+        <div className="Admin-content-DD">
+          <h2 className="heading-DD">Admin Sign Up</h2>
+        </div>
+        <div className="edit-input-container-DD">
+          <TextField
+            type="text"
+            className="seats-input2-DD"
+            label="First Name"
+            value={formData.first_name}
+            onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
+            required
+          >
+            First Name
+          </TextField>
+          <TextField
+            type="text"
+            className="seats-input2-DD"
+            label="Last Name"
+            value={formData.last_name}
+            onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
+            required
+          >
+            Last Name
+          </TextField>
+
+          <TextField
+            type="text"
+            className="seats-input2-DD"
+            label="Email"
+            value={formData.email}
+            onChange={(e) => handleUpdatedDataInputChange(e, "email")}
+            required
+          >
+            Email
+          </TextField>
+
+          <TextField
+            type="number"
+            className="seats-input2-DD"
+            label="Age(18-150)"
+            value={formData.age}
+            onChange={(e) => handleUpdatedDataInputChange(e, "age")}
+            required
+          >
+            Age
+          </TextField>
+
+          <TextField
+            type="tel"
+            className="seats-input2-DD"
+            label="Phone"
+            value={formData.phone}
+            onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
+            required
+          >
+            Phone
+          </TextField>
+          <InputLabel id="country-label">Select Country</InputLabel>
+          <Select
+            required
+            labelId="country-label"
+            id="country"
+            size="small"
+            className="seats-input2-DD"
+            value={selectedCountry}
+            label="Select Country"
+            sx={{
+              marginBottom: "2.5vh",
+              paddingTop: "4vh !important",
+              paddingBottom: "4vh !important",
+              height: " 3vh !important",
+              width: "26% !important",
+            }}
+            fullWidth
+            onChange={handleCountryChange}
+          >
+            <MenuItem value="">Select Country</MenuItem>
+            {Country.getAllCountries().map((country) => (
+              <MenuItem key={country.isoCode} value={country.isoCode}>
+                {country.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <InputLabel id="city-label">Select City</InputLabel>
+
+          <Select
+            required
+            labelId="city-label"
+            id="city"
+            className="seats-input2-DD"
+            disabled={!selectedCountry}
+            fullWidth
+            value={selectedCity}
+            label="Select City"
+            size="small"
+            sx={{
+              marginBottom: "2.5vh",
+              paddingTop: "4vh !important",
+              paddingBottom: "4vh !important",
+              height: " 3vh !important",
+              width: "26% !important",
+            }}
+            onChange={handleCityChange}
+          >
+            <MenuItem value="">Select City</MenuItem>
+            {cities.map((city) => (
+              <MenuItem key={city.name} value={city.name}>
+                {city.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <TextField
+            type="text"
+            className="seats-input2-DD"
+            label="Complete Address"
+            value={formData.address}
+            onChange={(e) => handleUpdatedDataInputChange(e, "address")}
+            required
+          >
+            Address
+          </TextField>
+          <TextField
+            type="password"
+            className="seats-input2-DD"
+            label="Enter Password"
+            value={formData.password}
+            onChange={(e) => handleUpdatedDataInputChange(e, "password")}
+            required
+          >
+            Password
+          </TextField>
+          <TextField
+            type="password"
+            className="seats-input2-DD"
+            label="Confirm Password"
+            value={confPassword}
+            onChange={(e) => setConfPassword(e.target.value)}
+            required
+          >
+            Confirm Password
+          </TextField>
+          <button
+            className="edit-button2-DD"
+            onClick={(e) => {
+              signUp(e);
+            }}
+          >
+            Sign Up
+          </button>
+          {error && <p className="error-message-DD">{error}</p>}
+        </div>
       </div>
     );
   };

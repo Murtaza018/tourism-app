@@ -37,6 +37,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("activeCard", "Home");
             localStorage.setItem("email", data.data[0].email);
             navigate("/TouristDashboard");
           } else {
@@ -119,6 +120,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("activeCard", "Home");
             navigate("/HotelDashboard");
           } else {
             setError("Incorrect Password!");
@@ -200,6 +202,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("activeCard", "Home");
             localStorage.setItem("email", data.data[0].email);
             navigate("/GuideDashboard");
           } else {
@@ -282,6 +285,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("activeCard", "Home");
             navigate("/AirlineDashboard");
           } else {
             setError("Incorrect Password!");
@@ -363,6 +367,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("activeCard", "Home");
             localStorage.setItem("email", data.data[0].email);
 
             navigate("/RentalDashboard");
@@ -446,6 +451,7 @@ function SignIn() {
           ) {
             localStorage.setItem("loggedIn", true);
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
+            localStorage.setItem("activeCard", "Home");
             localStorage.setItem("email", data.data[0].email);
 
             navigate("/AdminDashboard");
