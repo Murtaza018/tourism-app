@@ -20,7 +20,7 @@ const UserCheckTable = async () => {
 const signInUser = async (req, res) => {
   await UserCheckTable();
   pool.query(
-    `select * from user where email = ?;`,
+    `select u.*,a.status from user u join accountStatus a on u.email=a.email where u.email = ?;`,
     [req.body.email],
     (err, results) => {
       if (results.length > 0) {

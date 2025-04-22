@@ -9,6 +9,7 @@ import BedIcon from "@mui/icons-material/Bed";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Aurora from "../../components/Aurora";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -100,24 +101,6 @@ function HotelDashboard() {
   };
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-HD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
 
   const OpenAddRoomCard = () => {
     setAddRoomCard(true);
@@ -322,7 +305,7 @@ function HotelDashboard() {
           <strong>Address:</strong> {address}
         </p>
         <p className="data-HD">
-          <strong>Password:</strong> {password}
+          <strong>Password:</strong> {"*".repeat(password.length)}
         </p>
       </div>
     );
@@ -1360,7 +1343,13 @@ function HotelDashboard() {
         return null;
     }
   };
-
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-HD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-HD");
+    menu.classList.toggle("open-HD");
+    hamburgerIcon.classList.toggle("open-HD");
+    setIsOpen(!isOpen);
+  }
   return (
     <div>
       <div className="background-HD"></div>

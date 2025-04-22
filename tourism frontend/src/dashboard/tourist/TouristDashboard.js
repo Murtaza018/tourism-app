@@ -100,23 +100,7 @@ function TouristDashboard() {
         console.log(err);
       });
   }, []);
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-TD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
   const logOut = () => {
     localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("email");
@@ -3051,6 +3035,13 @@ function TouristDashboard() {
       </Suspense>
     ) : null;
   };
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-TD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-TD");
+    menu.classList.toggle("open-TD");
+    hamburgerIcon.classList.toggle("open-TD");
+    setIsOpen(!isOpen);
+  }
   return (
     <div>
       <div className="background-TD">
@@ -3076,7 +3067,7 @@ function TouristDashboard() {
             ></span>
           </button>
 
-          <nav className={`menu-TD ${isOpen ? "open-TD" : ""}`}>
+          <nav className={`menu-TD `}>
             <ul>
               <li>
                 <button

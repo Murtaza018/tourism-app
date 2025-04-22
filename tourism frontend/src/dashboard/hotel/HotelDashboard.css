@@ -58,7 +58,7 @@
 .menu-HD {
   width: 250px;
   height: 100%;
-  background-color: rgba(240, 230, 140, 0.8);
+  background-color: rgba(240, 230, 140, 0.9);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 20;
@@ -76,10 +76,13 @@
   list-style: none;
   padding: 50px 20px;
   margin: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .menu-HD li {
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
 .button-HD {
@@ -101,9 +104,11 @@
 }
 
 .content-HD {
-  padding: 20px;
+  padding: 5px 5px 5px 20px;
   transition: margin-left 0.3s ease;
   flex-grow: 1;
+
+  overflow: auto;
 }
 
 body.menu-open-HD {
@@ -113,23 +118,28 @@ body.menu-open-HD {
 .background-HD {
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url("https://www.uniqhotels.com/media/current_blog/5._Urban_Hotel_Los_Angeles.jpg");
+  background-position: center center;
+  background-image: url("https://southcarolina.usmc-mccs.org/modules/media/t/91fb2e33e41145dfb3b155a03fb6fcea_v1.jpeg?m=638298216333830000");
   min-height: 100vh;
+  height: 100vh;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: -1;
+  filter: brightness(0.5);
 }
 
 .details-HD {
-  background-color: rgba(240, 230, 140, 0.8);
+  background-color: rgba(240, 230, 140, 0.9);
   border: 1px solid #ccebff;
   border-radius: 8px;
   padding: 50px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  overflow: hidden;
+
+  overflow: auto;
+
+  backdrop-filter: blur(2px);
 }
 
 .details-HD .data-HD {
@@ -138,11 +148,13 @@ body.menu-open-HD {
   font-size: 16px;
   color: #343a40;
   transition: transform 0.2s ease;
+  overflow: hidden !important;
 }
 
 .details-HD .data-HD strong {
   font-weight: 600;
   margin-right: 5px;
+  overflow: hidden !important;
 }
 
 @media (max-width: 768px) {
@@ -152,6 +164,10 @@ body.menu-open-HD {
 
   .details-HD .data-HD {
     font-size: 14px;
+    overflow: hidden !important;
+  }
+  .main-container-HD {
+    padding-left: 0px;
   }
 }
 .data-HD:hover {

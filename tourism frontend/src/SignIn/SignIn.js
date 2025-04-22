@@ -2,6 +2,7 @@ import { Card, Button } from "@mui/material";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
+import toast, { Toaster } from "react-hot-toast";
 
 // Sign in page
 function SignIn() {
@@ -31,7 +32,9 @@ function SignIn() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          if (
+          if (data.data[0].status && data.data[0].status === 2) {
+            toast.error("Account locked by Admin!");
+          } else if (
             data.data[0].password &&
             data.data[0].password === touristData.current.password
           ) {
@@ -41,10 +44,10 @@ function SignIn() {
             localStorage.setItem("email", data.data[0].email);
             navigate("/TouristDashboard");
           } else {
-            setError("Incorrect Password!");
+            toast.error("Incorrect Password!");
           }
         } else {
-          setError("Email does not exist!");
+          toast.error("Email does not exist!");
         }
       })
       .catch((err) => {
@@ -114,19 +117,22 @@ function SignIn() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          if (
+          if (data.data[0].status && data.data[0].status === 2) {
+            toast.error("Account locked by Admin!");
+          } else if (
             data.data[0].password &&
             data.data[0].password === HotelData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("activeCard", "Home");
+            localStorage.setItem("email", data.data[0].email);
             navigate("/HotelDashboard");
           } else {
-            setError("Incorrect Password!");
+            toast.error("Incorrect Password!");
           }
         } else {
-          setError("Email does not exist!");
+          toast.error("Email does not exist!");
         }
       })
       .catch((err) => {
@@ -196,7 +202,9 @@ function SignIn() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          if (
+          if (data.data[0].status && data.data[0].status === 2) {
+            toast.error("Account locked by Admin!");
+          } else if (
             data.data[0].password &&
             data.data[0].password === GuideData.current.password
           ) {
@@ -206,10 +214,10 @@ function SignIn() {
             localStorage.setItem("email", data.data[0].email);
             navigate("/GuideDashboard");
           } else {
-            setError("Incorrect Password!");
+            toast.error("Incorrect Password!");
           }
         } else {
-          setError("Email does not exist!");
+          toast.error("Email does not exist!");
         }
       })
       .catch((err) => {
@@ -279,19 +287,22 @@ function SignIn() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          if (
+          if (data.data[0].status && data.data[0].status === 2) {
+            toast.error("Account locked by Admin!");
+          } else if (
             data.data[0].password &&
             data.data[0].password === AirlineData.current.password
           ) {
             localStorage.setItem("loggedIn", true);
-            localStorage.setItem("email", data.data[0].email);
+            localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("activeCard", "Home");
+            localStorage.setItem("email", data.data[0].email);
             navigate("/AirlineDashboard");
           } else {
-            setError("Incorrect Password!");
+            toast.error("Incorrect Password!");
           }
         } else {
-          setError("Email does not exist!");
+          toast.error("Email does not exist!");
         }
       })
       .catch((err) => {
@@ -361,7 +372,9 @@ function SignIn() {
       .then((data) => {
         if (data.code === 200) {
           console.log(data.data);
-          if (
+          if (data.data[0].status && data.data[0].status === 2) {
+            toast.error("Account locked by Admin!");
+          } else if (
             data.data[0].password &&
             data.data[0].password === RentalData.current.password
           ) {
@@ -369,13 +382,12 @@ function SignIn() {
             localStorage.setItem("user_data", JSON.stringify(data.data[0]));
             localStorage.setItem("activeCard", "Home");
             localStorage.setItem("email", data.data[0].email);
-
             navigate("/RentalDashboard");
           } else {
-            setError("Incorrect Password!");
+            toast.error("Incorrect Password!");
           }
         } else {
-          setError("Email does not exist!");
+          toast.error("Email does not exist!");
         }
       })
       .catch((err) => {
@@ -532,52 +544,58 @@ function SignIn() {
   };
 
   return (
-    <div className="back2-signin">
-      <Card className="card-signin">
-        <div className="heading-signin">Sign In</div>
-        <div className="button-container-signin">
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("TouristCard")}
-          >
-            Tourist
-          </Button>
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("HotelCard")}
-          >
-            Hotel Management
-          </Button>
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("AirlineCard")}
-          >
-            Airline Company
-          </Button>
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("GuideCard")}
-          >
-            Tour Guide
-          </Button>
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("RentalCard")}
-          >
-            Car Rental
-          </Button>
-          <Button
-            className="button-signin"
-            onClick={() => setActiveCard("AdminCard")}
-          >
-            Admin
-          </Button>
-          <Button className="button-signin" onClick={() => navigate("/signup")}>
-            Sign Up
-          </Button>
-        </div>
-      </Card>
-      <div>{renderCardContent()}</div>
+    <div>
+      <Toaster />
+      <div className="back2-signin">
+        <Card className="card-signin">
+          <div className="heading-signin">Sign In</div>
+          <div className="button-container-signin">
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("TouristCard")}
+            >
+              Tourist
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("HotelCard")}
+            >
+              Hotel Management
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("AirlineCard")}
+            >
+              Airline Company
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("GuideCard")}
+            >
+              Tour Guide
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("RentalCard")}
+            >
+              Car Rental
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => setActiveCard("AdminCard")}
+            >
+              Admin
+            </Button>
+            <Button
+              className="button-signin"
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </Card>
+        <div>{renderCardContent()}</div>
+      </div>
     </div>
   );
 }
