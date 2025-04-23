@@ -148,15 +148,25 @@ body.menu-open-HD {
   font-size: 16px;
   color: #343a40;
   transition: transform 0.2s ease;
-  overflow: hidden !important;
 }
 
 .details-HD .data-HD strong {
   font-weight: 600;
   margin-right: 5px;
-  overflow: hidden !important;
 }
-
+.data-HD:hover {
+  transform: scale(1.2);
+}
+.home-content-div-HD {
+  overflow: hidden;
+}
+.setting-content-div-HD {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 @media (max-width: 768px) {
   .details-HD {
     padding: 15px;
@@ -164,15 +174,12 @@ body.menu-open-HD {
 
   .details-HD .data-HD {
     font-size: 14px;
-    overflow: hidden !important;
   }
   .main-container-HD {
     padding-left: 0px;
   }
 }
-.data-HD:hover {
-  transform: scale(1.4);
-}
+
 .details-HD:hover {
   box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -273,15 +280,17 @@ body.menu-open-HD {
 .form-input-HD {
   display: block;
   margin: 10px auto;
-  padding: 10px;
-  width: 48%;
+  padding: 10px 0px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  width: 35%;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   margin-bottom: 20px;
 }
 .input-menu-HD {
-  width: 51%;
+  width: 35%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
@@ -293,6 +302,37 @@ body.menu-open-HD {
 }
 
 .input-menu-HD:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+.form-input2-HD {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 0px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 0px 50px 20px 50px;
+}
+.input-menu2-HD {
+  width: 70%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+
+  margin: 0px 50px 20px 50px;
+}
+
+.input-menu2-HD:focus {
   outline: none;
   border-color: #007bff;
   background-color: #fff;

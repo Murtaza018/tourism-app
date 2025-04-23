@@ -226,48 +226,50 @@ function HotelDashboard() {
           ✕
         </button>
         <h2 className="heading-HD">Add New Room</h2>
-        <select className="input-menu-HD" value={type} onChange={TypeChange}>
-          {roomType.map((option) => (
-            <option
-              className="select-menu-option-HD"
-              key={option.value}
-              value={option.value}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <select
-          className="input-menu-HD"
-          value={status}
-          onChange={StatusChange}
-        >
-          {statusType.map((option) => (
-            <option
-              className="select-menu-option-HD"
-              key={option.value}
-              value={option.value}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          placeholder="Price per night ($)"
-          ref={priceRef}
-          className="form-input-HD"
-          defaultValue={roomData.current.price}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Number of persons"
-          ref={quantityRef}
-          className="form-input-HD"
-          defaultValue={roomData.current.quantity}
-          required
-        />
+        <div className="setting-content-div-HD">
+          <select className="input-menu2-HD" value={type} onChange={TypeChange}>
+            {roomType.map((option) => (
+              <option
+                className="select-menu-option-HD"
+                key={option.value}
+                value={option.value}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <select
+            className="input-menu2-HD"
+            value={status}
+            onChange={StatusChange}
+          >
+            {statusType.map((option) => (
+              <option
+                className="select-menu-option-HD"
+                key={option.value}
+                value={option.value}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            placeholder="Price per night ($)"
+            ref={priceRef}
+            className="form-input2-HD"
+            defaultValue={roomData.current.price}
+            required
+          />
+          <input
+            type="number"
+            placeholder="Number of persons"
+            ref={quantityRef}
+            className="form-input2-HD"
+            defaultValue={roomData.current.quantity}
+            required
+          />
+        </div>
         {error && <p className="error-message-HD">{error}</p>}
 
         <button type="submit" className="form-button-HD" onClick={addRoomData}>
@@ -278,7 +280,7 @@ function HotelDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div>
+      <div className="home-content-div-HD">
         <h2 className="heading-HD">Details</h2>
         <p className="data-HD">
           <strong>First Name:</strong> {firstName}
@@ -619,6 +621,7 @@ function HotelDashboard() {
       .then((response) => response.json())
       .then((data) => {
         if (data.code === 200) {
+          console.log(data.data);
           setDisplayReservationData(data.data);
         } else {
           console.log("Error to fetch data!", data.data);
@@ -1157,7 +1160,7 @@ function HotelDashboard() {
       <div>
         <h2 className="heading-HD">Settings</h2>
         {editData === true ? (
-          <div>
+          <div className="setting-content-div-HD">
             <input
               type="text"
               placeholder="First Name"
@@ -1260,7 +1263,7 @@ function HotelDashboard() {
             {error && <p className="error-message">{error}</p>}
           </div>
         ) : (
-          <div>
+          <div className="home-content-div-HD">
             <p className="data-HD">
               <strong>First Name:</strong> {firstName}
             </p>
