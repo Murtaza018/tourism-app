@@ -9,7 +9,13 @@ import BedIcon from "@mui/icons-material/Bed";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Aurora from "../../components/Aurora";
+import StarIcon from "@mui/icons-material/Star";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
+import { StarOutline } from "@mui/icons-material";
+
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import { Button, Dialog, TextField } from "@mui/material";
+import toast, { Toaster } from "react-hot-toast";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -666,6 +672,8 @@ function HotelDashboard() {
       getRoomData();
     } else if (activeCard === "ReservationUpdates") {
       getReservationData();
+    } else if (activeCard === "Feedback") {
+      getFeedbackData();
     }
   }, [activeCard]);
   const filteredReservations = displayReservationData.filter((reserv) => {
@@ -794,7 +802,160 @@ function HotelDashboard() {
       window.location.reload();
     }
   };
+
   const ReservationContent = () => {
+    const handleCloseFeedbackCard = () => {
+      setError("");
+      setReceiver("");
+      setOpenFeedbackCard(false);
+    };
+    const FeedbackCard = ({ open, onClose }) => {
+      const SubmitFeedback = () => {
+        console.log("jhggjhgj");
+        fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+            t_email: receiver.tourist_email,
+            desc: feedbackDescription,
+            rate: rating,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              toast.success("Feedback Submitted!");
+              handleCloseFeedbackCard();
+            } else {
+              toast.error("Feedback did not Submit!");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [feedbackDescription, setFeedbackDescription] = useState("");
+      const [rating, setRating] = useState(0);
+
+      const handleStarClick = (value) => {
+        setRating(value);
+      };
+
+      const handleStarHover = (value) => {
+        highlightStars(value);
+      };
+
+      const handleStarMouseOut = () => {
+        highlightStars(rating);
+      };
+
+      const highlightStars = (value) => {
+        const stars = document.querySelectorAll(".star-GD");
+        stars.forEach((star) => {
+          const starValue = parseFloat(star.dataset.value);
+          if (starValue <= value) {
+            star.classList.add("selected");
+          } else {
+            star.classList.remove("selected");
+          }
+        });
+      };
+
+      const stars = [];
+      for (let i = 0; i <= 5; i += 0.5) {
+        stars.push(
+          <span
+            key={i}
+            className="star-GD"
+            data-value={i}
+            onClick={() => handleStarClick(i)}
+            onMouseOver={() => handleStarHover(i)}
+            onMouseOut={() => handleStarMouseOut()}
+          >
+            <StarIcon sx={{ fontSize: "2.2rem !important" }} />
+          </span>
+        );
+      }
+
+      return (
+        <Dialog open={open} onClose={onClose} className="feedback-dialog-GD">
+          <div className="dialog-content-GD">
+            <h1 className="heading-GD">
+              <strong>Feedback</strong>
+            </h1>
+            <div className="rating-GD">
+              <div className="star-container-GD">
+                {stars}
+                <p>Rating: {rating}</p>
+              </div>
+            </div>
+            <TextField
+              label="Receiver Name"
+              value={receiver.first_name}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
+            />
+
+            <TextField
+              label="Sender Email"
+              value={localStorage.getItem("email")}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
+            />
+
+            <div className="feedback-input-container-GD">
+              <TextField
+                type="text"
+                label="Feedback Description"
+                inputProps={{ maxLength: 500, className: "expanding-input-GD" }}
+                multiline
+                required
+                maxRows={4}
+                onChange={(e) => setFeedbackDescription(e.target.value)}
+                className="dialog-field-GD feedback-input-GD"
+              />
+              <p className="char-count-GD">{feedbackDescription.length}/500</p>
+            </div>
+
+            <Button className="submit-button-GD" onClick={SubmitFeedback}>
+              Submit
+            </Button>
+          </div>
+        </Dialog>
+      );
+    };
+    const [feedbackButton, setFeedbackButton] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
+    const [receiver, setReceiver] = useState([]);
+    const handleClickOpenFeedbackCard = (feedbackData) => {
+      setReceiver(feedbackData);
+      setError("");
+      setOpenFeedbackCard(true);
+    };
+    const handleFeedbackButton = () => {
+      setFeedbackButton(!feedbackButton);
+      if (selectedFilter !== "completed") {
+        setSelectedFilter("completed");
+      } else {
+        setSelectedFilter(null);
+      }
+      if (reservEditboxes) {
+        setReserveEditboxes(false);
+      }
+      if (reservEditId) {
+        setReservEditId(null);
+      }
+    };
+    const filteredReservations = displayReservationData.filter((reserv) => {
+      if (!selectedFilter) {
+        return true; // Show all if no filter is selected
+      }
+      return reserv.status.toLowerCase() === selectedFilter;
+    });
     return (
       <div>
         <div className="room-content-HD">
@@ -808,6 +969,9 @@ function HotelDashboard() {
             </button>
             <button className="res-option-HD" onClick={handleCompletedButton}>
               {completedButton ? "Cancel Completed" : "Completed"}
+            </button>
+            <button className="res-option-HD" onClick={handleFeedbackButton}>
+              {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
             </button>
             <button
               className="res-option-HD"
@@ -841,6 +1005,9 @@ function HotelDashboard() {
                       <th className="table-header-HD">Reservation Status</th>
                       {reservEditboxes && (
                         <th className="table-header-HD">Edit</th>
+                      )}
+                      {feedbackButton && (
+                        <th className="table-header-GD">Feedback</th>
                       )}
                     </tr>
                   </thead>
@@ -933,6 +1100,18 @@ function HotelDashboard() {
                                 </button>
                               </td>
                             )}
+                            {feedbackButton && (
+                              <td>
+                                <button
+                                  className="feedback-button-GD"
+                                  onClick={() =>
+                                    handleClickOpenFeedbackCard(reserv)
+                                  }
+                                >
+                                  Feedback
+                                </button>
+                              </td>
+                            )}
                           </>
                         )}
                       </tr>
@@ -954,6 +1133,10 @@ function HotelDashboard() {
             )}
           </div>
         </div>
+        <FeedbackCard
+          open={openFeedbackCard}
+          onClose={handleCloseFeedbackCard}
+        />
       </div>
     );
   };
@@ -1167,6 +1350,93 @@ function HotelDashboard() {
         });
     }
   };
+  const [displayFeedbackData, setDisplayFeedbackData] = useState([]);
+  const getFeedbackData = () => {
+    fetch("http://localhost:8008/Tourism/getFeedbackData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: localStorage.getItem("email") }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log(data.data);
+          setDisplayFeedbackData(data.data);
+        } else {
+          console.log("Error to fetch data!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const StarRating = ({ rating }) => {
+    return (
+      <div className="star-rating-AD">
+        {[...Array(5)].map((_, index) => {
+          const fullStars = Math.floor(rating);
+          const hasHalfStar = rating % 1 >= 0.5;
+          const starType =
+            index < fullStars
+              ? "full"
+              : index === fullStars && hasHalfStar
+              ? "half"
+              : "empty";
+
+          return (
+            <span key={index} className={`star ${starType}`}>
+              {starType === "full" ? (
+                <StarIcon />
+              ) : starType === "half" ? (
+                <StarHalfIcon />
+              ) : (
+                <StarOutline />
+              )}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const FeedbackContent = () => {
+    return (
+      <div>
+        <div className="flight-content-AD">
+          <h1 className="heading-room-HD">Feedback</h1>
+          {displayFeedbackData.length > 0 ? (
+            <>
+              {displayFeedbackData.map((reserv) => (
+                <details
+                  className="feedback-details-AD"
+                  key={reserv.feedback_id}
+                >
+                  <summary className="feedback-summary-AD">
+                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
+                    )
+                  </summary>
+                  <div className="feedback-content-AD">
+                    <div className="feedback-rating-AD">
+                      Rating: <StarRating rating={reserv.rating} />
+                    </div>
+
+                    <p className="feedback-text-AD">
+                      Description:&nbsp;
+                      {reserv.description}
+                    </p>
+                  </div>
+                </details>
+              ))}
+            </>
+          ) : (
+            <p className="no-data-message-AD">No feedback available.</p>
+          )}
+        </div>
+      </div>
+    );
+  };
   const SettingContent = () => {
     return (
       <div>
@@ -1352,6 +1622,8 @@ function HotelDashboard() {
         return <RoomContent />;
       case "ReservationUpdates":
         return <ReservationContent />;
+      case "Feedback":
+        return <FeedbackContent />;
       case "SettingUpdates":
         return <SettingContent />;
       default:
@@ -1367,6 +1639,7 @@ function HotelDashboard() {
   }
   return (
     <div>
+      <Toaster />
       <div className="background-HD"></div>
       <div className="main-container-HD">
         <div className="hamburger-menu-HD">
@@ -1390,7 +1663,10 @@ function HotelDashboard() {
               <li>
                 <button
                   className="button-HD"
-                  onClick={() => setActiveCard("Home")}
+                  onClick={() => {
+                    setActiveCard("Home");
+                    localStorage.setItem("activeCard", "Home");
+                  }}
                 >
                   <HomeIcon />
                   Home
@@ -1399,7 +1675,10 @@ function HotelDashboard() {
               <li>
                 <button
                   className="button-HD"
-                  onClick={() => setActiveCard("RoomUpdates")}
+                  onClick={() => {
+                    setActiveCard("RoomUpdates");
+                    localStorage.setItem("activeCard", "RoomUpdates");
+                  }}
                 >
                   <BedIcon />
                   Rooms
@@ -1408,7 +1687,10 @@ function HotelDashboard() {
               <li>
                 <button
                   className="button-HD"
-                  onClick={() => setActiveCard("ReservationUpdates")}
+                  onClick={() => {
+                    setActiveCard("ReservationUpdates");
+                    localStorage.setItem("activeCard", "ReservationUpdates");
+                  }}
                 >
                   <CalendarMonthIcon />
                   Reservations
@@ -1417,7 +1699,22 @@ function HotelDashboard() {
               <li>
                 <button
                   className="button-HD"
-                  onClick={() => setActiveCard("SettingUpdates")}
+                  onClick={() => {
+                    setActiveCard("Feedback");
+                    localStorage.setItem("activeCard", "Feedback");
+                  }}
+                >
+                  <FeedbackIcon />
+                  Feedback
+                </button>
+              </li>
+              <li>
+                <button
+                  className="button-HD"
+                  onClick={() => {
+                    setActiveCard("SettingUpdates");
+                    localStorage.setItem("activeCard", "SettingUpdates");
+                  }}
                 >
                   <SettingsIcon />
                   Settings

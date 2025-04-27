@@ -491,7 +491,7 @@ body.menu-open-HD {
 }
 
 .res-option-HD:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .res-option-HD:hover:nth-child(1) {
@@ -512,6 +512,10 @@ body.menu-open-HD {
   border-color: purple;
 }
 .res-option-HD:hover:nth-child(5) {
+  color: orange;
+  border-color: orange;
+}
+.res-option-HD:hover:nth-child(6) {
   color: red;
   border-color: red;
 }

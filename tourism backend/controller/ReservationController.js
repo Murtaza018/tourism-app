@@ -18,7 +18,7 @@ const getReservationData = async (req, res) => {
   await ReservationCheckTable();
   console.log(req.body);
   pool.query(
-    `select res.reservation_id,res.status,res.start_date,res.end_date,r.type,u.first_name,u.phone from reservation res join room r on res.room_id=r.room_id join user u on res.tourist_email=u.email where res.hotel_email = ?;`,
+    `select res.tourist_email,res.reservation_id,res.status,res.start_date,res.end_date,r.type,u.first_name,u.phone from reservation res join room r on res.room_id=r.room_id join user u on res.tourist_email=u.email where res.hotel_email = ?;`,
     [req.body.email],
     (err, results) => {
       if (err) {
