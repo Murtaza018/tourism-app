@@ -834,6 +834,10 @@ function HotelDashboard() {
                       <th className="table-header-HD">Room Type</th>
                       <th className="table-header-HD">Guest Name</th>
                       <th className="table-header-HD">Guest Phone Number</th>
+                      <th className="table-header-HD">
+                        Start Date (YYYY-MM-DD)
+                      </th>
+                      <th className="table-header-HD">End Date (YYYY-MM-DD)</th>
                       <th className="table-header-HD">Reservation Status</th>
                       {reservEditboxes && (
                         <th className="table-header-HD">Edit</th>
@@ -865,6 +869,10 @@ function HotelDashboard() {
                               {reserv.first_name}
                             </td>
                             <td className="table-cell-HD">{reserv.phone}</td>
+                            <td className="table-cell-HD">
+                              {reserv.start_date}
+                            </td>
+                            <td className="table-cell-HD">{reserv.end_date}</td>
                             <td>
                               <select
                                 className="select-editroom-HD"
@@ -910,6 +918,10 @@ function HotelDashboard() {
                               {reserv.first_name}
                             </td>
                             <td className="table-cell-HD">{reserv.phone}</td>
+                            <td className="table-cell-HD">
+                              {reserv.start_date}
+                            </td>
+                            <td className="table-cell-HD">{reserv.end_date}</td>
                             <td className="table-cell-HD">{reserv.status}</td>
                             {reservEditboxes && (
                               <td>

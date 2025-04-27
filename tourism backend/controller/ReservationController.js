@@ -31,17 +31,15 @@ const getReservationData = async (req, res) => {
         const parsedReservations = results.map((reservation) => ({
           ...reservation,
           start_date: reservation.start_date
-            ? typeof reservation.start_date === "string" &&
-              reservation.start_date.includes("T")
-              ? reservation.start_date
+            ? typeof reservation.start_date === "string"
+              ? reservation.start_date // Already in YYYY-MM-DD format
               : reservation.start_date instanceof Date
               ? reservation.start_date.toISOString().split("T")[0]
               : null
             : null,
           end_date: reservation.end_date
-            ? typeof reservation.end_date === "string" &&
-              reservation.end_date.includes("T")
-              ? reservation.end_date
+            ? typeof reservation.end_date === "string"
+              ? reservation.end_date // Already in YYYY-MM-DD format
               : reservation.end_date instanceof Date
               ? reservation.end_date.toISOString().split("T")[0]
               : null
