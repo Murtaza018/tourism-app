@@ -540,3 +540,32 @@ body.menu-open-HD {
   align-items: center;
   gap: 5px;
 }
+/* Styling for the rating header */
+.heading-room-rating-HD {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Style for the star icon */
+.heading-room-rating-HD svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffc107; /* Gold/yellow color for the star */
+  font-size: 1.25rem;
+}
+
+/* Adding responsive adjustments */
+@media (max-width: 768px) {
+  .heading-room-rating-HD {
+    font-size: 1.1rem;
+  }
+
+  .heading-room-rating-HD svg {
+    width: 18px;
+    height: 18px;
+  }
+}

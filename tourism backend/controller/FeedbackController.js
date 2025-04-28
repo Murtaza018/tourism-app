@@ -10,8 +10,9 @@ const FeedbackCheckTable = async () => {
 const getFeedbackData = async (req, res) => {
   await FeedbackCheckTable();
   pool.query(
-    `select f.*,u.first_name,u.last_name from feedback f join user u on f.sender_email=u.email where receiver_email = ?;`,
-    [req.body.email],
+    `SELECT f.*,u.first_name,u.last_name,(SELECT AVG(rating) FROM feedback WHERE receiver_email=?) AS avg_rating FROM feedback f 
+JOIN USER u ON f.sender_email=u.email WHERE receiver_email = ?;`,
+    [req.body.email, req.body.email],
     (err, results) => {
       if (results) {
         console.log("Hi", results);

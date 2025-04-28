@@ -1408,6 +1408,10 @@ function HotelDashboard() {
           <h1 className="heading-room-HD">Feedback</h1>
           {displayFeedbackData.length > 0 ? (
             <>
+              <h3 className="heading-room-rating-HD">
+                Average Rating: {displayFeedbackData[0].avg_rating} <StarIcon />
+              </h3>
+
               {displayFeedbackData.map((reserv) => (
                 <details
                   className="feedback-details-AD"
