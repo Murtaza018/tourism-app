@@ -61,49 +61,45 @@ const getFlightData = async (req, res) => {
       if (results) {
         const flights = results;
 
-        const parsedFlights = flights.map((flight) => {
-          const departureTime = flight.departure_time;
-
-          let formattedDepartureTime = null;
-
-          if (departureTime) {
-            //Check if it is not null or undefined
-            if (typeof departureTime === "string") {
-              //Check if it is a string
-              formattedDepartureTime = new Date(
-                `1970-01-01T${departureTime}`
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              });
-            } else if (departureTime instanceof Date) {
-              //Check if it is a Date object
-              formattedDepartureTime = departureTime.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              });
-            } else {
-              console.error(
-                "Unexpected departure time type:",
-                typeof departureTime,
-                departureTime
-              );
-            }
-          }
-          return {
-            ...flight,
-            departure_date: flight.departure_date
+        const parsedFlights = flights.map((flight) => ({
+          ...flight,
+          departure_date: flight.departure_date
+            ? typeof flight.departure_date === "string" &&
+              flight.departure_date.includes("T")
+              ? flight.departure_date.split("T")[0]
+              : flight.departure_date instanceof Date
               ? flight.departure_date.toISOString().split("T")[0]
-              : null,
-            departure_time: formattedDepartureTime, // Use the formatted time
-            arrival_date: flight.arrival_date
+              : flight.departure_date // Assuming it's already in a desirable format if not the above
+            : null,
+          departure_time: flight.departure_time
+            ? typeof flight.departure_time === "string"
+              ? new Date(
+                  `1970-01-01T${flight.departure_time}`
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })
+              : flight.departure_time instanceof Date
+              ? flight.departure_time.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })
+              : null
+            : null,
+          arrival_date: flight.arrival_date
+            ? typeof flight.arrival_date === "string" &&
+              flight.arrival_date.includes("T")
+              ? flight.arrival_date.split("T")[0]
+              : flight.arrival_date instanceof Date
               ? flight.arrival_date.toISOString().split("T")[0]
-              : null,
-            arrival_time: flight.arrival_time
+              : flight.arrival_date // Assuming it's already in a desirable format if not the above
+            : null,
+          arrival_time: flight.arrival_time
+            ? typeof flight.arrival_time === "string"
               ? new Date(
                   `1970-01-01T${flight.arrival_time}`
                 ).toLocaleTimeString([], {
@@ -112,9 +108,16 @@ const getFlightData = async (req, res) => {
                   second: "2-digit",
                   hour12: false,
                 })
-              : null,
-          };
-        });
+              : flight.arrival_time instanceof Date
+              ? flight.arrival_time.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })
+              : null
+            : null,
+        }));
         console.log(parsedFlights);
         return res.json({ code: 200, data: parsedFlights });
       } else {

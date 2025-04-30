@@ -11,11 +11,16 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import StarIcon from "@mui/icons-material/Star";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import { StarOutline } from "@mui/icons-material";
+import { HourglassFull, StarOutline, Sync } from "@mui/icons-material";
 
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import { Button, Dialog, TextField } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
+
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 function HotelDashboard() {
   const navigate = useNavigate();
@@ -287,33 +292,35 @@ function HotelDashboard() {
   const HomeContent = () => {
     return (
       <div className="home-content-div-HD">
-        <h2 className="heading-HD">Details</h2>
+        <h2 className="heading-HD">
+          <strong>Details</strong>
+        </h2>
         <p className="data-HD">
-          <strong>First Name:</strong> {firstName}
+          <strong>First Name: {firstName}</strong>
         </p>
         <p className="data-HD">
-          <strong>Last Name:</strong> {lastName}
+          <strong>Last Name: {lastName}</strong>
         </p>
         <p className="data-HD">
-          <strong>Email:</strong> {email}
+          <strong>Email: {email}</strong>
         </p>
         <p className="data-HD">
-          <strong>Age:</strong> {age}
+          <strong>Age: {age}</strong>
         </p>
         <p className="data-HD">
-          <strong>Phone:</strong> {phone}
+          <strong>Phone: {phone}</strong>
         </p>
         <p className="data-HD">
-          <strong>Country:</strong> {country}
+          <strong>Country: {country}</strong>
         </p>
         <p className="data-HD">
-          <strong>City:</strong> {city}
+          <strong>City: {city}</strong>
         </p>
         <p className="data-HD">
-          <strong>Address:</strong> {address}
+          <strong>Address: {address}</strong>
         </p>
         <p className="data-HD">
-          <strong>Password:</strong> {"*".repeat(password.length)}
+          <strong>Password: {"*".repeat(password.length)}</strong>
         </p>
       </div>
     );
@@ -454,16 +461,17 @@ function HotelDashboard() {
             <h1 className="heading-room-HD">Rooms</h1>
             <div className="room-options-container-HD">
               <button className="room-option-HD" onClick={OpenAddRoomCard}>
-                Add Room
+                <AddIcon /> Add Room
               </button>
               <button
                 className="room-option-HD"
                 onClick={handleToggleCheckboxes}
               >
+                <DeleteIcon />
                 {showCheckboxes ? "Cancel Delete" : "Delete Room"}
               </button>
               <button className="room-option-HD" onClick={toggleEditButton}>
-                {editboxes ? "Cancel Edit" : "Edit Room"}
+                <EditIcon /> {editboxes ? "Cancel Edit" : "Edit Room"}
               </button>
             </div>
             <div className="table-container-HD">
@@ -962,27 +970,34 @@ function HotelDashboard() {
           <h1 className="heading-room-HD">Reservations</h1>
           <div className="room-options-container-HD">
             <button className="res-option-HD" onClick={handlePendingButton}>
+              <HourglassFull />
               {pendingButton ? "Cancel Pending" : "Pending"}
             </button>
             <button className="res-option-HD" onClick={handleOngoingButton}>
+              <Sync />
               {ongoingButton ? "Cancel Ongoing" : "Ongoing"}
             </button>
             <button className="res-option-HD" onClick={handleCompletedButton}>
+              <CheckCircleIcon />
               {completedButton ? "Cancel Completed" : "Completed"}
             </button>
             <button className="res-option-HD" onClick={handleFeedbackButton}>
+              <FeedbackIcon />
               {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
             </button>
             <button
               className="res-option-HD"
               onClick={toggleReservationEditButton}
             >
+              <EditIcon />
               {reservEditboxes ? "Cancel Edit" : "Edit"}
             </button>
             <button
               className="res-option-HD"
               onClick={toggleReservationDeleteButton}
             >
+              {" "}
+              <DeleteIcon />
               {reservDeleteboxes ? "Cancel Delete" : "Delete"}
             </button>
           </div>
@@ -1546,6 +1561,7 @@ function HotelDashboard() {
               className="form-input-HD"
               required
             />
+
             {error && <p className="error-message">{error}</p>}
           </div>
         ) : (

@@ -27,7 +27,9 @@ import StarIcon from "@mui/icons-material/Star";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import { StarOutline } from "@mui/icons-material";
+import { HourglassFull, StarOutline, Sync } from "@mui/icons-material";
+import toast, { Toaster } from "react-hot-toast";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 function AirlineDashboard() {
   const navigate = useNavigate();
@@ -97,23 +99,13 @@ function AirlineDashboard() {
       });
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-AD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
-
-  const toggleMenu = () => {
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-AD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-AD");
+    menu.classList.toggle("open-AD");
+    hamburgerIcon.classList.toggle("open-AD");
     setIsOpen(!isOpen);
-  };
+  }
   const logOut = () => {
     localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("email");
@@ -121,38 +113,40 @@ function AirlineDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div className="details-container-GD">
-        <h2 className="heading-GD">
+      <>
+        <h2 className="heading-AD">
           <strong>Details</strong>
         </h2>
-        <p className="data-GD">
-          <strong>First Name: {AccountData.first_name}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Last Name: {AccountData.last_name}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Email: {AccountData.email}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Age: {AccountData.age}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Phone: {AccountData.phone}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Country: {AccountData.country}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>City: {AccountData.city}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Address: {AccountData.address}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
-        </p>
-      </div>
+        <div className="home-content-div-HD">
+          <p className="data-AD">
+            <strong>First Name: {AccountData.first_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Last Name: {AccountData.last_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Email: {AccountData.email}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Age: {AccountData.age}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Phone: {AccountData.phone}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Country: {AccountData.country}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>City: {AccountData.city}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Address: {AccountData.address}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+          </p>
+        </div>
+      </>
     );
   };
   const FlightButton = styled(Button)(({ theme }) => ({
@@ -171,11 +165,11 @@ function AirlineDashboard() {
       color: "blue",
       borderColor: "blue",
     },
-    "&:nth-of-type(2):hover": {
+    "&:nth-of-type(3):hover": {
       color: "green",
       borderColor: "green",
     },
-    "&:nth-of-type(3):hover": {
+    "&:nth-of-type(2):hover": {
       color: "red",
       borderColor: "red",
     },
@@ -815,34 +809,22 @@ function AirlineDashboard() {
     return (
       <div>
         <div className="flight-content-AD">
-          <h2 className="heading-AD">
-            <strong>Flights</strong>
-          </h2>
-          <div className="flight-options-container-AD">
-            <FlightButton
-              variant="outlined"
-              className="flight-option-AD"
-              startIcon={<AddIcon />}
+          <h1 className="heading-room-HD">Flights</h1>
+
+          <div className="room-options-container-HD">
+            <button
+              className="room-option-AD"
               onClick={handleClickOpenFlightCard}
             >
-              Add Flight
-            </FlightButton>
-            <FlightButton
-              variant="outlined"
-              startIcon={<EditIcon />}
-              className="flight-option-AD"
-              onClick={toggleEditButton}
-            >
-              {editboxes ? "Cancel Edit" : "Edit Flight"}
-            </FlightButton>
-            <FlightButton
-              variant="outlined"
-              startIcon={<DeleteIcon />}
-              className="flight-option-AD"
-              onClick={handleToggleCheckboxes}
-            >
+              <AddIcon /> Add Flight
+            </button>
+            <button className="room-option-AD" onClick={handleToggleCheckboxes}>
+              <DeleteIcon />
               {showCheckboxes ? "Cancel Delete" : "Delete Flight"}
-            </FlightButton>
+            </button>
+            <button className="room-option-AD" onClick={toggleEditButton}>
+              <EditIcon /> {editboxes ? "Cancel Edit" : "Edit Flight"}
+            </button>
           </div>
           <div className="table-container-AD">
             {displayFlightData.length > 0 ? (
@@ -1082,6 +1064,7 @@ function AirlineDashboard() {
       .then((data) => {
         if (data.code === 200) {
           setDisplayReservationData(data.data);
+          console.log(data.data);
         } else {
           console.log("Error to fetch data!", data.data);
         }
@@ -1202,39 +1185,225 @@ function AirlineDashboard() {
     }
   };
   const ReservationContent = () => {
+    const [pendingButton, setPendingButton] = useState(false);
+    const [ongoingButton, setOngoingButton] = useState(false);
+    const [completedButton, setCompletedButton] = useState(false);
+
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const handlePendingButton = () => {
+      setPendingButton(!pendingButton);
+      setOngoingButton(false);
+      setCompletedButton(false);
+      if (selectedFilter !== "pending") {
+        setSelectedFilter("pending");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
+    const handleOngoingButton = () => {
+      setPendingButton(false);
+      setOngoingButton(!ongoingButton);
+      setCompletedButton(false);
+      if (selectedFilter !== "ongoing") {
+        setSelectedFilter("ongoing");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
+    const handleCompletedButton = () => {
+      setPendingButton(false);
+      setOngoingButton(false);
+      setCompletedButton(!completedButton);
+      if (selectedFilter !== "completed") {
+        setSelectedFilter("completed");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
+    const handleCloseFeedbackCard = () => {
+      setError("");
+      setReceiver("");
+      setOpenFeedbackCard(false);
+    };
+    const FeedbackCard = ({ open, onClose }) => {
+      const SubmitFeedback = () => {
+        fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+            t_email: receiver.tourist_email,
+            desc: feedbackDescription,
+            rate: rating,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              toast.success("Feedback Submitted!");
+              handleCloseFeedbackCard();
+            } else {
+              toast.error("Feedback did not Submit!");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [feedbackDescription, setFeedbackDescription] = useState("");
+      const [rating, setRating] = useState(0);
+
+      const handleStarClick = (value) => {
+        setRating(value);
+      };
+
+      const handleStarHover = (value) => {
+        highlightStars(value);
+      };
+
+      const handleStarMouseOut = () => {
+        highlightStars(rating);
+      };
+
+      const highlightStars = (value) => {
+        const stars = document.querySelectorAll(".star-GD");
+        stars.forEach((star) => {
+          const starValue = parseFloat(star.dataset.value);
+          if (starValue <= value) {
+            star.classList.add("selected");
+          } else {
+            star.classList.remove("selected");
+          }
+        });
+      };
+
+      const stars = [];
+      for (let i = 0; i <= 5; i += 0.5) {
+        stars.push(
+          <span
+            key={i}
+            className="star-GD"
+            data-value={i}
+            onClick={() => handleStarClick(i)}
+            onMouseOver={() => handleStarHover(i)}
+            onMouseOut={() => handleStarMouseOut()}
+          >
+            <StarIcon sx={{ fontSize: "2.2rem !important" }} />
+          </span>
+        );
+      }
+
+      return (
+        <Dialog open={open} onClose={onClose} className="feedback-dialog-GD">
+          <div className="dialog-content-GD">
+            <h1 className="heading-GD">
+              <strong>Feedback</strong>
+            </h1>
+            <div className="rating-GD">
+              <div className="star-container-GD">
+                {stars}
+                <p>Rating: {rating}</p>
+              </div>
+            </div>
+            <TextField
+              label="Receiver Name"
+              value={receiver.first_name}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
+            />
+
+            <TextField
+              label="Sender Email"
+              value={localStorage.getItem("email")}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
+            />
+
+            <div className="feedback-input-container-GD">
+              <TextField
+                type="text"
+                label="Feedback Description"
+                inputProps={{ maxLength: 500, className: "expanding-input-GD" }}
+                multiline
+                required
+                maxRows={4}
+                onChange={(e) => setFeedbackDescription(e.target.value)}
+                className="dialog-field-GD feedback-input-GD"
+              />
+              <p className="char-count-GD">{feedbackDescription.length}/500</p>
+            </div>
+
+            <Button className="submit-button-GD" onClick={SubmitFeedback}>
+              Submit
+            </Button>
+          </div>
+        </Dialog>
+      );
+    };
+    const [feedbackButton, setFeedbackButton] = useState(false);
+    const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
+    const [receiver, setReceiver] = useState([]);
+    const handleClickOpenFeedbackCard = (feedbackData) => {
+      setReceiver(feedbackData);
+      setError("");
+      setOpenFeedbackCard(true);
+    };
+    const handleFeedbackButton = () => {
+      setFeedbackButton(!feedbackButton);
+      if (selectedFilter !== "completed") {
+        setSelectedFilter("completed");
+      } else {
+        setSelectedFilter(null);
+      }
+      if (reservEditboxes) {
+        setReserveEditboxes(false);
+      }
+      if (reservEditId) {
+        setReservEditId(null);
+      }
+    };
+    const filteredReservations = displayReservationData.filter((reserv) => {
+      if (!selectedFilter) {
+        return true; // Show all if no filter is selected
+      }
+      return reserv.status.toLowerCase() === selectedFilter;
+    });
     return (
       <div>
         <div className="flight-content-AD">
-          <h1 className="heading-AD">
-            <strong>Reservations</strong>
-          </h1>
-          <div className="flight-options-container-AD">
-            <FlightButton
-              variant="outlined"
-              sx={{
-                "&:hover": {
-                  color: "green !important",
-                  borderColor: "green !important",
-                },
-              }}
-              startIcon={<EditIcon />}
+          <h1 className="heading-room-HD">Reservations</h1>
+          <div className="room-options-container-HD">
+            <button className="res-option-HD" onClick={handlePendingButton}>
+              <HourglassFull />
+              {pendingButton ? "Cancel Pending" : "Pending"}
+            </button>
+            <button className="res-option-HD" onClick={handleOngoingButton}>
+              <Sync />
+              {ongoingButton ? "Cancel Ongoing" : "Ongoing"}
+            </button>
+            <button className="res-option-HD" onClick={handleCompletedButton}>
+              <CheckCircleIcon />
+              {completedButton ? "Cancel Completed" : "Completed"}
+            </button>
+            <button className="res-option-HD" onClick={handleFeedbackButton}>
+              <FeedbackIcon />
+              {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
+            </button>
+            <button
+              className="res-option-HD"
               onClick={toggleReservationEditButton}
             >
-              {reservEditboxes ? "Cancel Edit" : "Edit Booking"}
-            </FlightButton>
-            <FlightButton
-              variant="outlined"
-              sx={{
-                "&:hover": {
-                  color: "red !important",
-                  borderColor: "red !important",
-                },
-              }}
-              startIcon={<DeleteIcon />}
+              <EditIcon /> {reservEditboxes ? "Cancel Edit" : "Edit"}
+            </button>
+            <button
+              className="res-option-HD"
               onClick={toggleReservationDeleteButton}
             >
-              {reservDeleteboxes ? "Cancel Delete" : "Delete Booking"}
-            </FlightButton>
+              <DeleteIcon />
+              {reservDeleteboxes ? "Cancel Delete" : "Delete"}
+            </button>
           </div>
           <div className="table-container-AD">
             {displayReservationData.length > 0 ? (
@@ -1254,10 +1423,13 @@ function AirlineDashboard() {
                       {reservEditboxes && (
                         <th className="table-header-AD">Edit</th>
                       )}
+                      {feedbackButton && (
+                        <th className="table-header-GD">Feedback</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="table-body-AD">
-                    {displayReservationData.map((reserv) => (
+                    {filteredReservations.map((reserv) => (
                       <tr key={reserv.reservation_id} className="table-row-AD">
                         {reservDeleteboxes && (
                           <td>
@@ -1359,6 +1531,18 @@ function AirlineDashboard() {
                                 </button>
                               </td>
                             )}
+                            {feedbackButton && (
+                              <td>
+                                <button
+                                  className="feedback-button-GD"
+                                  onClick={() =>
+                                    handleClickOpenFeedbackCard(reserv)
+                                  }
+                                >
+                                  Feedback
+                                </button>
+                              </td>
+                            )}
                           </>
                         )}
                       </tr>
@@ -1380,6 +1564,10 @@ function AirlineDashboard() {
             )}
           </div>
         </div>
+        <FeedbackCard
+          open={openFeedbackCard}
+          onClose={handleCloseFeedbackCard}
+        />
       </div>
     );
   };
@@ -1717,13 +1905,16 @@ function AirlineDashboard() {
     };
     return (
       <div>
-        <h2 className="heading-AD">Settings</h2>
+        <h2 className="heading-AD">
+          <strong>Settings</strong>
+        </h2>
         {editData === true ? (
-          <div className="edit-input-container-AD">
+          <div className="setting-content-div-HD">
             <TextField
               type="text"
               className="seats-input2-AD"
               label="Flight Name"
+              style={{ width: "35%" }}
               value={updatedData.first_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
               required
@@ -1734,6 +1925,7 @@ function AirlineDashboard() {
               type="text"
               className="seats-input2-AD"
               label="Last Name"
+              style={{ width: "35%" }}
               value={updatedData.last_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
               required
@@ -1748,6 +1940,7 @@ function AirlineDashboard() {
               type="number"
               className="seats-input2-AD"
               label="Age(18-150)"
+              style={{ width: "35%" }}
               value={updatedData.age}
               onChange={(e) => handleUpdatedDataInputChange(e, "age")}
               required
@@ -1758,6 +1951,7 @@ function AirlineDashboard() {
               type="tel"
               className="seats-input2-AD"
               label="Phone"
+              style={{ width: "35%" }}
               value={updatedData.phone}
               onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
               required
@@ -1778,7 +1972,7 @@ function AirlineDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               fullWidth
               onChange={handleCountryChange}
@@ -1808,7 +2002,7 @@ function AirlineDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               onChange={handleCityChange}
             >
@@ -1823,6 +2017,7 @@ function AirlineDashboard() {
               type="text"
               className="seats-input2-AD"
               label="Complete Address"
+              style={{ width: "35%" }}
               value={updatedData.address}
               onChange={(e) => handleUpdatedDataInputChange(e, "address")}
               required
@@ -1833,6 +2028,7 @@ function AirlineDashboard() {
               type="password"
               className="seats-input2-AD"
               label="Enter Password"
+              style={{ width: "35%" }}
               value={updatedData.password}
               onChange={(e) => handleUpdatedDataInputChange(e, "password")}
               required
@@ -1843,6 +2039,7 @@ function AirlineDashboard() {
               type="password"
               className="seats-input2-AD"
               label="Confirm Password"
+              style={{ width: "35%" }}
               value={confPassword}
               onChange={(e) => setConfPassword(e.target.value)}
               required
@@ -1853,7 +2050,7 @@ function AirlineDashboard() {
             {error && <p className="error-message-AD">{error}</p>}
           </div>
         ) : (
-          <div className="details-container-AD">
+          <div className="home-content-div-HD">
             <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>
@@ -1965,6 +2162,7 @@ function AirlineDashboard() {
   };
   return (
     <div>
+      <Toaster />
       <div className="background-AD"></div>
       <div className="main-container-AD">
         <div className="hamburger-menu-AD">

@@ -17,7 +17,7 @@ const getFlightReservationData = async (req, res) => {
   await FlightReservationCheckTable();
   console.log(req.body);
   pool.query(
-    `select res.reservation_id,res.seats_booked,res.status,f.flight_name,f.seat_type,u.first_name,u.phone from flight_reservation res join flight f 
+    `select res.reservation_id,res.tourist_email,res.seats_booked,res.status,f.flight_name,f.seat_type,u.first_name,u.phone from flight_reservation res join flight f 
     on res.flight_id=f.flight_id join user u on res.tourist_email=u.email where res.airline_email = ?;`,
     [req.body.email],
     (err, results) => {
