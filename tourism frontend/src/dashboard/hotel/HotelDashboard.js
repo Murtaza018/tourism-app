@@ -13,6 +13,7 @@ import StarIcon from "@mui/icons-material/Star";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { HourglassFull, StarOutline, Sync } from "@mui/icons-material";
 
+import SaveIcon from "@mui/icons-material/Save";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import { Button, Dialog, TextField } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
@@ -1433,8 +1434,8 @@ function HotelDashboard() {
                   key={reserv.feedback_id}
                 >
                   <summary className="feedback-summary-AD">
-                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
-                    )
+                    {reserv.first_name} {reserv.last_name} ({reserv.rating}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content-AD">
                     <div className="feedback-rating-AD">
@@ -1597,20 +1598,31 @@ function HotelDashboard() {
         )}
         <div className="setting-container-HD">
           {editData && (
-            <button className="save-button-HD" onClick={saveChanges}>
+            <button className="room-option-HD" onClick={saveChanges}>
+              <SaveIcon />
               Save
             </button>
           )}
-          <button className="edit-button-HD" onClick={editDataButton}>
+          <button className="room-option-HD" onClick={editDataButton}>
+            <EditIcon />
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
 
         <div className="setting-container-HD">
           <button className="room-option-HD" onClick={lockAccount}>
-            {accountStatus ? "Lock Account" : "Unlock Account"}
+            {accountStatus ? (
+              <>
+                <LockIcon /> Lock Account
+              </>
+            ) : (
+              <>
+                <LockOpenIcon /> Unlock Account
+              </>
+            )}
           </button>
           <button className="room-option-HD" onClick={deleteAccount}>
+            <DeleteIcon />
             Delete Account
           </button>
         </div>

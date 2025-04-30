@@ -1,6 +1,7 @@
 import "./AirlineDashboard.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import SaveIcon from "@mui/icons-material/Save";
 import {
   Card,
   TextField,
@@ -1627,19 +1628,21 @@ function AirlineDashboard() {
     return (
       <div>
         <div className="flight-content-AD">
-          <h2 className="heading-AD">
-            <strong>Feedback</strong>
-          </h2>
+          <h1 className="heading-room-HD">Feedback</h1>
+
           {displayFeedbackData.length > 0 ? (
             <>
+              <h3 className="heading-room-rating-HD">
+                Average Rating: {displayFeedbackData[0].avg_rating} <StarIcon />
+              </h3>
               {displayFeedbackData.map((reserv) => (
                 <details
                   className="feedback-details-AD"
                   key={reserv.feedback_id}
                 >
                   <summary className="feedback-summary-AD">
-                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
-                    )
+                    {reserv.first_name} {reserv.last_name} ({reserv.rating}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content-AD">
                     <div className="feedback-rating-AD">
@@ -2084,22 +2087,19 @@ function AirlineDashboard() {
         )}
         <div className="setting-container-AD">
           {editData && (
-            <button className="save-button-AD" onClick={saveChanges}>
+            <button className="room-option-HD" onClick={saveChanges}>
+              <SaveIcon />
               Save
             </button>
           )}
-          <button className="edit-button-AD" onClick={editDataButton}>
+          <button className="room-option-HD" onClick={editDataButton}>
+            <EditIcon />
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
 
         <div className="setting-container-AD">
-          <FlightButton
-            onClick={lockAccount}
-            sx={{
-              gap: "0.7vw",
-            }}
-          >
+          <button onClick={lockAccount} className="room-option-HD">
             {accountStatus ? (
               <>
                 <LockIcon /> Lock Account
@@ -2109,20 +2109,11 @@ function AirlineDashboard() {
                 <LockOpenIcon /> Unlock Account
               </>
             )}
-          </FlightButton>
-          <FlightButton
-            sx={{
-              "&:hover": {
-                color: "red !important",
-                borderColor: "red !important",
-              },
-              gap: "0.7vw",
-            }}
-            onClick={deleteAccount}
-          >
+          </button>
+          <button className="room-option-HD" onClick={deleteAccount}>
             <DeleteIcon />
             Delete Account
-          </FlightButton>
+          </button>
         </div>
         <div className="setting-container-AD">
           {error2 && <p className="error-message2-AD">{error2}</p>}

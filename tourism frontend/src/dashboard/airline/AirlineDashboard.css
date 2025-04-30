@@ -744,7 +744,6 @@ body.menu-open-AD {
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 1rem;
 }
 
 .feedback-summary-AD::-webkit-details-marker {
@@ -840,26 +839,26 @@ details[open] .feedback-summary-AD::after {
 .seats-input2-AD .MuiOutlinedInput-root {
   margin-top: 2vh !important;
   margin-bottom: 3vh !important;
-  color: rgb(19, 0, 28) !important;
+  color: black !important;
   width: 100% !important;
 }
 
 .seats-input2-AD .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: rgb(19, 0, 28) !important;
+  border-color: black !important;
 }
 
 .seats-input2-AD .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: rgb(19, 0, 28) !important;
+  border-color: black !important;
 }
 
 .seats-input2-AD
   .MuiOutlinedInput-root.Mui-focused
   .MuiOutlinedInput-notchedOutline {
-  border-color: rgb(19, 0, 28) !important;
+  border-color: black !important;
 }
 
 .edit-input-container-AD .MuiInputLabel-root {
-  color: rgb(19, 0, 28) !important;
+  color: black !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
