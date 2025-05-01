@@ -17,7 +17,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import { Button } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -116,9 +115,7 @@ function AirlineDashboard() {
     return (
       <>
         <div className="details-container-GD">
-          <h2 className="heading-AD">
-            <strong>Details</strong>
-          </h2>
+          <h2 className="heading-AD">Details</h2>
           <div className="home-content-div-HD">
             <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
@@ -1888,9 +1885,7 @@ function AirlineDashboard() {
     };
     return (
       <div>
-        <h2 className="heading-AD">
-          <strong>Settings</strong>
-        </h2>
+        <h2 className="heading-AD">Settings</h2>
         {editData === true ? (
           <div className="setting-content-div-HD">
             <TextField
@@ -2033,7 +2028,7 @@ function AirlineDashboard() {
             {error && <p className="error-message-AD">{error}</p>}
           </div>
         ) : (
-          <div className="home-content-div-HD">
+          <div className="setting-content-div-HD">
             <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>

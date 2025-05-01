@@ -6,7 +6,10 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import Aurora from "../../components/Aurora";
+
+import SaveIcon from "@mui/icons-material/Save";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { HourglassFull, StarOutline, Sync } from "@mui/icons-material";
 import { Country, City } from "country-state-city";
 import {
   Button,
@@ -21,7 +24,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
 import { LockIcon, LockOpenIcon, StarHalfIcon } from "lucide-react";
-import { StarOutline } from "@mui/icons-material";
 
 function RentalDashboard() {
   const navigate = useNavigate();
@@ -136,23 +138,14 @@ function RentalDashboard() {
         console.log(err);
       });
   }, []);
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-RD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
-
-  const toggleMenu = () => {
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-RD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-RD");
+    menu.classList.toggle("open-R");
+    hamburgerIcon.classList.toggle("open-RD");
     setIsOpen(!isOpen);
-  };
+  }
   const logOut = () => {
     localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("email");
@@ -160,69 +153,56 @@ function RentalDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div className="details-container-RD">
-        <h2 className="heading-RD">
-          <strong>Details</strong>
-        </h2>
-        <h3 className="heading-RD">
-          <strong>Car Info</strong>
-        </h3>
-        <p className="data-RD">
-          <strong>First Name: {AccountData.first_name}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Last Name: {AccountData.last_name}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Email: {AccountData.email}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Age: {AccountData.age}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Price Per Day: {price}$</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Phone: {AccountData.phone}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Country: {AccountData.country}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>City: {AccountData.city}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Address: {AccountData.address}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
-        </p>
-        <h3 className="heading-RD">
-          <strong>Driver Info</strong>
-        </h3>
-        <p className="data-RD">
-          <strong>Plate Number: {CarData.plate}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Description: {CarData.desc}</strong>
-        </p>
-        <p className="data-RD">
-          <strong>Capacity: {CarData.capacity}</strong>
-        </p>
+      <div className="details-container-GD">
+        <h2 className="heading-RD">Details</h2>
+        <h3 className="heading-RD">Driver Information</h3>
+        <div className="home-content-div-HD">
+          <p className="data-AD">
+            <strong>First Name: {AccountData.first_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Last Name: {AccountData.last_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Email: {AccountData.email}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Age: {AccountData.age}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Price Per Day: {price}$</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Phone: {AccountData.phone}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Country: {AccountData.country}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>City: {AccountData.city}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Address: {AccountData.address}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+          </p>
+          <h3 className="heading-RD">Driver Information</h3>
+          <p className="data-AD">
+            <strong>Plate Number: {CarData.plate}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Description: {CarData.desc}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Capacity: {CarData.capacity}</strong>
+          </p>
+        </div>
       </div>
     );
   };
 
-  const [selectedReservs, setSelectedReservs] = useState([]);
-  const [reservEditId, setReservEditId] = useState(null);
-  const [editedReservData, setEditedReservData] = useState({});
-  const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
   const [displayReservationData, setDisplayReservationData] = useState([]);
-  const [reservEditboxes, setReserveEditboxes] = useState(false);
-  const RentalStatus = [
-    { value: "Pending", label: "Pending" },
-    { value: "Completed", label: "Completed" },
-  ];
   const getReservationData = async () => {
     fetch("http://localhost:8008/Tourism/getGuideReservationData", {
       method: "POST",
@@ -244,119 +224,6 @@ function RentalDashboard() {
       });
   };
 
-  const updateReserv = () => {
-    fetch("http://localhost:8008/Tourism/updateGuideReservationData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(editedReservData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.code === 200) {
-          console.log("Reservation Edited");
-        } else {
-          console.log("Reservation not edited!", data.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const DeleteReservation = (selectedData) => {
-    fetch("http://localhost:8008/Tourism/deleteGuideReservationData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.code === 200) {
-          console.log("Reservation Deleted");
-        } else {
-          console.log("Reservation not Deleted!", data.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const toggleReservationEditButton = () => {
-    if (reservDeleteboxes) {
-      setReservDeleteboxes(false);
-    }
-    if (feedbackButton) {
-      setFeedbackButton(false);
-    }
-    setReserveEditboxes(!reservEditboxes);
-    if (reservEditId) {
-      setReservEditId(null);
-    }
-  };
-  const handleReservEditClick = (reserv) => {
-    setReservEditId(reserv.reservation_id);
-    setEditedReservData({ ...reserv }); // Initialize edited data with current room data
-  };
-
-  const handleSaveReservClick = () => {
-    if (editedReservData.status === "") {
-      setError("Please select a status!");
-      return;
-    }
-    setError("");
-    updateReserv(editedReservData); // Call the update function
-    setReservEditId(null); // Exit edit mode
-    window.location.reload();
-  };
-
-  const handleCancelReservClick = () => {
-    setReservEditId(null); // Exit edit mode without saving changes
-  };
-
-  const handleReservInputChange = (event, field) => {
-    setEditedReservData((prevData) => ({
-      ...prevData,
-      [field]: event.target.value,
-    }));
-  };
-
-  const toggleReservationDeleteButton = () => {
-    setReservDeleteboxes(!reservDeleteboxes);
-
-    if (reservEditboxes) {
-      setReserveEditboxes(false);
-    }
-  };
-
-  const handleReservCheckboxChange = (reservId) => {
-    setSelectedReservs((prevSelectedReservs) => {
-      if (prevSelectedReservs.includes(reservId)) {
-        return prevSelectedReservs.filter((id) => id !== reservId);
-      } else {
-        return [...prevSelectedReservs, reservId];
-      }
-    });
-  };
-
-  const handleDeleteSelectedReserv = () => {
-    if (selectedReservs.length === 0) {
-      alert("Please select reservations to delete.");
-      return;
-    }
-
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete the selected reservations?"
-    );
-    if (confirmDelete) {
-      DeleteReservation(selectedReservs); // Call the onDeleteRooms function passed as a prop
-      setReservDeleteboxes(false); // Hide checkboxes after deletion
-      setSelectedReservs([]); // Clear selected rooms
-      window.location.reload();
-    }
-  };
   const RentalButton = styled(Button)(({ theme }) => ({
     backgroundColor: "transparent",
     border: "2px solid black",
@@ -382,206 +249,353 @@ function RentalDashboard() {
       borderColor: "red",
     },
   }));
-  const [feedbackButton, setFeedbackButton] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
-  const handleFeedbackButton = () => {
-    setFeedbackButton(!feedbackButton);
-    if (selectedFilter !== "completed") {
-      setSelectedFilter("completed");
-    } else {
-      setSelectedFilter(null);
-    }
-    if (reservEditboxes) {
-      setReserveEditboxes(false);
-    }
-    if (reservEditId) {
-      setReservEditId(null);
-    }
-  };
-  const filteredReservations = displayReservationData.filter((reserv) => {
-    if (!selectedFilter) {
-      return true; // Show all if no filter is selected
-    }
-    return reserv.status.toLowerCase() === selectedFilter;
-  });
-  const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
-  const [receiver, setReceiver] = useState([]);
-  const handleClickOpenFeedbackCard = (feedbackData) => {
-    setReceiver(feedbackData);
-    setError("");
-    setOpenFeedbackCard(true);
-  };
 
-  const handleCloseFeedbackCard = () => {
-    setError("");
-    setReceiver("");
-    setOpenFeedbackCard(false);
-  };
-  const FeedbackCard = ({ open, onClose }) => {
-    const SubmitFeedback = () => {
-      console.log("jhggjhgj");
-      fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+  const ReservationContent = () => {
+    const [selectedReservs, setSelectedReservs] = useState([]);
+    const [reservEditId, setReservEditId] = useState(null);
+    const [editedReservData, setEditedReservData] = useState({});
+    const [reservDeleteboxes, setReservDeleteboxes] = useState(false);
+    const [reservEditboxes, setReserveEditboxes] = useState(false);
+    const RentalStatus = [
+      { value: "Pending", label: "Pending" },
+      { value: "Ongoing", label: "Ongoing" },
+      { value: "Completed", label: "Completed" },
+    ];
+
+    const updateReserv = () => {
+      fetch("http://localhost:8008/Tourism/updateGuideReservationData", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: localStorage.getItem("email"),
-          t_email: receiver.tourist_email,
-          desc: feedbackDescription,
-          rate: rating,
-        }),
+        body: JSON.stringify(editedReservData),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.code === 200) {
-            window.alert("Feedback Submitted!");
-            handleCloseFeedbackCard();
+            console.log("Reservation Edited");
           } else {
-            console.log("Feedback not Submitted!", data.data);
+            console.log("Reservation not edited!", data.data);
           }
         })
         .catch((err) => {
           console.log(err);
         });
     };
-    const [feedbackDescription, setFeedbackDescription] = useState("");
-    const [rating, setRating] = useState(0);
-
-    const handleStarClick = (value) => {
-      setRating(value);
+    const DeleteReservation = (selectedData) => {
+      fetch("http://localhost:8008/Tourism/deleteGuideReservationData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            console.log("Reservation Deleted");
+          } else {
+            console.log("Reservation not Deleted!", data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const toggleReservationEditButton = () => {
+      if (reservDeleteboxes) {
+        setReservDeleteboxes(false);
+      }
+      if (feedbackButton) {
+        setFeedbackButton(false);
+      }
+      setReserveEditboxes(!reservEditboxes);
+      if (reservEditId) {
+        setReservEditId(null);
+      }
+    };
+    const handleReservEditClick = (reserv) => {
+      setReservEditId(reserv.reservation_id);
+      setEditedReservData({ ...reserv }); // Initialize edited data with current room data
     };
 
-    const handleStarHover = (value) => {
-      highlightStars(value);
+    const handleSaveReservClick = () => {
+      if (editedReservData.status === "") {
+        setError("Please select a status!");
+        return;
+      }
+      setError("");
+      updateReserv(editedReservData); // Call the update function
+      setReservEditId(null); // Exit edit mode
+      window.location.reload();
     };
 
-    const handleStarMouseOut = () => {
-      highlightStars(rating);
+    const handleCancelReservClick = () => {
+      setReservEditId(null); // Exit edit mode without saving changes
     };
 
-    const highlightStars = (value) => {
-      const stars = document.querySelectorAll(".star-RD");
-      stars.forEach((star) => {
-        const starValue = parseFloat(star.dataset.value);
-        if (starValue <= value) {
-          star.classList.add("selected");
+    const handleReservInputChange = (event, field) => {
+      setEditedReservData((prevData) => ({
+        ...prevData,
+        [field]: event.target.value,
+      }));
+    };
+
+    const toggleReservationDeleteButton = () => {
+      setReservDeleteboxes(!reservDeleteboxes);
+
+      if (reservEditboxes) {
+        setReserveEditboxes(false);
+      }
+    };
+
+    const handleReservCheckboxChange = (reservId) => {
+      setSelectedReservs((prevSelectedReservs) => {
+        if (prevSelectedReservs.includes(reservId)) {
+          return prevSelectedReservs.filter((id) => id !== reservId);
         } else {
-          star.classList.remove("selected");
+          return [...prevSelectedReservs, reservId];
         }
       });
     };
 
-    const stars = [];
-    for (let i = 0; i <= 5; i += 0.5) {
-      stars.push(
-        <span
-          key={i}
-          className="star-RD"
-          data-value={i}
-          onClick={() => handleStarClick(i)}
-          onMouseOver={() => handleStarHover(i)}
-          onMouseOut={() => handleStarMouseOut()}
-        >
-          <StarIcon sx={{ fontSize: "2.2rem !important" }} />
-        </span>
+    const handleDeleteSelectedReserv = () => {
+      if (selectedReservs.length === 0) {
+        alert("Please select reservations to delete.");
+        return;
+      }
+
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete the selected reservations?"
       );
-    }
+      if (confirmDelete) {
+        DeleteReservation(selectedReservs); // Call the onDeleteRooms function passed as a prop
+        setReservDeleteboxes(false); // Hide checkboxes after deletion
+        setSelectedReservs([]); // Clear selected rooms
+        window.location.reload();
+      }
+    };
+    const [feedbackButton, setFeedbackButton] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const handleFeedbackButton = () => {
+      setFeedbackButton(!feedbackButton);
+      if (selectedFilter !== "completed") {
+        setSelectedFilter("completed");
+      } else {
+        setSelectedFilter(null);
+      }
+      if (reservEditboxes) {
+        setReserveEditboxes(false);
+      }
+      if (reservEditId) {
+        setReservEditId(null);
+      }
+    };
+    const filteredReservations = displayReservationData.filter((reserv) => {
+      if (!selectedFilter) {
+        return true; // Show all if no filter is selected
+      }
+      return reserv.status.toLowerCase() === selectedFilter;
+    });
+    const [openFeedbackCard, setOpenFeedbackCard] = useState(false);
+    const [receiver, setReceiver] = useState([]);
+    const handleClickOpenFeedbackCard = (feedbackData) => {
+      setReceiver(feedbackData);
+      setError("");
+      setOpenFeedbackCard(true);
+    };
 
-    return (
-      <Dialog open={open} onClose={onClose} className="feedback-dialog-RD">
-        <div className="dialog-content-RD">
-          <h1 className="heading-RD">
-            <strong>Feedback</strong>
-          </h1>
-          <div className="rating-RD">
-            <div className="star-container-RD">
-              {stars}
-              <p>Rating: {rating}</p>
+    const handleCloseFeedbackCard = () => {
+      setError("");
+      setReceiver("");
+      setOpenFeedbackCard(false);
+    };
+    const FeedbackCard = ({ open, onClose }) => {
+      const SubmitFeedback = () => {
+        console.log("jhggjhgj");
+        fetch("http://localhost:8008/Tourism/SubmitFeedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+            t_email: receiver.tourist_email,
+            desc: feedbackDescription,
+            rate: rating,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              window.alert("Feedback Submitted!");
+              handleCloseFeedbackCard();
+            } else {
+              console.log("Feedback not Submitted!", data.data);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+      const [feedbackDescription, setFeedbackDescription] = useState("");
+      const [rating, setRating] = useState(0);
+
+      const handleStarClick = (value) => {
+        setRating(value);
+      };
+
+      const handleStarHover = (value) => {
+        highlightStars(value);
+      };
+
+      const handleStarMouseOut = () => {
+        highlightStars(rating);
+      };
+
+      const highlightStars = (value) => {
+        const stars = document.querySelectorAll(".star-GD");
+        stars.forEach((star) => {
+          const starValue = parseFloat(star.dataset.value);
+          if (starValue <= value) {
+            star.classList.add("selected");
+          } else {
+            star.classList.remove("selected");
+          }
+        });
+      };
+
+      const stars = [];
+      for (let i = 0; i <= 5; i += 0.5) {
+        stars.push(
+          <span
+            key={i}
+            className="star-GD"
+            data-value={i}
+            onClick={() => handleStarClick(i)}
+            onMouseOver={() => handleStarHover(i)}
+            onMouseOut={() => handleStarMouseOut()}
+          >
+            <StarIcon sx={{ fontSize: "2.2rem !important" }} />
+          </span>
+        );
+      }
+
+      return (
+        <Dialog open={open} onClose={onClose} className="feedback-dialog-GD">
+          <div className="dialog-content-GD">
+            <h1 className="heading-GD">
+              <strong>Feedback</strong>
+            </h1>
+            <div className="rating-GD">
+              <div className="star-container-GD">
+                {stars}
+                <p>Rating: {rating}</p>
+              </div>
             </div>
-          </div>
-          <TextField
-            label="Receiver Name"
-            value={receiver.first_name}
-            disabled
-            className="dialog-field-RD disabled-field-RD"
-          />
-
-          <TextField
-            label="Sender Email"
-            value={localStorage.getItem("email")}
-            disabled
-            className="dialog-field-RD disabled-field-RD"
-          />
-
-          <div className="feedback-input-container-RD">
             <TextField
-              type="text"
-              label="Feedback Description"
-              inputProps={{ maxLength: 500, className: "expanding-input-RD" }}
-              multiline
-              required
-              maxRows={4}
-              onChange={(e) => setFeedbackDescription(e.target.value)}
-              className="dialog-field-RD feedback-input-RD"
+              label="Receiver Name"
+              value={receiver.first_name}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
             />
-            <p className="char-count-RD">{feedbackDescription.length}/500</p>
-          </div>
 
-          <Button className="submit-button-RD" onClick={SubmitFeedback}>
-            Submit
-          </Button>
-        </div>
-      </Dialog>
-    );
-  };
-  const ReservationContent = () => {
+            <TextField
+              label="Sender Email"
+              value={localStorage.getItem("email")}
+              disabled
+              className="dialog-field-GD disabled-field-GD"
+            />
+
+            <div className="feedback-input-container-GD">
+              <TextField
+                type="text"
+                label="Feedback Description"
+                inputProps={{ maxLength: 500, className: "expanding-input-GD" }}
+                multiline
+                required
+                maxRows={4}
+                onChange={(e) => setFeedbackDescription(e.target.value)}
+                className="dialog-field-GD feedback-input-GD"
+              />
+              <p className="char-count-GD">{feedbackDescription.length}/500</p>
+            </div>
+
+            <Button className="submit-button-GD" onClick={SubmitFeedback}>
+              Submit
+            </Button>
+          </div>
+        </Dialog>
+      );
+    };
+    const [pendingButton, setPendingButton] = useState(false);
+    const [ongoingButton, setOngoingButton] = useState(false);
+    const [completedButton, setCompletedButton] = useState(false);
+
+    const handlePendingButton = () => {
+      setPendingButton(!pendingButton);
+      setOngoingButton(false);
+      setCompletedButton(false);
+      if (selectedFilter !== "pending") {
+        setSelectedFilter("pending");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
+    const handleOngoingButton = () => {
+      setPendingButton(false);
+      setOngoingButton(!ongoingButton);
+      setCompletedButton(false);
+      if (selectedFilter !== "ongoing") {
+        setSelectedFilter("ongoing");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
+    const handleCompletedButton = () => {
+      setPendingButton(false);
+      setOngoingButton(false);
+      setCompletedButton(!completedButton);
+      if (selectedFilter !== "completed") {
+        setSelectedFilter("completed");
+      } else {
+        setSelectedFilter(null);
+      }
+    };
     return (
       <div>
         <div className="Rental-content-RD">
-          <h1 className="heading-RD">
-            <strong>Reservations</strong>
-          </h1>
-          <div className="Rental-options-container-RD">
-            <RentalButton
-              variant="outlined"
-              sx={{
-                "&:hover": {
-                  color: "blue !important",
-                  borderColor: "blue !important",
-                },
-              }}
-              startIcon={<EditIcon />}
+          <h1 className="heading-room-HD">Reservations</h1>
+          <div className="room-options-container-HD">
+            <button className="res-option-HD" onClick={handlePendingButton}>
+              <HourglassFull />
+              {pendingButton ? "Cancel Pending" : "Pending"}
+            </button>
+            <button className="res-option-HD" onClick={handleOngoingButton}>
+              <Sync />
+              {ongoingButton ? "Cancel Ongoing" : "Ongoing"}
+            </button>
+            <button className="res-option-HD" onClick={handleCompletedButton}>
+              <CheckCircleIcon />
+              {completedButton ? "Cancel Completed" : "Completed"}
+            </button>
+            <button className="res-option-HD" onClick={handleFeedbackButton}>
+              <FeedbackIcon />
+              {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
+            </button>
+            <button
+              className="res-option-HD"
               onClick={toggleReservationEditButton}
             >
-              {reservEditboxes ? "Cancel Edit" : "Edit Booking"}
-            </RentalButton>
-            <RentalButton
-              variant="outlined"
-              sx={{
-                "&:hover": {
-                  color: "red !important",
-                  borderColor: "red !important",
-                },
-              }}
-              startIcon={<DeleteIcon />}
+              <EditIcon /> {reservEditboxes ? "Cancel Edit" : "Edit"}
+            </button>
+            <button
+              className="res-option-HD"
               onClick={toggleReservationDeleteButton}
             >
-              {reservDeleteboxes ? "Cancel Delete" : "Delete Booking"}
-            </RentalButton>
-            <RentalButton
-              variant="outlined"
-              sx={{
-                "&:hover": {
-                  color: "yellow !important",
-                  borderColor: "yellow !important",
-                },
-              }}
-              startIcon={<FeedbackIcon />}
-              onClick={handleFeedbackButton}
-            >
-              {feedbackButton ? "Cancel Feedback" : "Give Feedback"}
-            </RentalButton>
+              <DeleteIcon />
+              {reservDeleteboxes ? "Cancel Delete" : "Delete"}
+            </button>
           </div>
           <div className="table-container-RD">
             {displayReservationData.length > 0 ? (
@@ -796,19 +810,20 @@ function RentalDashboard() {
     return (
       <div>
         <div className="Rental-content-RD">
-          <h2 className="heading-RD">
-            <strong>Feedback</strong>
-          </h2>
+          <h1 className="heading-room-HD">Feedback</h1>
           {displayFeedbackData.length > 0 ? (
             <>
+              <h3 className="heading-room-rating-HD">
+                Average Rating: {displayFeedbackData[0].avg_rating} <StarIcon />
+              </h3>
               {displayFeedbackData.map((reserv) => (
                 <details
-                  className="feedback-details-RD"
+                  className="feedback-details-AD"
                   key={reserv.feedback_id}
                 >
-                  <summary className="feedback-summary-RD">
-                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
-                    )
+                  <summary className="feedback-summary-AD">
+                    {reserv.first_name} {reserv.last_name} ({reserv.rating}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content-RD">
                     <div className="feedback-rating-RD">
@@ -1155,19 +1170,16 @@ function RentalDashboard() {
     };
     return (
       <div>
-        <div className="details-container-RD">
-          <h2 className="heading-RD">Settings</h2>
-        </div>
-        <div className="details-container-RD">
-          <h2 className="heading-RD">Driver Info</h2>
-        </div>
+        <h2 className="heading-RD">Settings</h2>
+        <h3 className="heading-RD">Driver Information</h3>
         {editData === true ? (
-          <div className="edit-input-container-RD">
+          <div className="setting-content-div-HD">
             <TextField
               type="text"
               className="seats-input2-RD"
               label="First Name"
               value={updatedData.first_name}
+              style={{ width: "35%" }}
               onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
               required
             >
@@ -1177,13 +1189,14 @@ function RentalDashboard() {
               type="text"
               className="seats-input2-RD"
               label="Last Name"
+              style={{ width: "35%" }}
               value={updatedData.last_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
               required
             >
               Last Name
             </TextField>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Email:</strong> {AccountData.email}
             </p>
 
@@ -1191,6 +1204,7 @@ function RentalDashboard() {
               type="number"
               className="seats-input2-RD"
               label="Age(18-150)"
+              style={{ width: "35%" }}
               value={updatedData.age}
               onChange={(e) => handleUpdatedDataInputChange(e, "age")}
               required
@@ -1202,6 +1216,7 @@ function RentalDashboard() {
               className="seats-input2-RD"
               label="Price Per Day($)"
               value={updatePrice}
+              style={{ width: "35%" }}
               onChange={(e) => setUpdatePrice(e.target.value)}
               required
             >
@@ -1211,6 +1226,7 @@ function RentalDashboard() {
               type="tel"
               className="seats-input2-RD"
               label="Phone"
+              style={{ width: "35%" }}
               value={updatedData.phone}
               onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
               required
@@ -1231,7 +1247,7 @@ function RentalDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               fullWidth
               onChange={handleCountryChange}
@@ -1261,7 +1277,7 @@ function RentalDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               onChange={handleCityChange}
             >
@@ -1276,6 +1292,7 @@ function RentalDashboard() {
               type="text"
               className="seats-input2-RD"
               label="Complete Address"
+              style={{ width: "35%" }}
               value={updatedData.address}
               onChange={(e) => handleUpdatedDataInputChange(e, "address")}
               required
@@ -1286,6 +1303,7 @@ function RentalDashboard() {
               type="password"
               className="seats-input2-RD"
               label="Enter Password"
+              style={{ width: "35%" }}
               value={updatedData.password}
               onChange={(e) => handleUpdatedDataInputChange(e, "password")}
               required
@@ -1296,6 +1314,7 @@ function RentalDashboard() {
               type="password"
               className="seats-input2-RD"
               label="Confirm Password"
+              style={{ width: "35%" }}
               value={confPassword}
               onChange={(e) => setConfPassword(e.target.value)}
               required
@@ -1304,13 +1323,14 @@ function RentalDashboard() {
             </TextField>
 
             <div className="details-container-RD">
-              <h2 className="heading-RD">Car Info</h2>
+              <h3 className="heading-RD">Car Information</h3>
             </div>
 
             <TextField
               type="text"
               className="seats-input2-RD"
               label="Plate Number"
+              style={{ width: "35%" }}
               value={updatedCar.plate}
               onChange={(e) => handleUpdatedCarInputChange(e, "plate")}
               required
@@ -1321,6 +1341,7 @@ function RentalDashboard() {
               type="text"
               className="seats-input2-RD"
               label="Description"
+              style={{ width: "35%" }}
               value={updatedCar.desc}
               onChange={(e) => handleUpdatedCarInputChange(e, "desc")}
               required
@@ -1331,6 +1352,7 @@ function RentalDashboard() {
               type="number"
               className="seats-input2-RD"
               label="Capacity"
+              style={{ width: "35%" }}
               value={updatedCar.capacity}
               onChange={(e) => handleUpdatedCarInputChange(e, "capacity")}
               required
@@ -1340,70 +1362,67 @@ function RentalDashboard() {
             {error && <p className="error-message-RD">{error}</p>}
           </div>
         ) : (
-          <div className="details-container-RD">
-            <p className="data-RD">
+          <div className="setting-content-div-HD">
+            <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Last Name: {AccountData.last_name}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Email: {AccountData.email}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Age: {AccountData.age}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Price Per Day($): {price}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Phone: {AccountData.phone}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Country: {AccountData.country}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>City: {AccountData.city}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Address: {AccountData.address}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>
                 Password: {"*".repeat(AccountData.password.length)}
               </strong>
             </p>
-            <h2 className="heading-RD">Car Info</h2>
+            <h3 className="heading-RD">Car Information</h3>
 
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Plate: {CarData.plate}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Description: {CarData.desc}</strong>
             </p>
-            <p className="data-RD">
+            <p className="data-AD">
               <strong>Capacity: {CarData.capacity}</strong>
             </p>
           </div>
         )}
-        <div className="setting-container-RD">
+        <div className="setting-container-AD">
           {editData && (
-            <button className="save-button-RD" onClick={saveChanges}>
+            <button className="room-option-HD" onClick={saveChanges}>
+              <SaveIcon />
               Save
             </button>
           )}
-          <button className="edit-button-RD" onClick={editDataButton}>
+          <button className="room-option-HD" onClick={editDataButton}>
+            <EditIcon />
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
 
-        <div className="setting-container-RD">
-          <RentalButton
-            onClick={lockAccount}
-            sx={{
-              gap: "0.7vw",
-            }}
-          >
+        <div className="setting-container-AD">
+          <button onClick={lockAccount} className="room-option-HD">
             {accountStatus ? (
               <>
                 <LockIcon /> Lock Account
@@ -1413,20 +1432,11 @@ function RentalDashboard() {
                 <LockOpenIcon /> Unlock Account
               </>
             )}
-          </RentalButton>
-          <RentalButton
-            sx={{
-              "&:hover": {
-                color: "red !important",
-                borderColor: "red !important",
-              },
-              gap: "0.7vw",
-            }}
-            onClick={deleteAccount}
-          >
+          </button>
+          <button className="room-option-HD" onClick={deleteAccount}>
             <DeleteIcon />
             Delete Account
-          </RentalButton>
+          </button>
         </div>
         <div className="setting-container-RD">
           {error2 && <p className="error-message2-RD">{error2}</p>}
@@ -1465,12 +1475,7 @@ function RentalDashboard() {
   };
   return (
     <div>
-      <div className="background-RD">
-        <Aurora
-          colorStops={["#FFB74D", "#E67E22", "#FFF5EE", "#FFB74D"]}
-          speed={0.9}
-        />
-      </div>
+      <div className="background-RD"></div>
       <div className="main-container-RD">
         <div className="hamburger-menu-RD">
           <button

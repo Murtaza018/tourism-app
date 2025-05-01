@@ -294,9 +294,7 @@ function HotelDashboard() {
     return (
       <>
         <div className="details-container-GD">
-          <h2 className="heading-HD">
-            <strong>Details</strong>
-          </h2>
+          <h2 className="heading-HD">Details</h2>
 
           <div className="home-content-div-HD">
             <p className="data-HD">
@@ -1571,33 +1569,33 @@ function HotelDashboard() {
             {error && <p className="error-message">{error}</p>}
           </div>
         ) : (
-          <div className="home-content-div-HD">
+          <div className="setting-content-div-HD">
             <p className="data-HD">
-              <strong>First Name:</strong> {firstName}
+              <strong>First Name: {firstName} </strong>
             </p>
             <p className="data-HD">
-              <strong>Last Name:</strong> {lastName}
+              <strong>Last Name: {lastName}</strong>
             </p>
             <p className="data-HD">
-              <strong>Email:</strong> {email}
+              <strong>Email: {email}</strong>
             </p>
             <p className="data-HD">
-              <strong>Age:</strong> {age}
+              <strong>Age: {age}</strong>
             </p>
             <p className="data-HD">
-              <strong>Phone:</strong> {phone}
+              <strong>Phone: {phone}</strong>
             </p>
             <p className="data-HD">
-              <strong>Country:</strong> {country}
+              <strong>Country: {country}</strong>
             </p>
             <p className="data-HD">
-              <strong>City:</strong> {city}
+              <strong>City: {city}</strong>
             </p>
             <p className="data-HD">
-              <strong>Address:</strong> {address}
+              <strong>Address: {address}</strong>
             </p>
             <p className="data-HD">
-              <strong>Password:</strong> {password}
+              <strong>Password: {password}</strong>
             </p>
           </div>
         )}
