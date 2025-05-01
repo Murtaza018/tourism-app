@@ -151,21 +151,21 @@ body.menu-open-AD {
 
 .details-AD {
   background-color: rgba(209, 167, 217, 0.9);
+
   border: 1px solid #ccebff;
   border-radius: 8px;
   padding: 50px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-
-  overflow: auto;
-
-  backdrop-filter: blur(2px);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  transition: box-shadow 1s ease;
 }
 .details-AD .data-AD {
-  font-weight: bold;
   margin-bottom: 10px;
   font-size: 16px;
   color: #343a40;
   transition: transform 0.2s ease;
+  color: inherit !important;
 }
 
 .details-AD .data-AD strong {

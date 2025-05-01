@@ -29,10 +29,22 @@ const getGuideReservationData = async (req, res) => {
         const formattedResults = results.map((row) => ({
           ...row,
           start_date: row.start_date
-            ? row.start_date.toISOString().slice(0, 10)
+            ? typeof row.start_date === "string"
+              ? row.start_date.includes("T")
+                ? row.start_date.split("T")[0]
+                : row.start_date // Assuming it's already in YYYY-MM-DD format
+              : row.start_date instanceof Date
+              ? row.start_date.toISOString().slice(0, 10)
+              : null
             : null,
           end_date: row.end_date
-            ? row.end_date.toISOString().slice(0, 10)
+            ? typeof row.end_date === "string"
+              ? row.end_date.includes("T")
+                ? row.end_date.split("T")[0]
+                : row.end_date // Assuming it's already in YYYY-MM-DD format
+              : row.end_date instanceof Date
+              ? row.end_date.toISOString().slice(0, 10)
+              : null
             : null,
         }));
 

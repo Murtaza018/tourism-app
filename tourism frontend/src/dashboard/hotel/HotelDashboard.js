@@ -292,38 +292,43 @@ function HotelDashboard() {
   };
   const HomeContent = () => {
     return (
-      <div className="home-content-div-HD">
-        <h2 className="heading-HD">
-          <strong>Details</strong>
-        </h2>
-        <p className="data-HD">
-          <strong>First Name: {firstName}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Last Name: {lastName}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Email: {email}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Age: {age}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Phone: {phone}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Country: {country}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>City: {city}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Address: {address}</strong>
-        </p>
-        <p className="data-HD">
-          <strong>Password: {"*".repeat(password.length)}</strong>
-        </p>
-      </div>
+      <>
+        <div className="details-container-GD">
+          <h2 className="heading-HD">
+            <strong>Details</strong>
+          </h2>
+
+          <div className="home-content-div-HD">
+            <p className="data-HD">
+              <strong>First Name: {firstName}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Last Name: {lastName}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Email: {email}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Age: {age}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Phone: {phone}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Country: {country}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>City: {city}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Address: {address}</strong>
+            </p>
+            <p className="data-HD">
+              <strong>Password: {"*".repeat(password.length)}</strong>
+            </p>
+          </div>
+        </div>
+      </>
     );
   };
 

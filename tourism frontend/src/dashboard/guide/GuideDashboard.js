@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import StarIcon from "@mui/icons-material/Star";
 import { LockIcon, LockOpenIcon, StarHalfIcon } from "lucide-react";
 import { StarOutline } from "@mui/icons-material";
+import { Toaster } from "react-hot-toast";
 
 function GuideDashboard() {
   const navigate = useNavigate();
@@ -108,23 +109,14 @@ function GuideDashboard() {
         console.log(err);
       });
   }, []);
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-GD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
-
-  const toggleMenu = () => {
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-GD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-GD");
+    menu.classList.toggle("open-GD");
+    hamburgerIcon.classList.toggle("open-GD");
     setIsOpen(!isOpen);
-  };
+  }
   const logOut = () => {
     localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("email");
@@ -136,36 +128,38 @@ function GuideDashboard() {
         <h2 className="heading-GD">
           <strong>Details</strong>
         </h2>
-        <p className="data-GD">
-          <strong>First Name: {AccountData.first_name}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Last Name: {AccountData.last_name}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Email: {AccountData.email}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Age: {AccountData.age}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Price Per Day: {price}$</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Phone: {AccountData.phone}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Country: {AccountData.country}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>City: {AccountData.city}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Address: {AccountData.address}</strong>
-        </p>
-        <p className="data-GD">
-          <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
-        </p>
+        <div className="home-content-div-HD">
+          <p className="data-AD">
+            <strong>First Name: {AccountData.first_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Last Name: {AccountData.last_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Email: {AccountData.email}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Age: {AccountData.age}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Price Per Day: {price}$</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Phone: {AccountData.phone}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Country: {AccountData.country}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>City: {AccountData.city}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Address: {AccountData.address}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+          </p>
+        </div>
       </div>
     );
   };
@@ -1323,9 +1317,8 @@ function GuideDashboard() {
   };
   return (
     <div>
-      <div className="background-GD">
-        <Aurora colorStops={["#00D8FF", "#7cff67", "#00D8FF"]} speed={0.9} />
-      </div>
+      <Toaster />
+      <div className="background-GD"></div>
       <div className="main-container-GD">
         <div className="hamburger-menu-GD">
           <button

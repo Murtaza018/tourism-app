@@ -115,66 +115,46 @@ function AirlineDashboard() {
   const HomeContent = () => {
     return (
       <>
-        <h2 className="heading-AD">
-          <strong>Details</strong>
-        </h2>
-        <div className="home-content-div-HD">
-          <p className="data-AD">
-            <strong>First Name: {AccountData.first_name}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Last Name: {AccountData.last_name}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Email: {AccountData.email}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Age: {AccountData.age}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Phone: {AccountData.phone}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Country: {AccountData.country}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>City: {AccountData.city}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Address: {AccountData.address}</strong>
-          </p>
-          <p className="data-AD">
-            <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
-          </p>
+        <div className="details-container-GD">
+          <h2 className="heading-AD">
+            <strong>Details</strong>
+          </h2>
+          <div className="home-content-div-HD">
+            <p className="data-AD">
+              <strong>First Name: {AccountData.first_name}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Last Name: {AccountData.last_name}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Email: {AccountData.email}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Age: {AccountData.age}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Phone: {AccountData.phone}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Country: {AccountData.country}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>City: {AccountData.city}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>Address: {AccountData.address}</strong>
+            </p>
+            <p className="data-AD">
+              <strong>
+                Password: {"*".repeat(AccountData.password.length)}
+              </strong>
+            </p>
+          </div>
         </div>
       </>
     );
   };
-  const FlightButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "transparent",
-    border: "2px solid black",
-    color: "black",
-    fontSize: "1em",
-    padding: "5px 10px",
-    cursor: "pointer",
-    transition: "transform 0.5s ease, color 0.5s ease, border-color 0.5s ease",
-    marginTop: "5px",
-    "&:hover": {
-      transform: "scale(1.2)",
-    },
-    "&:nth-of-type(1):hover": {
-      color: "blue",
-      borderColor: "blue",
-    },
-    "&:nth-of-type(3):hover": {
-      color: "green",
-      borderColor: "green",
-    },
-    "&:nth-of-type(2):hover": {
-      color: "red",
-      borderColor: "red",
-    },
-  }));
+
   const [openFlightCard, setOpenFlightCard] = useState(false);
 
   const handleClickOpenFlightCard = () => {
