@@ -610,6 +610,9 @@ details[open] .feedback-summary-DD::after {
   color: rgb(28, 40, 208) !important;
 }
 
+.seats-input2-DD .MuiOutlinedInput-root input {
+  color: black !important;
+}
 .edit-input-container-DD .MuiInputLabel-root {
   color: rgb(28, 40, 208) !important;
   font-size: 14px !important;
@@ -618,10 +621,6 @@ details[open] .feedback-summary-DD::after {
   letter-spacing: 1px !important;
   margin: 10px 0 5px !important;
 }
-.seats-input2-DD .MuiOutlinedInput-root input {
-  color: black !important;
-}
-
 .hotel-details-DD {
   display: flex;
   align-items: flex-start; /* Align to the top */
@@ -634,6 +633,7 @@ details[open] .feedback-summary-DD::after {
 .hotel-details-DD .details2-DD {
   display: flex;
   flex-direction: column; /* Stack details vertically */
+  align-items: flex-start;
 }
 
 .hotel-details-DD p {
@@ -726,6 +726,8 @@ details[open] .feedback-summary2-DD::after {
 }
 .feedback-content3-DD {
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .button-div-DD {
   padding-left: 1rem;

@@ -4,7 +4,9 @@ import { useState, useEffect, Suspense } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Aurora from "../../components/Aurora";
+
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 import { Country, City } from "country-state-city";
 import { Hotel, Plane, Car, UsersRound, MapPinned } from "lucide-react";
 
@@ -20,6 +22,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { PersonAddAlt1Outlined } from "@mui/icons-material";
 import toast, { Toaster } from "react-hot-toast";
+import { hover } from "framer-motion";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -362,6 +365,7 @@ function AdminDashboard() {
               type="text"
               className="seats-input2-DD"
               label="First Name"
+              style={{ width: "35%" }}
               value={updatedData.first_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
               required
@@ -371,6 +375,7 @@ function AdminDashboard() {
             <TextField
               type="text"
               className="seats-input2-DD"
+              style={{ width: "35%" }}
               label="Last Name"
               value={updatedData.last_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
@@ -378,7 +383,7 @@ function AdminDashboard() {
             >
               Last Name
             </TextField>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Email:</strong> {AccountData.email}
             </p>
 
@@ -387,6 +392,7 @@ function AdminDashboard() {
               className="seats-input2-DD"
               label="Age(18-150)"
               value={updatedData.age}
+              style={{ width: "35%" }}
               onChange={(e) => handleUpdatedDataInputChange(e, "age")}
               required
             >
@@ -398,6 +404,7 @@ function AdminDashboard() {
               className="seats-input2-DD"
               label="Phone"
               value={updatedData.phone}
+              style={{ width: "35%" }}
               onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
               required
             >
@@ -417,7 +424,7 @@ function AdminDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               fullWidth
               onChange={handleCountryChange}
@@ -447,7 +454,7 @@ function AdminDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               onChange={handleCityChange}
             >
@@ -462,6 +469,7 @@ function AdminDashboard() {
               type="text"
               className="seats-input2-DD"
               label="Complete Address"
+              style={{ width: "35%" }}
               value={updatedData.address}
               onChange={(e) => handleUpdatedDataInputChange(e, "address")}
               required
@@ -472,6 +480,7 @@ function AdminDashboard() {
               type="password"
               className="seats-input2-DD"
               label="Enter Password"
+              style={{ width: "35%" }}
               value={updatedData.password}
               onChange={(e) => handleUpdatedDataInputChange(e, "password")}
               required
@@ -482,6 +491,7 @@ function AdminDashboard() {
               type="password"
               className="seats-input2-DD"
               label="Confirm Password"
+              style={{ width: "35%" }}
               value={confPassword}
               onChange={(e) => setConfPassword(e.target.value)}
               required
@@ -493,32 +503,32 @@ function AdminDashboard() {
           </div>
         ) : (
           <div className="details-container-DD">
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Last Name: {AccountData.last_name}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Email: {AccountData.email}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Age: {AccountData.age}</strong>
             </p>
 
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Phone: {AccountData.phone}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Country: {AccountData.country}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>City: {AccountData.city}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>Address: {AccountData.address}</strong>
             </p>
-            <p className="data-DD">
+            <p className="data-AD">
               <strong>
                 Password: {"*".repeat(AccountData.password.length)}
               </strong>
@@ -527,28 +537,21 @@ function AdminDashboard() {
         )}
         <div className="setting-container-DD">
           {editData && (
-            <button className="save-button-DD" onClick={saveChanges}>
+            <button className="room-option-HD" onClick={saveChanges}>
+              <SaveIcon />
               Save
             </button>
           )}
-          <button className="edit-button-DD" onClick={editDataButton}>
+          <button className="room-option-HD" onClick={editDataButton}>
+            <EditIcon />
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
         <div className="setting-container-DD">
-          <AdminButton
-            sx={{
-              "&:hover": {
-                color: "red !important",
-                borderColor: "red !important",
-              },
-              gap: "0.7vw",
-            }}
-            onClick={deleteAccount}
-          >
+          <button className="room-option2-HD" onClick={deleteAccount}>
             <DeleteIcon />
             Delete Account
-          </AdminButton>
+          </button>
         </div>
         <div className="setting-container-DD">
           {error2 && <p className="error-message2-DD">{error2}</p>}
@@ -556,34 +559,46 @@ function AdminDashboard() {
       </div>
     );
   };
-  const HotelContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [hotelData, setHotelData] = useState(null);
-    useEffect(() => {
-      const hotelDataRetreival = async () => {
-        setIsLoading(true);
-        fetch("http://localhost:8008/Tourism/getAdminHotels", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              console.log("Hotel Data", data.data);
-              setHotelData(data.data);
-              setIsLoading(false);
-            } else {
-              console.log("Data not retreived!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
+  useEffect(() => {
+    setIsLoading(true);
+    if (activeCard === "Hotel") {
       hotelDataRetreival();
-    }, []);
+    } else if (activeCard === "Airline") {
+      AirlineDataRetreival();
+    } else if (activeCard === "Guide") {
+      GuideDataRetreival();
+    } else if (activeCard === "Rental") {
+      RentalDataRetreival();
+    } else if (activeCard === "Tourist") {
+      TouristDataRetreival();
+    }
+  }, [activeCard]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hotelData, setHotelData] = useState(null);
+
+  const hotelDataRetreival = async () => {
+    setIsLoading(true);
+    fetch("http://localhost:8008/Tourism/getAdminHotels", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Hotel Data", data.data);
+          setHotelData(data.data);
+          setIsLoading(false);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const HotelContent = () => {
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
@@ -609,7 +624,7 @@ function AdminDashboard() {
     };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Hotels</h2>
+        <h1 className="heading-room-HD">Hotels</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -617,28 +632,24 @@ function AdminDashboard() {
             {hotelData && hotelData.length > 0 ? (
               hotelData.map((hotel) => (
                 <details
-                  className="feedback-details2-DD"
+                  className="feedback-details-AD"
                   key={hotel.email}
                   open={openSummary === hotel.email}
                 >
                   <summary
-                    className="feedback-summary2-DD"
+                    className="feedback-summary-AD"
                     onClick={() => {
                       setOpenSummary(hotel.email);
                     }}
                   >
-                    {hotel.first_name} {hotel.last_name}
-                    <p className="summary-rating-DD">
-                      ({hotel.rating.toFixed(2)}
-                      <StarIcon />)
-                    </p>
+                    {hotel.first_name} {hotel.last_name} (
+                    {hotel.rating.toFixed(2)}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
-                        <h2 className="flight-details-heading-DD">
-                          Personal Information:
-                        </h2>
+                        <h2 className="heading-DD">Personal Information:</h2>
                         <p className="summary-rating2-DD">
                           First Name: {hotel.first_name}
                         </p>
@@ -698,34 +709,30 @@ function AdminDashboard() {
       </div>
     );
   };
+  const [AirlineData, setAirlineData] = useState(null);
+  const AirlineDataRetreival = async () => {
+    setIsLoading(true);
+    fetch("http://localhost:8008/Tourism/getAdminAirlines", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Airline Data", data.data);
+          setAirlineData(data.data);
+          setIsLoading(false);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const AirlineContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [AirlineData, setAirlineData] = useState(null);
-    useEffect(() => {
-      const AirlineDataRetreival = async () => {
-        setIsLoading(true);
-        fetch("http://localhost:8008/Tourism/getAdminAirlines", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              console.log("Airline Data", data.data);
-              setAirlineData(data.data);
-              setIsLoading(false);
-            } else {
-              console.log("Data not retreived!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-      AirlineDataRetreival();
-    }, []);
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
@@ -751,7 +758,7 @@ function AdminDashboard() {
     };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Airlines</h2>
+        <h1 className="heading-room-HD">Airlines</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -759,28 +766,24 @@ function AdminDashboard() {
             {AirlineData && AirlineData.length > 0 ? (
               AirlineData.map((Airline) => (
                 <details
-                  className="feedback-details2-DD"
+                  className="feedback-details-AD"
                   key={Airline.email}
                   open={openSummary === Airline.email}
                 >
                   <summary
-                    className="feedback-summary2-DD"
+                    className="feedback-summary-AD"
                     onClick={() => {
                       setOpenSummary(Airline.email);
                     }}
                   >
-                    {Airline.first_name} {Airline.last_name}
-                    <p className="summary-rating-DD">
-                      ({Airline.rating.toFixed(2)}
-                      <StarIcon />)
-                    </p>
+                    {Airline.first_name} {Airline.last_name} (
+                    {Airline.rating.toFixed(2)}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
-                        <h2 className="flight-details-heading-DD">
-                          Personal Information:
-                        </h2>
+                        <h2 className="heading-DD">Personal Information:</h2>
                         <p className="summary-rating2-DD">
                           First Name: {Airline.first_name}
                         </p>
@@ -842,35 +845,30 @@ function AdminDashboard() {
       </div>
     );
   };
-
+  const [GuideData, setGuideData] = useState(null);
+  const GuideDataRetreival = async () => {
+    setIsLoading(true);
+    fetch("http://localhost:8008/Tourism/getAdminGuides", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Guide Data", data.data);
+          setGuideData(data.data);
+          setIsLoading(false);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const GuideContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [GuideData, setGuideData] = useState(null);
-    useEffect(() => {
-      const GuideDataRetreival = async () => {
-        setIsLoading(true);
-        fetch("http://localhost:8008/Tourism/getAdminGuides", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              console.log("Guide Data", data.data);
-              setGuideData(data.data);
-              setIsLoading(false);
-            } else {
-              console.log("Data not retreived!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-      GuideDataRetreival();
-    }, []);
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
@@ -896,7 +894,7 @@ function AdminDashboard() {
     };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Guides</h2>
+        <h1 className="heading-room-HD">Tour Guides</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -904,28 +902,24 @@ function AdminDashboard() {
             {GuideData && GuideData.length > 0 ? (
               GuideData.map((Guide) => (
                 <details
-                  className="feedback-details2-DD"
+                  className="feedback-details-AD"
                   key={Guide.email}
                   open={openSummary === Guide.email}
                 >
                   <summary
-                    className="feedback-summary2-DD"
+                    className="feedback-summary-AD"
                     onClick={() => {
                       setOpenSummary(Guide.email);
                     }}
                   >
-                    {Guide.first_name} {Guide.last_name}
-                    <p className="summary-rating-DD">
-                      ({Guide.rating.toFixed(2)}
-                      <StarIcon />)
-                    </p>
+                    {Guide.first_name} {Guide.last_name} (
+                    {Guide.rating.toFixed(2)}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
-                        <h2 className="flight-details-heading-DD">
-                          Personal Information:
-                        </h2>
+                        <h2 className="heading-DD">Personal Information:</h2>
                         <p className="summary-rating2-DD">
                           First Name: {Guide.first_name}
                         </p>
@@ -989,34 +983,31 @@ function AdminDashboard() {
     );
   };
 
+  const [RentalData, setRentalData] = useState(null);
+
+  const RentalDataRetreival = async () => {
+    setIsLoading(true);
+    fetch("http://localhost:8008/Tourism/getAdminRentals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Rental Data", data.data);
+          setRentalData(data.data);
+          setIsLoading(false);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const RentalContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [RentalData, setRentalData] = useState(null);
-    useEffect(() => {
-      const RentalDataRetreival = async () => {
-        setIsLoading(true);
-        fetch("http://localhost:8008/Tourism/getAdminRentals", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              console.log("Rental Data", data.data);
-              setRentalData(data.data);
-              setIsLoading(false);
-            } else {
-              console.log("Data not retreived!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-      RentalDataRetreival();
-    }, []);
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
@@ -1042,7 +1033,7 @@ function AdminDashboard() {
     };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Rentals</h2>
+        <h1 className="heading-room-HD">Rental</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -1050,28 +1041,24 @@ function AdminDashboard() {
             {RentalData && RentalData.length > 0 ? (
               RentalData.map((Rental) => (
                 <details
-                  className="feedback-details2-DD"
+                  className="feedback-details-AD"
                   key={Rental.email}
                   open={openSummary === Rental.email}
                 >
                   <summary
-                    className="feedback-summary2-DD"
+                    className="feedback-summary-AD"
                     onClick={() => {
                       setOpenSummary(Rental.email);
                     }}
                   >
-                    {Rental.first_name} {Rental.last_name}
-                    <p className="summary-rating-DD">
-                      ({Rental.rating.toFixed(2)}
-                      <StarIcon />)
-                    </p>
+                    {Rental.first_name} {Rental.last_name} (
+                    {Rental.rating.toFixed(2)}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
-                        <h2 className="flight-details-heading-DD">
-                          Personal Information:
-                        </h2>
+                        <h2 className="heading-DD">Personal Information:</h2>
                         <p className="summary-rating2-DD">
                           First Name: {Rental.first_name}
                         </p>
@@ -1104,9 +1091,7 @@ function AdminDashboard() {
                           Rating: ({Rental.rating.toFixed(2)}
                           <StarIcon />)
                         </p>
-                        <h2 className="flight-details-heading-DD">
-                          Car Information:
-                        </h2>
+                        <h2 className="heading-DD">Car Information:</h2>
                         <p className="summary-rating2-DD">
                           Description: {Rental.description}
                         </p>
@@ -1149,34 +1134,30 @@ function AdminDashboard() {
     );
   };
 
+  const [TouristData, setTouristData] = useState(null);
+  const TouristDataRetreival = async () => {
+    setIsLoading(true);
+    fetch("http://localhost:8008/Tourism/getAdminTourists", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          console.log("Tourist Data", data.data);
+          setTouristData(data.data);
+          setIsLoading(false);
+        } else {
+          console.log("Data not retreived!", data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const TouristContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [TouristData, setTouristData] = useState(null);
-    useEffect(() => {
-      const TouristDataRetreival = async () => {
-        setIsLoading(true);
-        fetch("http://localhost:8008/Tourism/getAdminTourists", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              console.log("Tourist Data", data.data);
-              setTouristData(data.data);
-              setIsLoading(false);
-            } else {
-              console.log("Data not retreived!", data.data);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-      TouristDataRetreival();
-    }, []);
     const [openSummary, setOpenSummary] = useState(null);
     const lockAccount = (email) => {
       console.log("email:", email);
@@ -1202,7 +1183,7 @@ function AdminDashboard() {
     };
     return (
       <div className="Admin-content-DD">
-        <h2 className="heading-DD">Tourists</h2>
+        <h1 className="heading-room-HD">Tourists</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -1210,28 +1191,24 @@ function AdminDashboard() {
             {TouristData && TouristData.length > 0 ? (
               TouristData.map((Tourist) => (
                 <details
-                  className="feedback-details2-DD"
+                  className="feedback-details-AD"
                   key={Tourist.email}
                   open={openSummary === Tourist.email}
                 >
                   <summary
-                    className="feedback-summary2-DD"
+                    className="feedback-summary-AD"
                     onClick={() => {
                       setOpenSummary(Tourist.email);
                     }}
                   >
-                    {Tourist.first_name} {Tourist.last_name}
-                    <p className="summary-rating-DD">
-                      ({Tourist.rating.toFixed(2)}
-                      <StarIcon />)
-                    </p>
+                    {Tourist.first_name} {Tourist.last_name} (
+                    {Tourist.rating.toFixed(2)}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content2-DD">
                     <div className="hotel-details-DD">
                       <div className="details2-DD">
-                        <h2 className="flight-details-heading-DD">
-                          Personal Information:
-                        </h2>
+                        <h2 className="heading-DD">Personal Information:</h2>
                         <p className="summary-rating2-DD">
                           First Name: {Tourist.first_name}
                         </p>
@@ -1423,14 +1400,15 @@ function AdminDashboard() {
     return (
       <div>
         <div className="Admin-content-DD">
-          <h2 className="heading-DD">Admin Sign Up</h2>
+          <h1 className="heading-room-HD">Admin Sign Up</h1>
         </div>
-        <div className="edit-input-container-DD">
+        <div className="setting-content-div-HD">
           <TextField
             type="text"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="First Name"
             value={formData.first_name}
+            style={{ width: "35%" }}
             onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
             required
           >
@@ -1438,8 +1416,9 @@ function AdminDashboard() {
           </TextField>
           <TextField
             type="text"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Last Name"
+            style={{ width: "35%" }}
             value={formData.last_name}
             onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
             required
@@ -1449,8 +1428,9 @@ function AdminDashboard() {
 
           <TextField
             type="text"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Email"
+            style={{ width: "35%" }}
             value={formData.email}
             onChange={(e) => handleUpdatedDataInputChange(e, "email")}
             required
@@ -1460,9 +1440,10 @@ function AdminDashboard() {
 
           <TextField
             type="number"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Age(18-150)"
             value={formData.age}
+            style={{ width: "35%" }}
             onChange={(e) => handleUpdatedDataInputChange(e, "age")}
             required
           >
@@ -1471,8 +1452,9 @@ function AdminDashboard() {
 
           <TextField
             type="tel"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Phone"
+            style={{ width: "35%" }}
             value={formData.phone}
             onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
             required
@@ -1485,7 +1467,7 @@ function AdminDashboard() {
             labelId="country-label"
             id="country"
             size="small"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             value={selectedCountry}
             label="Select Country"
             sx={{
@@ -1493,7 +1475,7 @@ function AdminDashboard() {
               paddingTop: "4vh !important",
               paddingBottom: "4vh !important",
               height: " 3vh !important",
-              width: "26% !important",
+              width: "35% !important",
             }}
             fullWidth
             onChange={handleCountryChange}
@@ -1512,7 +1494,7 @@ function AdminDashboard() {
             required
             labelId="city-label"
             id="city"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             disabled={!selectedCountry}
             fullWidth
             value={selectedCity}
@@ -1523,7 +1505,7 @@ function AdminDashboard() {
               paddingTop: "4vh !important",
               paddingBottom: "4vh !important",
               height: " 3vh !important",
-              width: "26% !important",
+              width: "35% !important",
             }}
             onChange={handleCityChange}
           >
@@ -1536,8 +1518,9 @@ function AdminDashboard() {
           </Select>
           <TextField
             type="text"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Complete Address"
+            style={{ width: "35%" }}
             value={formData.address}
             onChange={(e) => handleUpdatedDataInputChange(e, "address")}
             required
@@ -1546,8 +1529,9 @@ function AdminDashboard() {
           </TextField>
           <TextField
             type="password"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Enter Password"
+            style={{ width: "35%" }}
             value={formData.password}
             onChange={(e) => handleUpdatedDataInputChange(e, "password")}
             required
@@ -1556,22 +1540,26 @@ function AdminDashboard() {
           </TextField>
           <TextField
             type="password"
-            className="seats-input2-DD"
+            className="seats-input2-RD"
             label="Confirm Password"
+            style={{ width: "35%" }}
             value={confPassword}
             onChange={(e) => setConfPassword(e.target.value)}
             required
           >
             Confirm Password
           </TextField>
-          <button
-            className="edit-button2-DD"
-            onClick={(e) => {
-              signUp(e);
-            }}
-          >
-            Sign Up
-          </button>
+
+          <div className="setting-container-AD">
+            <button
+              className="room-option-HD"
+              onClick={(e) => {
+                signUp(e);
+              }}
+            >
+              <PersonAddAlt1Outlined /> Add Admin
+            </button>
+          </div>
           {error && <p className="error-message-DD">{error}</p>}
         </div>
       </div>

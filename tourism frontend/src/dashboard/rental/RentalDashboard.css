@@ -608,6 +608,9 @@ details[open] .feedback-summary-RD::after {
   color: rgb(28, 40, 208) !important;
 }
 
+.seats-input2-RD .MuiOutlinedInput-root input {
+  color: black !important;
+}
 .edit-input-container-RD .MuiInputLabel-root {
   color: rgb(28, 40, 208) !important;
   font-size: 14px !important;
@@ -615,7 +618,4 @@ details[open] .feedback-summary-RD::after {
   text-transform: uppercase !important;
   letter-spacing: 1px !important;
   margin: 10px 0 5px !important;
-}
-.seats-input2-RD .MuiOutlinedInput-root input {
-  color: black !important;
 }

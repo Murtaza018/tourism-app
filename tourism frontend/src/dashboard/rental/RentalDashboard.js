@@ -17,7 +17,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -223,32 +222,6 @@ function RentalDashboard() {
         console.log(err);
       });
   };
-
-  const RentalButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "transparent",
-    border: "2px solid black",
-    color: "black",
-    fontSize: "1em",
-    padding: "5px 10px",
-    cursor: "pointer",
-    transition: "transform 0.5s ease, color 0.5s ease, border-color 0.5s ease",
-    marginTop: "5px",
-    "&:hover": {
-      transform: "scale(1.2)",
-    },
-    "&:nth-of-type(1):hover": {
-      color: "blue",
-      borderColor: "blue",
-    },
-    "&:nth-of-type(2):hover": {
-      color: "green",
-      borderColor: "green",
-    },
-    "&:nth-of-type(3):hover": {
-      color: "red",
-      borderColor: "red",
-    },
-  }));
 
   const ReservationContent = () => {
     const [selectedReservs, setSelectedReservs] = useState([]);
@@ -822,7 +795,8 @@ function RentalDashboard() {
                   key={reserv.feedback_id}
                 >
                   <summary className="feedback-summary-AD">
-                    {reserv.first_name} {reserv.last_name} ({reserv.rating}{" "}
+                    {reserv.first_name} {reserv.last_name} (
+                    {reserv.rating.toFixed(2)}{" "}
                     <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content-RD">
