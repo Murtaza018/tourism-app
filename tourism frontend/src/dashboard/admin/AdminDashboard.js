@@ -78,23 +78,14 @@ function AdminDashboard() {
     };
     userDataRetreival();
   }, []);
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
-  useEffect(() => {
-    const mainContainer = document.querySelector(".main-container-DD");
-    if (mainContainer) {
-      mainContainer.classList.toggle("menu-open", isOpen);
-    }
-  }, [isOpen]);
-
-  const toggleMenu = () => {
+  function toggleMenu() {
+    const menu = document.querySelector(".menu-DD");
+    const hamburgerIcon = document.querySelector(".hamburger-icon-DD");
+    menu.classList.toggle("open-DD");
+    hamburgerIcon.classList.toggle("open-DD");
     setIsOpen(!isOpen);
-  };
+  }
   const logOut = () => {
     localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("email");
@@ -103,35 +94,34 @@ function AdminDashboard() {
   const HomeContent = () => {
     return (
       <div className="details-container-DD">
-        <h2 className="heading-DD">
-          <strong>Details</strong>
-        </h2>
-        <p className="data-DD">
+        <h2 className="heading-DD">Details</h2>
+        <div className="home-content-div-HD"></div>
+        <p className="data-AD">
           <strong>First Name: {AccountData.first_name}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Last Name: {AccountData.last_name}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Email: {AccountData.email}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Age: {AccountData.age}</strong>
         </p>
 
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Phone: {AccountData.phone}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Country: {AccountData.country}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>City: {AccountData.city}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Address: {AccountData.address}</strong>
         </p>
-        <p className="data-DD">
+        <p className="data-AD">
           <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
         </p>
       </div>
@@ -1607,12 +1597,7 @@ function AdminDashboard() {
   };
   return (
     <div>
-      <div className="background-DD">
-        <Aurora
-          colorStops={["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]}
-          speed={0.9}
-        />
-      </div>
+      <div className="background-DD"></div>
       <div>
         <Toaster />
       </div>

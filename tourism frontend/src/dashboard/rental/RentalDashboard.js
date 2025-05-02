@@ -142,7 +142,7 @@ function RentalDashboard() {
   function toggleMenu() {
     const menu = document.querySelector(".menu-RD");
     const hamburgerIcon = document.querySelector(".hamburger-icon-RD");
-    menu.classList.toggle("open-R");
+    menu.classList.toggle("open-RD");
     hamburgerIcon.classList.toggle("open-RD");
     setIsOpen(!isOpen);
   }

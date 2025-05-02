@@ -19,10 +19,12 @@ const UserCheckTable = async () => {
 };
 const signInUser = async (req, res) => {
   await UserCheckTable();
+  console.log("signin:", req.body);
   pool.query(
     `select u.*,a.status from user u join accountStatus a on u.email=a.email where u.email = ?;`,
     [req.body.email],
     (err, results) => {
+      console.log("sigin results", results);
       if (results.length > 0) {
         console.log("Hi", results);
         return res.json({ code: 200, data: results });

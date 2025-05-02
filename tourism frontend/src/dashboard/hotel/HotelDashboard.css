@@ -13,6 +13,12 @@
     padding-left: 50px;
   }
 }
+@media (max-width: 300px) {
+  .setting-container-HD {
+    flex-direction: column;
+    margin-top: 3vh;
+  }
+}
 .hamburger-menu-HD {
   position: absolute;
   top: 0;

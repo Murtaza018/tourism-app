@@ -45,7 +45,7 @@
 .hamburger-icon-TD .line-TD {
   width: 100%;
   height: 4px;
-  background-color: white;
+  background-color: black;
   transition: all 0.3s ease;
 }
 
@@ -67,15 +67,15 @@
 
 .menu-TD ul {
   list-style: none;
-  padding: 50px 18px;
+  padding: 50px 20px;
   margin: 0;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
+  flex-direction: column;
 }
 
 .menu-TD li {
-  margin: 10px 0;
+  margin: 15px 0;
 }
 
 .button-TD {
@@ -101,19 +101,23 @@ body.menu-open-TD {
 }
 
 .background-TD {
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-  min-height: 100vh !important;
-  width: 100% !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  z-index: -1 !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-image: url("https://southcarolina.usmc-mccs.org/modules/media/t/91fb2e33e41145dfb3b155a03fb6fcea_v1.jpeg?m=638298216333830000");
+  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  filter: brightness(0.5);
 }
 .menu-TD {
   width: 250px;
   height: 100%;
-  background-color: rgba(33, 150, 243, 0.7);
+  background-color: rgba(255, 255, 255, 0.9);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 20;
@@ -124,14 +128,12 @@ body.menu-open-TD {
 }
 .heading-TD {
   color: rgb(40, 53, 147);
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(40, 53, 147, 0.78);
+  font-size: 1.5em;
+  margin-bottom: 15px;
 }
 
 .details-TD {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(167, 235, 254, 0.9);
   border: 1px solid #ccebff;
   border-radius: 8px;
   padding: 50px;
@@ -141,12 +143,13 @@ body.menu-open-TD {
   transition: box-shadow 1s ease;
 }
 .content-TD {
-  padding: 20px;
+  padding: 5px 5px 5px 20px;
   transition: margin-left 0.3s ease;
   flex-grow: 1;
-  overflow-x: auto;
+
+  overflow: auto;
 }
-.details-TD .data-TD {
+.details-TD .data-AD {
   margin-bottom: 10px;
   font-size: 16px;
   color: #343a40;
@@ -166,11 +169,9 @@ body.menu-open-TD {
   .details-TD .data-TD {
     font-size: 14px;
   }
-}
-
-.details-TD:hover {
-  box-shadow: 0 0 20px 5px rgba(52, 152, 219, 0.7),
-    inset 0 0 20px 5px rgba(52, 152, 219, 0.5);
+  .main-container-TD {
+    padding-left: 0px;
+  }
 }
 
 .details-container-TD {

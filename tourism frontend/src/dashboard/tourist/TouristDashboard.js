@@ -5,13 +5,15 @@ import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import Aurora from "../../components/Aurora";
 import { Country, City } from "country-state-city";
 import PublicIcon from "@mui/icons-material/Public";
 import HistoryIcon from "@mui/icons-material/History";
 import { DateTime } from "luxon";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightIcon from "@mui/icons-material/Flight";
+
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 import {
   Button,
   Dialog,
@@ -109,36 +111,36 @@ function TouristDashboard() {
   const HomeContent = () => {
     return (
       <div className="details-container-TD">
-        <h2 className="heading-TD">
-          <strong>Details</strong>
-        </h2>
-        <p className="data-TD">
-          <strong>First Name: {AccountData.first_name}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Last Name: {AccountData.last_name}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Email: {AccountData.email}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Age: {AccountData.age}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Phone: {AccountData.phone}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Country: {AccountData.country}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>City: {AccountData.city}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Address: {AccountData.address}</strong>
-        </p>
-        <p className="data-TD">
-          <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
-        </p>
+        <h2 className="heading-TD">Details</h2>
+        <div className="home-content-div-HD">
+          <p className="data-AD">
+            <strong>First Name: {AccountData.first_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Last Name: {AccountData.last_name}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Email: {AccountData.email}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Age: {AccountData.age}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Phone: {AccountData.phone}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Country: {AccountData.country}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>City: {AccountData.city}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Address: {AccountData.address}</strong>
+          </p>
+          <p className="data-AD">
+            <strong>Password: {"*".repeat(AccountData.password.length)}</strong>
+          </p>
+        </div>
       </div>
     );
   };
@@ -1930,9 +1932,7 @@ function TouristDashboard() {
     const [openSummary2, setOpenSummary2] = useState(null);
     return (
       <div className="Tourist-content-TD">
-        <h2 className="heading-TD">
-          <strong>Your Packages</strong>
-        </h2>
+        <h1 className="heading-room-HD">Your Packages</h1>
         {packageData && packageData.length > 0 ? (
           packageData.map((packageItem) => (
             <details
@@ -2404,9 +2404,7 @@ function TouristDashboard() {
     return (
       <>
         <div className="Tourist-content-TD">
-          <h2 className="heading-TD">
-            <strong>Travel The World!</strong>
-          </h2>
+          <h1 className="heading-room-HD">Travel The World!</h1>
           <button
             onClick={handleOpenPackageStepper}
             className={"travel-btn travel-btn-animated"}
@@ -2507,19 +2505,20 @@ function TouristDashboard() {
     return (
       <div>
         <div className="Tourist-content-TD">
-          <h2 className="heading-TD">
-            <strong>Feedback</strong>
-          </h2>
+          <h1 className="heading-room-HD">Feedback</h1>
           {displayFeedbackData.length > 0 ? (
             <>
+              <h3 className="heading-room-rating-HD">
+                Average Rating: {displayFeedbackData[0].avg_rating} <StarIcon />
+              </h3>
               {displayFeedbackData.map((reserv) => (
                 <details
-                  className="feedback-details-TD"
+                  className="feedback-details-AD"
                   key={reserv.feedback_id}
                 >
-                  <summary className="feedback-summary-TD">
-                    {reserv.first_name} {reserv.last_name}({reserv.sender_email}
-                    )
+                  <summary className="feedback-summary-AD">
+                    {reserv.first_name} {reserv.last_name} ({reserv.rating}{" "}
+                    <StarIcon sx={{ color: "#ffc107", margin: "0px" }} />)
                   </summary>
                   <div className="feedback-content-TD">
                     <div className="feedback-rating-TD">
@@ -2787,16 +2786,15 @@ function TouristDashboard() {
 
     return (
       <div>
-        <div className="details-container-TD">
-          <h2 className="heading-TD">Settings</h2>
-        </div>
+        <h2 className="heading-TD">Settings</h2>
         {editData === true ? (
-          <div className="edit-input-container-TD">
+          <div className="setting-content-div-HD">
             <TextField
               type="text"
               className="seats-input2-TD"
               label="First Name"
               value={updatedData.first_name}
+              style={{ width: "35%" }}
               onChange={(e) => handleUpdatedDataInputChange(e, "first_name")}
               required
             >
@@ -2806,19 +2804,21 @@ function TouristDashboard() {
               type="text"
               className="seats-input2-TD"
               label="Last Name"
+              style={{ width: "35%" }}
               value={updatedData.last_name}
               onChange={(e) => handleUpdatedDataInputChange(e, "last_name")}
               required
             >
               Last Name
             </TextField>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Email:</strong> {AccountData.email}
             </p>
 
             <TextField
               type="number"
               className="seats-input2-TD"
+              style={{ width: "35%" }}
               label="Age(18-150)"
               value={updatedData.age}
               onChange={(e) => handleUpdatedDataInputChange(e, "age")}
@@ -2830,6 +2830,7 @@ function TouristDashboard() {
               type="tel"
               className="seats-input2-TD"
               label="Phone"
+              style={{ width: "35%" }}
               value={updatedData.phone}
               onChange={(e) => handleUpdatedDataInputChange(e, "phone")}
               required
@@ -2850,7 +2851,7 @@ function TouristDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               fullWidth
               onChange={handleCountryChange}
@@ -2880,7 +2881,7 @@ function TouristDashboard() {
                 paddingTop: "4vh !important",
                 paddingBottom: "4vh !important",
                 height: " 3vh !important",
-                width: "26% !important",
+                width: "35% !important",
               }}
               onChange={handleCityChange}
             >
@@ -2895,6 +2896,7 @@ function TouristDashboard() {
               type="text"
               className="seats-input2-TD"
               label="Complete Address"
+              style={{ width: "35%" }}
               value={updatedData.address}
               onChange={(e) => handleUpdatedDataInputChange(e, "address")}
               required
@@ -2905,6 +2907,7 @@ function TouristDashboard() {
               type="password"
               className="seats-input2-TD"
               label="Enter Password"
+              style={{ width: "35%" }}
               value={updatedData.password}
               onChange={(e) => handleUpdatedDataInputChange(e, "password")}
               required
@@ -2915,6 +2918,7 @@ function TouristDashboard() {
               type="password"
               className="seats-input2-TD"
               label="Confirm Password"
+              style={{ width: "35%" }}
               value={confPassword}
               onChange={(e) => setConfPassword(e.target.value)}
               required
@@ -2925,56 +2929,53 @@ function TouristDashboard() {
             {error && <p className="error-message-TD">{error}</p>}
           </div>
         ) : (
-          <div className="details-container-TD">
-            <p className="data-TD">
+          <div className="setting-content-div-HD">
+            <p className="data-AD">
               <strong>First Name: {AccountData.first_name}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Last Name: {AccountData.last_name}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Email: {AccountData.email}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Age: {AccountData.age}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Phone: {AccountData.phone}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Country: {AccountData.country}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>City: {AccountData.city}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>Address: {AccountData.address}</strong>
             </p>
-            <p className="data-TD">
+            <p className="data-AD">
               <strong>
                 Password: {"*".repeat(AccountData.password.length)}
               </strong>
             </p>
           </div>
         )}
-        <div className="setting-container-TD">
+        <div className="setting-container-AD">
           {editData && (
-            <button className="save-button-TD" onClick={saveChanges}>
+            <button className="room-option-HD" onClick={saveChanges}>
+              <SaveIcon />
               Save
             </button>
           )}
-          <button className="edit-button-TD" onClick={editDataButton}>
+          <button className="room-option-HD" onClick={editDataButton}>
+            <EditIcon />
             {editData ? "Cancel Edit" : "Edit Info"}
           </button>
         </div>
 
-        <div className="setting-container-TD">
-          <TouristButton
-            onClick={lockAccount}
-            sx={{
-              gap: "0.7vw",
-            }}
-          >
+        <div className="setting-container-AD">
+          <button onClick={lockAccount} className="room-option-HD">
             {accountStatus ? (
               <>
                 <LockIcon /> Lock Account
@@ -2984,20 +2985,11 @@ function TouristDashboard() {
                 <LockOpenIcon /> Unlock Account
               </>
             )}
-          </TouristButton>
-          <TouristButton
-            sx={{
-              "&:hover": {
-                color: "red !important",
-                borderColor: "red !important",
-              },
-              gap: "0.7vw",
-            }}
-            onClick={deleteAccount}
-          >
+          </button>
+          <button className="room-option-HD" onClick={deleteAccount}>
             <DeleteIcon />
             Delete Account
-          </TouristButton>
+          </button>
         </div>
         <div className="setting-container-TD">
           {error2 && <p className="error-message2-TD">{error2}</p>}
@@ -3044,12 +3036,7 @@ function TouristDashboard() {
   }
   return (
     <div>
-      <div className="background-TD">
-        <Aurora
-          colorStops={["#2196F3", "#3498DB", "#FFFFFF", "#87CEEB", "#2196F3"]}
-          speed={1.2}
-        />
-      </div>
+      <div className="background-TD"></div>
       <div className="main-container-TD">
         <div className="hamburger-menu-TD">
           <button
