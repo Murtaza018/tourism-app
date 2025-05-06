@@ -523,14 +523,29 @@ const PackageStepper = ({ open, onClose }) => {
     },
     0
   );
+  const [selectedFlightPrice, setSelectedFlightPrice] = useState(0);
+  const [selectedReturnFlightPrice, setSelectedReturnFlightPrice] = useState(0);
   useEffect(() => {
     setRentalPrice(totalRentalPrice);
   }, [totalRentalPrice]);
   useEffect(() => {
     setFormData({
-      amount: Math.floor((hotelPrice + guidePrice + rentalPrice) * 0.9),
+      amount: Math.floor(
+        (hotelPrice +
+          guidePrice +
+          rentalPrice +
+          selectedFlightPrice +
+          selectedReturnFlightPrice) *
+          0.9
+      ),
     });
-  }, [guidePrice, hotelPrice, rentalPrice]);
+  }, [
+    guidePrice,
+    hotelPrice,
+    rentalPrice,
+    selectedFlightPrice,
+    selectedReturnFlightPrice,
+  ]);
   const [formData, setFormData] = useState({
     card: "",
     expiry: "",
@@ -1178,6 +1193,7 @@ const PackageStepper = ({ open, onClose }) => {
                                     onClick={() => {
                                       setSelectedFlightID(flight.flight_id);
                                       setFlightSelected(true);
+                                      setSelectedFlightPrice(flight.price);
                                     }}
                                   >
                                     Select
@@ -1366,6 +1382,9 @@ const PackageStepper = ({ open, onClose }) => {
                                         flight.flight_id
                                       );
                                       setReturnFlightSelected(true);
+                                      setSelectedReturnFlightPrice(
+                                        flight.price
+                                      );
                                     }}
                                   >
                                     Select
